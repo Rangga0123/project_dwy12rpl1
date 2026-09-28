@@ -91,8 +91,8 @@
             </a>
 
 
-            <!-- Kategori -->
-            <a href="#"
+          <!-- Kategori -->
+            <a href="{{ route('categories.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
                 <span class="text-xl">📂</span>
                 <span>Kategori Buku</span>

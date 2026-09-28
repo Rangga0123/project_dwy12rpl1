@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RestockRequestController;
+use App\Http\Controllers\CategoryController; // <--- TAMBAHAN: Import CategoryController
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,14 @@ Route::middleware('auth')->group(function () {
     */
 
     Route::resource('books', BookController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kategori Buku (BARU DITAMBAHKAN)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('categories', CategoryController::class)->except(['show', 'edit', 'update']);
 
     /*
     |--------------------------------------------------------------------------
@@ -138,5 +147,4 @@ Route::middleware('auth')->group(function () {
 | Authentication
 |--------------------------------------------------------------------------
 */
-
 require __DIR__.'/auth.php';

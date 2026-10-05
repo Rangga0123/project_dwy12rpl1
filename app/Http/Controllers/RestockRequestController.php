@@ -23,10 +23,11 @@ class RestockRequestController extends Controller
     /**
      * Menyimpan pengajuan restock
      */
-    public function store(Request $request): RedirectResponse
+ public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'book_id' => ['required', 'exists:restocks,id'],
+            // PERBAIKAN DI SINI: ubah 'restocks' menjadi 'books'
+            'book_id' => ['required', 'exists:books,id'],
             'jumlah' => ['required', 'integer', 'min:1'],
             'alasan' => ['nullable', 'string', 'max:1000'],
         ], [

@@ -9,17 +9,17 @@ class Book extends Model
 {
     use HasFactory;
 
-    // Nama tabel di database kamu adalah "restocks"
-    protected $table = 'restocks';
+    // Ubah kembali ke 'books' karena data buku disimpan di tabel books
+    protected $table = 'books';
 
     protected $fillable = [
         'title',
-        'author',
+        'category_id',
         'stock',
     ];
 
-    public function restockRequests()
+    public function category()
     {
-        return $this->hasMany(RestockRequest::class, 'book_id');
+        return $this->belongsTo(Category::class);
     }
 }

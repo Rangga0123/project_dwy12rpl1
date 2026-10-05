@@ -9,6 +9,8 @@ class RestockRequest extends Model
 {
     use HasFactory;
 
+    protected $table = 'restock_requests';
+
     protected $fillable = [
         'user_id',
         'book_id',

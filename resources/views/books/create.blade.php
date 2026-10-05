@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Buku - Book Stock SMKN5</title>
+    <title>Tambah Buku - Book Stock SMKN5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: Arial, sans-serif; }
@@ -88,11 +88,11 @@
     <!-- ================= MAIN CONTENT ================= -->
     <main class="ml-64 w-full min-h-screen">
         
-        <!-- TOPBAR (DIUBAH JADI PUTIH BERSIH) -->
+        <!-- TOPBAR (PUTIH BERSIH) -->
         <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center shadow-sm">
             <div>
-                <h2 class="text-2xl font-bold brown">Data Buku</h2>
-                <p class="text-gray-500">Kelola daftar buku perpustakaan</p>
+                <h2 class="text-2xl font-bold brown">Tambah Buku</h2>
+                <p class="text-gray-500">Formulir penambahan data koleksi buku baru</p>
             </div>
 
             <div class="flex items-center gap-3">
@@ -106,57 +106,47 @@
             </div>
         </header>
 
-        <!-- KONTEN UTAMA HALAMAN DATA BUKU -->
+        <!-- KONTEN UTAMA FORM TAMBAH BUKU -->
         <section class="p-8">
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 max-w-2xl">
                 
-                <!-- Bagian Tombol Tambah & Search -->
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold brown">Daftar Koleksi Buku</h3>
-                    <a href="{{ route('books.create') }}" class="bg-[#6b3f28] hover:bg-[#553120] text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
-                        <span>➕</span> Tambah Buku
-                    </a>
-                </div>
+                <form action="{{ route('books.store') }}" method="POST">
+                    @csrf
 
-                <!-- Tabel Data Buku -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-[#f4eee9] brown border-b border-gray-200">
-                                <th class="p-3">No</th>
-                                <th class="p-3">Judul Buku</th>
-                                <th class="p-3">Kategori</th>
-                                <th class="p-3">Stok</th>
-                                <th class="p-3">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($books ?? [] as $index => $book)
-                            <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                <td class="p-3">{{ $index + 1 }}</td>
-                                <td class="p-3 font-semibold">{{ $book->title }}</td>
-                                <td class="p-3">{{ $book->category->name ?? '-' }}</td>
-                                <td class="p-3">{{ $book->stock }}</td>
-                                <td class="p-3 flex gap-2">
-                                    <!-- Tombol Edit yang Diperbaiki -->
-                                    <a href="{{ route('books.edit', $book->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition">Edit</a>
-                                    
-                                    <!-- Tombol Hapus yang Diperbaiki -->
-                                    <form action="{{ route('books.destroy', $book->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
-                                        @csrf 
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="text-center p-5 text-gray-500">Belum ada data buku.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                    <!-- Judul Buku -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Judul Buku</label>
+                        <input type="text" name="title" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#6b3f28]" placeholder="Masukkan judul buku..." required>
+                    </div>
+
+                    <!-- Kategori Buku -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Kategori</label>
+                        <select name="category_id" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#6b3f28]" required>
+                            <option value="">Pilih Kategori</option>
+                            <!-- Jika ada variabel $categories dari controller, loop di sini -->
+                            @foreach($categories ?? [] as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Stok Buku -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-2">Jumlah Stok</label>
+                        <input type="number" name="stock" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#6b3f28]" placeholder="0" min="0" required>
+                    </div>
+
+                    <!-- Tombol Aksi -->
+                    <div class="flex items-center gap-3">
+                        <button type="submit" class="bg-[#6b3f28] hover:bg-[#553120] text-white px-5 py-2 rounded-lg font-medium transition">
+                            Simpan Buku
+                        </button>
+                        <a href="{{ route('books.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-5 py-2 rounded-lg font-medium transition">
+                            Batal
+                        </a>
+                    </div>
+                </form>
 
             </div>
         </section>

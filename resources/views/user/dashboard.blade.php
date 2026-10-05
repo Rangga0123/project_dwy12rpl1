@@ -271,7 +271,7 @@
                             </p>
 
                             <h3 class="text-4xl font-bold brown mt-2">
-                                0
+                                {{ $totalBuku ?? 0 }}
                             </h3>
 
                             <p class="text-xs text-gray-500 mt-2">

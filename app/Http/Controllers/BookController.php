@@ -3,33 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    // 1. Menampilkan daftar semua buku
-    public function index()
+    // 1. Menampilkan daftar semua buku (Dipisah otomatis: Admin atau User)
+    public function index(Request $request)
     {
+        $user = $request->user();
         $books = Book::all();
-        return view('books.index', compact('books'));
+
+        // Jika yang login adalah admin
+        if ($user && $user->role === 'admin') {
+            return view('admin.books.index', compact('books'));
+        }
+
+        // Jika yang login adalah user biasa
+        return view('user.books.index', compact('books'));
     }
 
     // 2. Form tambah buku baru
     public function create()
     {
-        return view('books.create');
+        $categories = Category::all();
+        return view('books.create', compact('categories'));
     }
 
     // 3. Menyimpan buku baru
     public function store(Request $request)
     {
         $request->validate([
-            'title'  => 'required',
-            'author' => 'required',
-            'stock'  => 'required|integer',
+            'title'       => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'stock'       => 'required|integer',
         ]);
 
-        Book::create($request->only(['title', 'author', 'stock']));
+        Book::create($request->only(['title', 'category_id', 'stock']));
 
         return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan!');
     }
@@ -38,25 +48,26 @@ class BookController extends Controller
     public function edit($id)
     {
         $book = Book::findOrFail($id);
-        return view('books.edit', compact('book'));
+        $categories = Category::all();
+        return view('books.edit', compact('book', 'categories'));
     }
 
-    // 5. Update data buku (edit biasa)
+    // 5. Update data buku
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title'  => 'required',
-            'author' => 'required',
-            'stock'  => 'required|integer',
+            'title'       => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'stock'       => 'required|integer',
         ]);
 
         $book = Book::findOrFail($id);
-        $book->update($request->only(['title', 'author', 'stock']));
+        $book->update($request->only(['title', 'category_id', 'stock']));
 
         return redirect()->route('books.index')->with('success', 'Data buku berhasil diupdate!');
     }
 
-    // 6. LOGIKA KHUSUS RESTOCK (Menambah stok ke yang sudah ada)
+    // 6. Logika khusus restock
     public function processRestock(Request $request, $id)
     {
         $request->validate([
@@ -65,7 +76,6 @@ class BookController extends Controller
 
         $book = Book::findOrFail($id);
         
-        // Logika Matematika: Stok lama + Stok yang baru ditambahkan
         $book->stock = $book->stock + $request->added_stock;
         $book->save();
 

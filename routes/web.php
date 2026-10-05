@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RestockRequestController;
-use App\Http\Controllers\CategoryController; // <--- TAMBAHAN: Import CategoryController
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,7 +45,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Kategori Buku (BARU DITAMBAHKAN)
+    | Kategori Buku
     |--------------------------------------------------------------------------
     */
 

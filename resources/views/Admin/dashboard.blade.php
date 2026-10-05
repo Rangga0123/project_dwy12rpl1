@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard Admin - Book Stock SMKN5</title>
+    <title>Dashboard - Book Stock SMKN5</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
+            background: #f7f4f1;
         }
 
         .sidebar {
@@ -21,54 +26,100 @@
             color: #6b3f28;
         }
 
-        .border-brown {
-            border-color: #8b4e2d;
-        }
-
-        .bg-brown {
-            background-color: #6b3f28;
-        }
-
-        .bg-brown-light {
-            background-color: #f4eee9;
-        }
-
         .menu-active {
-            background-color: #d96b24;
+            background: #d96b24;
+        }
+
+        .menu-item {
+            transition: all 0.2s ease;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.10);
+            transform: translateX(3px);
         }
 
         .card {
-            transition: 0.2s;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(74, 45, 30, 0.10);
+        }
+
+        .page-enter {
+            animation: pageEnter 0.5s ease-out;
+        }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-number {
+            animation: numberEnter 0.6s ease-out;
+        }
+
+        @keyframes numberEnter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quick-item {
+            transition: all 0.2s ease;
+        }
+
+        .quick-item:hover {
+            transform: translateX(4px);
+            background: #eee3da;
         }
     </style>
 </head>
 
-<body class="bg-[#f7f4f1]">
+<body>
 
 <div class="min-h-screen flex">
 
-    <!-- ================= SIDEBAR ================= -->
+    <!-- SIDEBAR -->
     <aside class="sidebar w-64 min-h-screen text-white fixed left-0 top-0">
 
-        <!-- Logo -->
-        <div class="p-5 text-center border-b border-white/20">
+        <!-- LOGO -->
+        <div class="p-6 text-center border-b border-white/15">
 
-            <div class="text-5xl mb-2">
-                📚
+            <div class="w-14 h-14 mx-auto mb-3 rounded-xl bg-white/10 flex items-center justify-center">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 5.5A2.5 2.5 0 016.5 3H20v16H6.5A2.5 2.5 0 014 16.5v-11z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 16.5A2.5 2.5 0 016.5 14H20"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8 7h8M8 10h6"/>
+                </svg>
             </div>
 
             <h1 class="text-xl font-bold">
                 Book Stock
             </h1>
 
-            <p class="text-sm text-white/80">
+            <p class="text-xs text-white/70 mt-1">
                 SMKN 5 Kabupaten Tangerang
             </p>
+
         </div>
 
 
@@ -78,82 +129,154 @@
             <!-- Dashboard -->
             <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg menu-active mb-2">
-                <span class="text-xl">🏠</span>
-                <span>Dashboard</span>
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 10.5L12 3l9 7.5"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 9.5V21h14V9.5"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 21v-6h6v6"/>
+                </svg>
+
+                <span class="text-sm">Dashboard</span>
+
             </a>
 
 
             <!-- Data Buku -->
             <a href="{{ route('books.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">📚</span>
-                <span>Data Buku</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 4h12a2 2 0 012 2v13H7a2 2 0 01-2-2V4z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 17a2 2 0 012-2h12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 7h6M9 10h5"/>
+                </svg>
+
+                <span class="text-sm">Data Buku</span>
+
             </a>
 
 
-          <!-- Kategori -->
+            <!-- Kategori -->
             <a href="{{ route('categories.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">📂</span>
-                <span>Kategori Buku</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 6.5A2.5 2.5 0 015.5 4H10l2 2h6.5A2.5 2.5 0 0121 8.5v9A2.5 2.5 0 0118.5 20h-13A2.5 2.5 0 013 17.5v-11z"/>
+                </svg>
+
+                <span class="text-sm">Kategori Buku</span>
+
             </a>
 
 
             <!-- Supplier -->
             <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">🏢</span>
-                <span>Supplier</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 21h18"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 21V7l7-4 7 4v14"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 21v-5h6v5M9 9h.01M12 9h.01M15 9h.01"/>
+                </svg>
+
+                <span class="text-sm">Supplier</span>
+
             </a>
 
 
-            <!-- Pengajuan Restock -->
+            <!-- Pengajuan -->
             <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">📄</span>
-                <span>Pengajuan Restock</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6 3h9l3 3v15H6V3z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M14 3v4h4M9 12h6M9 15h6"/>
+                </svg>
+
+                <span class="text-sm">Pengajuan Restock</span>
+
             </a>
 
 
-            <!-- Riwayat Restock -->
+            <!-- Riwayat -->
             <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">📋</span>
-                <span>Riwayat Restock</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 5h16v14H4z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8 9h8M8 12h8M8 15h5"/>
+                </svg>
+
+                <span class="text-sm">Riwayat Restock</span>
+
             </a>
 
 
             <!-- Laporan -->
             <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">📊</span>
-                <span>Laporan</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 20V10M12 20V4M19 20v-7"/>
+                </svg>
+
+                <span class="text-sm">Laporan</span>
+
             </a>
 
 
             <!-- Profile -->
             <a href="{{ route('profile.edit') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 mb-2">
-                <span class="text-xl">👤</span>
-                <span>Profil</span>
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="3"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 20a7 7 0 0114 0"/>
+                </svg>
+
+                <span class="text-sm">Profil</span>
+
             </a>
 
         </nav>
 
 
-        <!-- Logout -->
+        <!-- LOGOUT -->
         <div class="absolute bottom-5 left-3 right-3">
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
 
                 <button type="submit"
-                    class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80 transition">
+                    class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80">
 
-                    <span class="text-xl">🚪</span>
-                    <span>Logout</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M10 17l5-5-5-5M15 12H3"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 19V5a2 2 0 00-2-2h-5"/>
+                    </svg>
+
+                    <span class="text-sm">Logout</span>
 
                 </button>
+
             </form>
 
         </div>
@@ -161,41 +284,47 @@
     </aside>
 
 
-
-    <!-- ================= MAIN CONTENT ================= -->
-
+    <!-- MAIN -->
     <main class="ml-64 w-full min-h-screen">
 
-
         <!-- TOPBAR -->
-        <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
+        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center">
 
             <div>
+
                 <h2 class="text-2xl font-bold brown">
                     Dashboard
                 </h2>
 
-                <p class="text-gray-600">
+                <p class="text-sm text-gray-500 mt-1">
                     Selamat datang kembali, Admin.
                 </p>
+
             </div>
 
 
-            <!-- User -->
             <div class="flex items-center gap-3">
 
                 <div class="text-right">
-                    <p class="font-semibold brown">
+
+                    <p class="font-semibold text-gray-800">
                         {{ Auth::user()->name }}
                     </p>
 
                     <p class="text-xs text-gray-500">
                         Administrator
                     </p>
+
                 </div>
 
-                <div class="w-11 h-11 rounded-full bg-[#6b3f28] text-white flex items-center justify-center text-xl">
-                    👤
+                <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center">
+
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M5 20a7 7 0 0114 0"/>
+                    </svg>
+
                 </div>
 
             </div>
@@ -203,109 +332,94 @@
         </header>
 
 
-
         <!-- CONTENT -->
-        <section class="p-8">
+        <section class="p-8 page-enter">
 
-
-            <!-- ================= STATISTIC CARDS ================= -->
-
+            <!-- STATISTIK -->
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-7">
 
-
                 <!-- TOTAL BUKU -->
-                <div class="card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                <div class="card bg-white rounded-xl p-5 border border-gray-200">
 
-                    <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-500">
+                        Total Buku
+                    </p>
 
-                        <div>
-                            <p class="text-gray-500 font-medium">
-                                Total Buku
-                            </p>
+                    <div class="flex items-end justify-between mt-3">
 
-                            <h3 class="text-3xl font-bold brown mt-2">
-                                {{ $totalBuku ?? 0 }}
-                            </h3>
-                        </div>
+                        <h3 class="text-3xl font-bold brown stat-number">
+                            {{ $totalBuku ?? 0 }}
+                        </h3>
 
-                        <div class="w-14 h-14 rounded-full bg-[#f4eee9] flex items-center justify-center text-3xl">
-                            📚
-                        </div>
+                        <span class="text-sm text-gray-400">
+                            Buku
+                        </span>
 
                     </div>
 
                 </div>
 
 
+                <!-- STOK -->
+                <div class="card bg-white rounded-xl p-5 border border-gray-200">
 
-                <!-- TOTAL STOK -->
-                <div class="card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <p class="text-sm text-gray-500">
+                        Total Stok
+                    </p>
 
-                    <div class="flex justify-between items-center">
+                    <div class="flex items-end justify-between mt-3">
 
-                        <div>
-                            <p class="text-gray-500 font-medium">
-                                Total Stok
-                            </p>
+                        <h3 class="text-3xl font-bold brown stat-number">
+                            {{ $totalStok ?? 0 }}
+                        </h3>
 
-                            <h3 class="text-3xl font-bold brown mt-2">
-                                {{ $totalStok ?? 0 }}
-                            </h3>
-                        </div>
-
-                        <div class="w-14 h-14 rounded-full bg-[#f4eee9] flex items-center justify-center text-3xl">
-                            📦
-                        </div>
+                        <span class="text-sm text-gray-400">
+                            Unit
+                        </span>
 
                     </div>
 
                 </div>
-
 
 
                 <!-- PENGAJUAN -->
-                <div class="card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                <div class="card bg-white rounded-xl p-5 border border-gray-200">
 
-                    <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-500">
+                        Pengajuan Restock
+                    </p>
 
-                        <div>
-                            <p class="text-gray-500 font-medium">
-                                Pengajuan Restock
-                            </p>
+                    <div class="flex items-end justify-between mt-3">
 
-                            <h3 class="text-3xl font-bold brown mt-2">
-                                {{ $totalPengajuan ?? 0 }}
-                            </h3>
-                        </div>
+                        <h3 class="text-3xl font-bold brown stat-number">
+                            {{ $totalPengajuan ?? 0 }}
+                        </h3>
 
-                        <div class="w-14 h-14 rounded-full bg-[#f4eee9] flex items-center justify-center text-3xl">
-                            📄
-                        </div>
+                        <span class="text-sm text-gray-400">
+                            Pengajuan
+                        </span>
 
                     </div>
 
                 </div>
 
 
+                <!-- SELESAI -->
+                <div class="card bg-white rounded-xl p-5 border border-gray-200">
 
-                <!-- RESTOCK SELESAI -->
-                <div class="card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <p class="text-sm text-gray-500">
+                        Restock Selesai
+                    </p>
 
-                    <div class="flex justify-between items-center">
+                    <div class="flex items-end justify-between mt-3">
 
-                        <div>
-                            <p class="text-gray-500 font-medium">
-                                Restock Selesai
-                            </p>
+                        <h3 class="text-3xl font-bold brown stat-number">
+                            {{ $totalRestockSelesai ?? 0 }}
+                        </h3>
 
-                            <h3 class="text-3xl font-bold brown mt-2">
-                                {{ $totalRestockSelesai ?? 0 }}
-                            </h3>
-                        </div>
-
-                        <div class="w-14 h-14 rounded-full bg-[#f4eee9] flex items-center justify-center text-3xl">
-                            ✅
-                        </div>
+                        <span class="text-sm text-gray-400">
+                            Selesai
+                        </span>
 
                     </div>
 
@@ -314,52 +428,43 @@
             </div>
 
 
-
-            <!-- ================= BAGIAN BAWAH ================= -->
-
+            <!-- BAGIAN BAWAH -->
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
+                <!-- RINGKASAN -->
+                <div class="xl:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
 
-                <!-- RINGKASAN RESTOCK -->
-                <div class="xl:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <div class="mb-6">
 
-                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold brown">
+                            Ringkasan Restock
+                        </h3>
 
-                        <div>
-                            <h3 class="text-xl font-bold brown">
-                                Ringkasan Restock
-                            </h3>
-
-                            <p class="text-gray-500 text-sm">
-                                Status pengajuan restock buku
-                            </p>
-                        </div>
-
-                        <span class="text-3xl">
-                            📊
-                        </span>
+                        <p class="text-sm text-gray-500 mt-1">
+                            Status pengajuan restock buku
+                        </p>
 
                     </div>
 
 
-                    <!-- Menunggu -->
-                    <div class="mb-5">
+                    <!-- MENUNGGU -->
+                    <div class="mb-6">
 
-                        <div class="flex justify-between mb-2">
+                        <div class="flex justify-between text-sm mb-2">
 
-                            <span class="font-medium text-gray-700">
+                            <span class="text-gray-600">
                                 Menunggu
                             </span>
 
-                            <span class="font-bold">
+                            <span class="font-semibold">
                                 {{ $totalMenunggu ?? 0 }}
                             </span>
 
                         </div>
 
-                        <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
 
-                            <div class="bg-yellow-400 h-3 rounded-full"
+                            <div class="h-full bg-yellow-400 rounded-full transition-all duration-700"
                                  style="width: 30%">
                             </div>
 
@@ -368,25 +473,24 @@
                     </div>
 
 
+                    <!-- DIPROSES -->
+                    <div class="mb-6">
 
-                    <!-- Diproses -->
-                    <div class="mb-5">
+                        <div class="flex justify-between text-sm mb-2">
 
-                        <div class="flex justify-between mb-2">
-
-                            <span class="font-medium text-gray-700">
+                            <span class="text-gray-600">
                                 Diproses
                             </span>
 
-                            <span class="font-bold">
+                            <span class="font-semibold">
                                 {{ $totalDiproses ?? 0 }}
                             </span>
 
                         </div>
 
-                        <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
 
-                            <div class="bg-blue-500 h-3 rounded-full"
+                            <div class="h-full bg-blue-500 rounded-full transition-all duration-700"
                                  style="width: 50%">
                             </div>
 
@@ -395,25 +499,24 @@
                     </div>
 
 
-
-                    <!-- Selesai -->
+                    <!-- SELESAI -->
                     <div>
 
-                        <div class="flex justify-between mb-2">
+                        <div class="flex justify-between text-sm mb-2">
 
-                            <span class="font-medium text-gray-700">
+                            <span class="text-gray-600">
                                 Selesai
                             </span>
 
-                            <span class="font-bold">
+                            <span class="font-semibold">
                                 {{ $totalRestockSelesai ?? 0 }}
                             </span>
 
                         </div>
 
-                        <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
 
-                            <div class="bg-green-500 h-3 rounded-full"
+                            <div class="h-full bg-green-500 rounded-full transition-all duration-700"
                                  style="width: 80%">
                             </div>
 
@@ -424,24 +527,28 @@
                 </div>
 
 
-
                 <!-- AKSI CEPAT -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
 
                     <h3 class="text-xl font-bold brown mb-5">
                         Aksi Cepat
                     </h3>
 
 
-                    <!-- Tambah Buku -->
                     <a href="{{ route('books.create') }}"
-                       class="flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] hover:bg-[#eadfd7] mb-3 transition">
+                       class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] mb-3">
 
-                        <div class="text-2xl">
-                            ➕
+                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown">
+
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 5v14M5 12h14"/>
+                            </svg>
+
                         </div>
 
                         <div>
+
                             <p class="font-semibold brown">
                                 Tambah Buku
                             </p>
@@ -449,21 +556,28 @@
                             <p class="text-xs text-gray-500">
                                 Menambahkan data buku
                             </p>
+
                         </div>
 
                     </a>
 
 
-
-                    <!-- Pengajuan -->
                     <a href="#"
-                       class="flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] hover:bg-[#eadfd7] mb-3 transition">
+                       class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] mb-3">
 
-                        <div class="text-2xl">
-                            📄
+                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown">
+
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M6 3h9l3 3v15H6V3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12h6M9 15h6"/>
+                            </svg>
+
                         </div>
 
                         <div>
+
                             <p class="font-semibold brown">
                                 Pengajuan Restock
                             </p>
@@ -471,21 +585,26 @@
                             <p class="text-xs text-gray-500">
                                 Kelola pengajuan restock
                             </p>
+
                         </div>
 
                     </a>
 
 
-
-                    <!-- Laporan -->
                     <a href="#"
-                       class="flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] hover:bg-[#eadfd7] transition">
+                       class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9]">
 
-                        <div class="text-2xl">
-                            📊
+                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown">
+
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5 20V10M12 20V4M19 20v-7"/>
+                            </svg>
+
                         </div>
 
                         <div>
+
                             <p class="font-semibold brown">
                                 Lihat Laporan
                             </p>
@@ -493,6 +612,7 @@
                             <p class="text-xs text-gray-500">
                                 Melihat laporan restock
                             </p>
+
                         </div>
 
                     </a>
@@ -502,36 +622,21 @@
             </div>
 
 
+            <!-- INFORMASI -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
 
-            <!-- ================= INFORMASI SISTEM ================= -->
+                <h3 class="text-lg font-bold brown mb-2">
+                    Book Stock SMKN 5
+                </h3>
 
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mt-6">
-
-                <div class="flex items-start gap-4">
-
-                    <div class="text-4xl">
-                        📚
-                    </div>
-
-                    <div>
-
-                        <h3 class="text-xl font-bold brown mb-1">
-                            Book Stock SMKN5
-                        </h3>
-
-                        <p class="text-gray-600">
-                            Sistem ini digunakan untuk membantu pengelolaan
-                            data buku, stok buku, pengajuan restock,
-                            supplier, serta riwayat penambahan stok
-                            perpustakaan SMKN 5 Kabupaten Tangerang.
-                        </p>
-
-                    </div>
-
-                </div>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Sistem ini digunakan untuk membantu pengelolaan
+                    data buku, stok buku, pengajuan restock,
+                    supplier, serta riwayat penambahan stok
+                    perpustakaan SMKN 5 Kabupaten Tangerang.
+                </p>
 
             </div>
-
 
         </section>
 

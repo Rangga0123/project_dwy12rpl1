@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dashboard - Book Stock SMKN5</title>
-
+    <title>Dashboard - Book Stock SMKN 5</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -31,25 +29,25 @@
         }
 
         .menu-item {
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .menu-item:hover {
-            background: rgba(255,255,255,0.10);
-            transform: translateX(3px);
+            background: rgba(255,255,255,0.12);
+            transform: translateX(4px);
         }
 
         .card {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(74, 45, 30, 0.10);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(74, 45, 30, 0.12);
         }
 
         .page-enter {
-            animation: pageEnter 0.5s ease-out;
+            animation: pageEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes pageEnter {
@@ -57,23 +55,6 @@
                 opacity: 0;
                 transform: translateY(8px);
             }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stat-number {
-            animation: numberEnter 0.6s ease-out;
-        }
-
-        @keyframes numberEnter {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -81,12 +62,21 @@
         }
 
         .quick-item {
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .quick-item:hover {
             transform: translateX(4px);
             background: #eee3da;
+        }
+
+        /* Animasi Logo Sekolah */
+        .school-logo {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .school-logo:hover {
+            transform: scale(1.06) rotate(2deg);
         }
     </style>
 </head>
@@ -96,20 +86,14 @@
 <div class="min-h-screen flex">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar w-64 min-h-screen text-white fixed left-0 top-0">
+    <aside class="sidebar w-64 min-h-screen text-white fixed left-0 top-0 z-20 shadow-lg">
 
         <!-- LOGO -->
         <div class="p-6 text-center border-b border-white/15">
 
-            <div class="w-14 h-14 mx-auto mb-3 rounded-xl bg-white/10 flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M4 5.5A2.5 2.5 0 016.5 3H20v16H6.5A2.5 2.5 0 014 16.5v-11z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M4 16.5A2.5 2.5 0 016.5 14H20"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8 7h8M8 10h6"/>
-                </svg>
+            <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-md school-logo overflow-hidden">
+                <!-- Logo SMKN 5 Kabupaten Tangerang -->
+                <img src="{{ asset('images/logo-smkn5.png') }}" alt="Logo SMKN 5 Kab. Tangerang" class="w-full h-full object-contain">
             </div>
 
             <h1 class="text-xl font-bold">
@@ -264,7 +248,7 @@
                 @csrf
 
                 <button type="submit"
-                    class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80">
+                    class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80 text-left">
 
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -288,7 +272,7 @@
     <main class="ml-64 w-full min-h-screen">
 
         <!-- TOPBAR -->
-        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center">
+        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
 
             <div>
 
@@ -296,7 +280,7 @@
                     Dashboard
                 </h2>
 
-                <p class="text-sm text-gray-500 mt-1">
+                <p id="greeting-text" class="text-sm text-gray-500 mt-1">
                     Selamat datang kembali, Admin.
                 </p>
 
@@ -308,7 +292,7 @@
                 <div class="text-right">
 
                     <p class="font-semibold text-gray-800">
-                        {{ Auth::user()->name }}
+                        {{ Auth::user()->name ?? 'Admin' }}
                     </p>
 
                     <p class="text-xs text-gray-500">
@@ -317,7 +301,7 @@
 
                 </div>
 
-                <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center shadow-inner">
 
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <circle cx="12" cy="8" r="3"/>
@@ -347,8 +331,8 @@
 
                     <div class="flex items-end justify-between mt-3">
 
-                        <h3 class="text-3xl font-bold brown stat-number">
-                            {{ $totalBuku ?? 0 }}
+                        <h3 class="text-3xl font-bold brown stat-number" data-target="{{ $totalBuku ?? 0 }}">
+                            0
                         </h3>
 
                         <span class="text-sm text-gray-400">
@@ -369,8 +353,8 @@
 
                     <div class="flex items-end justify-between mt-3">
 
-                        <h3 class="text-3xl font-bold brown stat-number">
-                            {{ $totalStok ?? 0 }}
+                        <h3 class="text-3xl font-bold brown stat-number" data-target="{{ $totalStok ?? 0 }}">
+                            0
                         </h3>
 
                         <span class="text-sm text-gray-400">
@@ -391,8 +375,8 @@
 
                     <div class="flex items-end justify-between mt-3">
 
-                        <h3 class="text-3xl font-bold brown stat-number">
-                            {{ $totalPengajuan ?? 0 }}
+                        <h3 class="text-3xl font-bold brown stat-number" data-target="{{ $totalPengajuan ?? 0 }}">
+                            0
                         </h3>
 
                         <span class="text-sm text-gray-400">
@@ -413,8 +397,8 @@
 
                     <div class="flex items-end justify-between mt-3">
 
-                        <h3 class="text-3xl font-bold brown stat-number">
-                            {{ $totalRestockSelesai ?? 0 }}
+                        <h3 class="text-3xl font-bold brown stat-number" data-target="{{ $totalRestockSelesai ?? 0 }}">
+                            0
                         </h3>
 
                         <span class="text-sm text-gray-400">
@@ -432,7 +416,7 @@
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
                 <!-- RINGKASAN -->
-                <div class="xl:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
+                <div class="xl:col-span-2 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
 
                     <div class="mb-6">
 
@@ -464,8 +448,8 @@
 
                         <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
 
-                            <div class="h-full bg-yellow-400 rounded-full transition-all duration-700"
-                                 style="width: 30%">
+                            <div class="progress-bar h-full bg-yellow-400 rounded-full transition-all duration-1000"
+                                 style="width: 0%" data-width="30%">
                             </div>
 
                         </div>
@@ -490,8 +474,8 @@
 
                         <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
 
-                            <div class="h-full bg-blue-500 rounded-full transition-all duration-700"
-                                 style="width: 50%">
+                            <div class="progress-bar h-full bg-blue-500 rounded-full transition-all duration-1000"
+                                 style="width: 0%" data-width="50%">
                             </div>
 
                         </div>
@@ -516,8 +500,8 @@
 
                         <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
 
-                            <div class="h-full bg-green-500 rounded-full transition-all duration-700"
-                                 style="width: 80%">
+                            <div class="progress-bar h-full bg-green-500 rounded-full transition-all duration-1000"
+                                 style="width: 0%" data-width="80%">
                             </div>
 
                         </div>
@@ -528,7 +512,7 @@
 
 
                 <!-- AKSI CEPAT -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
 
                     <h3 class="text-xl font-bold brown mb-5">
                         Aksi Cepat
@@ -538,7 +522,7 @@
                     <a href="{{ route('books.create') }}"
                        class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] mb-3">
 
-                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown">
+                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown shadow-sm">
 
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -565,7 +549,7 @@
                     <a href="#"
                        class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] mb-3">
 
-                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown">
+                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown shadow-sm">
 
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -594,7 +578,7 @@
                     <a href="#"
                        class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9]">
 
-                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown">
+                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown shadow-sm">
 
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -623,7 +607,7 @@
 
 
             <!-- INFORMASI -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mt-6 shadow-sm">
 
                 <h3 class="text-lg font-bold brown mb-2">
                     Book Stock SMKN 5
@@ -643,6 +627,59 @@
     </main>
 
 </div>
+
+<!-- SCRIPT ANIMASI VANILLA JS -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1. Efek Angka Berjalan (Counter Animation)
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        statNumbers.forEach(el => {
+            const target = parseInt(el.getAttribute('data-target')) || 0;
+            if (target === 0) return;
+            
+            let current = 0;
+            const increment = Math.ceil(target / 30);
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    el.innerText = target;
+                    clearInterval(timer);
+                } else {
+                    el.innerText = current;
+                }
+            }, 30);
+        });
+
+        // 2. Animasi Progress Bar Masuk Perlahan
+        setTimeout(() => {
+            const bars = document.querySelectorAll('.progress-bar');
+            bars.forEach(bar => {
+                const widthVal = bar.getAttribute('data-width');
+                bar.style.width = widthVal;
+            });
+        }, 200);
+
+        // 3. Sapaan Otomatis Berdasarkan Waktu Lokal
+        const greetingEl = document.getElementById('greeting-text');
+        const hour = new Date().getHours();
+        let greeting = "Selamat datang kembali, Admin.";
+
+        if (hour >= 4 && hour < 11) {
+            greeting = "Selamat pagi, Admin. Semangat beraktivitas!";
+        } else if (hour >= 11 && hour < 15) {
+            greeting = "Selamat siang, Admin. Tetap produktif ya!";
+        } else if (hour >= 15 && hour < 18) {
+            greeting = "Selamat sore, Admin. Pekerjaan hampir beres!";
+        } else {
+            greeting = "Selamat malam, Admin. Waktunya istirahat santai.";
+        }
+
+        if (greetingEl) {
+            greetingEl.innerText = greeting;
+        }
+    });
+</script>
 
 </body>
 </html>

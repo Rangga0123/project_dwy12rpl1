@@ -82,17 +82,10 @@
 
         <div class="p-6 text-center border-b border-white/15">
 
-            <div class="w-14 h-14 mx-auto mb-3 rounded-xl bg-white/10 flex items-center justify-center">
-
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M4 5.5A2.5 2.5 0 016.5 3H20v16H6.5A2.5 2.5 0 014 16.5v-11z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M4 16.5A2.5 2.5 0 016.5 14H20"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8 7h8M8 10h6"/>
-                </svg>
-
+                        <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-md overflow-hidden">
+                <img src="{{ asset('images/logo-smkn5.png') }}"
+                    alt="Logo SMKN 5 Kabupaten Tangerang"
+                    class="w-full h-full object-contain">
             </div>
 
             <h1 class="text-xl font-bold">

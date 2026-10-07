@@ -3,11 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Setting Profil - Book Stock SMKN5</title>
+    <title>Profil - Book Stock SMKN 5</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,36 +15,62 @@
         }
 
         body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f7f3ef;
-            color: #4a2c1d;
+            font-family: Arial, sans-serif;
+            background: #f7f4f1;
         }
 
         .sidebar {
-            background: #713f24;
-        }
-
-        .menu {
-            transition: 0.2s;
-        }
-
-        .menu:hover {
-            background: #8b4d2c;
-        }
-
-        .active {
-            background: #d86b1f;
+            background: #6b3f28;
         }
 
         .brown {
-            color: #713f24;
+            color: #6b3f28;
+        }
+
+        .menu-active {
+            background: #d96b24;
+        }
+
+        .menu-item {
+            transition: all 0.25s ease;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateX(4px);
         }
 
         .card {
-            background: white;
-            border: 1px solid #eaded5;
-            box-shadow: 0 5px 18px rgba(76, 45, 29, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(74, 45, 30, 0.10);
+        }
+
+        .page-enter {
+            animation: pageEnter 0.6s ease forwards;
+        }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .school-logo {
+            transition: transform 0.3s ease;
+        }
+
+        .school-logo:hover {
+            transform: scale(1.05);
         }
 
         input {
@@ -54,106 +78,278 @@
         }
 
         input:focus {
-            border-color: #713f24 !important;
-            box-shadow: 0 0 0 3px rgba(113, 63, 36, 0.08);
+            border-color: #6b3f28;
+            box-shadow: 0 0 0 3px rgba(107, 63, 40, 0.08);
+        }
+
+        .profile-photo {
+            transition: all 0.3s ease;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.03);
+        }
+
+        .btn {
+            transition: all 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
     </style>
 </head>
 
 <body>
 
-<div class="flex min-h-screen">
+<div class="min-h-screen flex">
 
-    <!-- ================= SIDEBAR ================= -->
-
-    <aside class="sidebar w-[270px] min-h-screen text-white flex flex-col">
+    <!-- SIDEBAR -->
+    <aside class="sidebar w-64 min-h-screen text-white fixed left-0 top-0 z-20 shadow-lg">
 
         <!-- LOGO -->
-        <div class="px-6 py-7 text-center border-b border-white/20">
+        <div class="p-6 text-center border-b border-white/15">
 
-            <div class="mx-auto mb-3
-                        w-16 h-16
-                        rounded-2xl
-                        bg-white
-                        flex items-center justify-center
-                        shadow-lg">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-md school-logo overflow-hidden">
 
-                <span class="text-4xl">📖</span>
+                <img
+                    src="{{ asset('images/logo-smkn5.png') }}"
+                    alt="Logo SMKN 5 Kabupaten Tangerang"
+                    class="w-full h-full object-contain"
+                >
 
             </div>
 
-            <h1 class="text-2xl font-bold">
-                Book Stock SMKN5
+            <h1 class="text-xl font-bold">
+                Book Stock
             </h1>
 
-            <p class="text-sm text-white/75 mt-1">
-                Sistem Restock Buku
-            </p>
-
-            <p class="text-sm text-white/75">
-                Perpustakaan
+            <p class="text-xs text-white/70 mt-1">
+                SMKN 5 Kabupaten Tangerang
             </p>
 
         </div>
 
 
         <!-- MENU -->
+        <nav class="mt-5 px-3">
 
-        <nav class="flex-1 px-4 py-6 space-y-2">
-
+            <!-- Dashboard -->
             <a href="{{ route('dashboard') }}"
-               class="menu flex items-center gap-4 px-4 py-3 rounded-xl">
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
-                <span class="text-xl">🏠</span>
-                <span>Dashboard</span>
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M3 10.5L12 3l9 7.5"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M5 9.5V21h14V9.5"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M9 21v-6h6v6"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Dashboard
+                </span>
 
             </a>
 
 
+            <!-- Data Buku -->
             <a href="{{ route('books.index') }}"
-               class="menu flex items-center gap-4 px-4 py-3 rounded-xl">
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
-                <span class="text-xl">📚</span>
-                <span>Data Buku</span>
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M5 4h12a2 2 0 012 2v13H7a2 2 0 01-2-2V4z"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M5 17a2 2 0 012-2h12"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M9 7h6M9 10h5"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Data Buku
+                </span>
 
             </a>
 
 
-            <a href="{{ route('books.index') }}"
-               class="menu flex items-center gap-4 px-4 py-3 rounded-xl">
+            <!-- Kategori -->
+            <a href="{{ route('categories.index') }}"
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
-                <span class="text-xl">📄</span>
-                <span>Pengajuan Restock</span>
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M3 6.5A2.5 2.5 0 015.5 4H10l2 2h6.5A2.5 2.5 0 0121 8.5v9A2.5 2.5 0 0118.5 20h-13A2.5 2.5 0 013 17.5v-11z"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Kategori Buku
+                </span>
 
             </a>
 
 
+            <!-- Supplier -->
             <a href="#"
-               class="menu flex items-center gap-4 px-4 py-3 rounded-xl">
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
-                <span class="text-xl">🕘</span>
-                <span>Riwayat Restock</span>
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M3 21h18"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M5 21V7l7-4 7 4v14"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M9 21v-5h6v5M9 9h.01M12 9h.01M15 9h.01"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Supplier
+                </span>
 
             </a>
 
 
+            <!-- Pengajuan -->
             <a href="#"
-               class="menu flex items-center gap-4 px-4 py-3 rounded-xl">
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
-                <span class="text-xl">🔄</span>
-                <span>Status Restock</span>
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6 3h9l3 3v15H6V3z"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M14 3v4h4M9 12h6M9 15h6"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Pengajuan Restock
+                </span>
 
             </a>
 
 
-            <!-- PROFILE -->
+            <!-- Riwayat -->
+            <a href="#"
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M4 5h16v14H4z"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M8 9h8M8 12h8M8 15h5"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Riwayat Restock
+                </span>
+
+            </a>
+
+
+            <!-- Laporan -->
+            <a href="#"
+               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M5 20V10M12 20V4M19 20v-7"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Laporan
+                </span>
+
+            </a>
+
+
+            <!-- Profil -->
             <a href="{{ route('profile.edit') }}"
-               class="active flex items-center gap-4
-                      px-4 py-3 rounded-xl font-semibold">
+               class="menu-active flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
 
-                <span class="text-xl">👤</span>
-                <span>Profil</span>
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <circle cx="12"
+                            cy="8"
+                            r="3"/>
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M5 20a7 7 0 0114 0"/>
+
+                </svg>
+
+                <span class="text-sm">
+                    Profil
+                </span>
 
             </a>
 
@@ -161,8 +357,7 @@
 
 
         <!-- LOGOUT -->
-
-        <div class="px-4 pb-6">
+        <div class="absolute bottom-5 left-3 right-3">
 
             <form method="POST"
                   action="{{ route('logout') }}">
@@ -170,12 +365,27 @@
                 @csrf
 
                 <button type="submit"
-                        class="menu w-full flex items-center gap-4
-                               px-4 py-3 rounded-xl text-left">
+                        class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80 text-left">
 
-                    <span class="text-xl">🚪</span>
+                    <svg class="w-5 h-5"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         viewBox="0 0 24 24">
 
-                    <span>Logout</span>
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M10 17l5-5-5-5M15 12H3"/>
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M21 19V5a2 2 0 00-2-2h-5"/>
+
+                    </svg>
+
+                    <span class="text-sm">
+                        Logout
+                    </span>
 
                 </button>
 
@@ -186,69 +396,70 @@
     </aside>
 
 
-    <!-- ================= MAIN ================= -->
-
-    <main class="flex-1">
+    <!-- MAIN -->
+    <main class="ml-64 w-full min-h-screen">
 
 
         <!-- TOPBAR -->
+        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
 
-        <header class="h-[76px]
-                       bg-white
-                       border-b border-[#eaded5]
-                       flex items-center
-                       justify-between
-                       px-8">
+            <div>
 
-            <button class="text-3xl brown">
-                ☰
-            </button>
+                <h2 class="text-2xl font-bold brown">
+                    Profil
+                </h2>
 
+                <p class="text-sm text-gray-500 mt-1">
+                    Kelola informasi akun Anda
+                </p>
 
-            <div class="flex items-center gap-5">
-
-                <span class="text-2xl">🔔</span>
+            </div>
 
 
-                <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3">
 
-                    <!-- FOTO HEADER -->
+                <div class="text-right">
 
-                    @if($user->profile_photo)
+                    <p class="font-semibold text-gray-800">
+                        {{ Auth::user()->name ?? 'Admin' }}
+                    </p>
 
-                        <img src="{{ asset('storage/' . $user->profile_photo) }}"
-                             class="w-11 h-11 rounded-full object-cover border-2 border-[#713f24]">
+                    <p class="text-xs text-gray-500">
+                        Administrator
+                    </p>
 
-                    @else
-
-                        <div class="w-11 h-11
-                                    rounded-full
-                                    bg-[#713f24]
-                                    text-white
-                                    flex items-center
-                                    justify-center
-                                    text-xl">
-
-                            👤
-
-                        </div>
-
-                    @endif
+                </div>
 
 
-                    <div>
+                @if($user->profile_photo)
 
-                        <p class="font-bold brown">
-                            {{ $user->name }}
-                        </p>
+                    <img src="{{ asset('storage/' . $user->profile_photo) }}"
+                         alt="Foto Profil"
+                         class="w-10 h-10 rounded-full object-cover border-2 border-[#6b3f28]">
 
-                        <p class="text-xs text-gray-500">
-                            {{ ucfirst($user->role ?? 'user') }}
-                        </p>
+                @else
+
+                    <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center">
+
+                        <svg class="w-5 h-5"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.8"
+                             viewBox="0 0 24 24">
+
+                            <circle cx="12"
+                                    cy="8"
+                                    r="3"/>
+
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M5 20a7 7 0 0114 0"/>
+
+                        </svg>
 
                     </div>
 
-                </div>
+                @endif
 
             </div>
 
@@ -256,99 +467,59 @@
 
 
         <!-- CONTENT -->
+        <section class="p-8 page-enter">
 
-        <section class="p-8 max-w-6xl mx-auto">
+            <div class="mb-7">
 
+                <h1 class="text-3xl font-bold brown">
+                    Pengaturan Profil
+                </h1>
 
-            <!-- TITLE -->
-
-            <div class="mb-8">
-
-                <p class="text-sm text-gray-500">
-                    Pengaturan akun
-                </p>
-
-                <h2 class="text-4xl font-bold brown mt-1">
-                    Setting Profil
-                </h2>
-
-                <p class="text-gray-600 mt-2">
-                    Kelola informasi akun, foto profil, dan keamanan password Anda.
+                <p class="text-gray-500 mt-1">
+                    Kelola informasi pribadi, foto profil, dan keamanan akun.
                 </p>
 
             </div>
 
 
-            <!-- SUCCESS PROFILE -->
-
+            <!-- PESAN BERHASIL -->
             @if(session('success'))
 
-                <div class="mb-6
-                            bg-green-50
-                            border border-green-200
-                            text-green-700
-                            px-5 py-4
-                            rounded-xl">
-
-                    ✓ {{ session('success') }}
-
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-5 py-4 rounded-xl">
+                    {{ session('success') }}
                 </div>
 
             @endif
 
-
-            <!-- SUCCESS FOTO -->
 
             @if(session('success_photo'))
 
-                <div class="mb-6
-                            bg-green-50
-                            border border-green-200
-                            text-green-700
-                            px-5 py-4
-                            rounded-xl">
-
-                    ✓ {{ session('success_photo') }}
-
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-5 py-4 rounded-xl">
+                    {{ session('success_photo') }}
                 </div>
 
             @endif
 
 
-            <!-- SUCCESS PASSWORD -->
-
             @if(session('success_password'))
 
-                <div class="mb-6
-                            bg-green-50
-                            border border-green-200
-                            text-green-700
-                            px-5 py-4
-                            rounded-xl">
-
-                    ✓ {{ session('success_password') }}
-
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-5 py-4 rounded-xl">
+                    {{ session('success_password') }}
                 </div>
 
             @endif
 
 
             <!-- ERROR -->
-
             @if($errors->any())
 
-                <div class="mb-6
-                            bg-red-50
-                            border border-red-200
-                            text-red-700
-                            px-5 py-4
-                            rounded-xl">
+                <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl">
 
-                    <p class="font-bold mb-2">
+                    <p class="font-semibold mb-2">
                         Ada kesalahan:
                     </p>
 
-                    <ul class="list-disc ml-5">
+                    <ul class="list-disc ml-5 text-sm">
 
                         @foreach($errors->all() as $error)
 
@@ -365,417 +536,280 @@
             @endif
 
 
-            <!-- ================= FOTO PROFIL ================= -->
-
-            <div class="card rounded-2xl p-7 mb-6">
-
-                <div class="flex items-center gap-4 mb-7">
-
-                    <div class="w-14 h-14
-                                rounded-full
-                                bg-[#f7e9dc]
-                                flex items-center
-                                justify-center
-                                text-3xl">
-
-                        📷
-
-                    </div>
-
-                    <div>
-
-                        <h3 class="text-xl font-bold brown">
-                            Foto Profil
-                        </h3>
-
-                        <p class="text-sm text-gray-500">
-                            Ganti foto profil akun Anda.
-                        </p>
-
-                    </div>
-
-                </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
 
-                <!-- FOTO + DATA USER -->
+                <!-- FOTO PROFIL -->
+                <div class="card bg-white rounded-xl border border-gray-200 p-6">
 
-                <div class="flex items-center gap-6 mb-7">
+                    <h3 class="text-xl font-bold brown">
+                        Foto Profil
+                    </h3>
 
-                    @if($user->profile_photo)
-
-                        <img src="{{ asset('storage/' . $user->profile_photo) }}"
-                             class="w-28 h-28
-                                    rounded-full
-                                    object-cover
-                                    border-4
-                                    border-[#713f24]
-                                    shadow">
-
-                    @else
-
-                        <div class="w-28 h-28
-                                    rounded-full
-                                    bg-[#f7e9dc]
-                                    border-4
-                                    border-[#713f24]
-                                    flex items-center
-                                    justify-center
-                                    text-5xl">
-
-                            👤
-
-                        </div>
-
-                    @endif
-
-
-                    <div>
-
-                        <h3 class="text-xl font-bold brown">
-                            {{ $user->name }}
-                        </h3>
-
-                        <p class="text-gray-500">
-                            {{ $user->email }}
-                        </p>
-
-                        <p class="text-sm text-gray-400 mt-1">
-                            {{ ucfirst($user->role ?? 'user') }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- FORM UPLOAD FOTO -->
-
-                <form method="POST"
-                      action="{{ route('profile.photo.update') }}"
-                      enctype="multipart/form-data">
-
-                    @csrf
-
-                    <label class="block font-semibold text-sm brown mb-2">
-                        Pilih Foto Baru
-                    </label>
-
-
-                    <input type="file"
-                           name="profile_photo"
-                           accept="image/jpeg,image/png,image/webp"
-                           required
-                           class="w-full
-                                  border border-gray-300
-                                  rounded-xl
-                                  px-4 py-3
-                                  bg-white">
-
-
-                    <p class="text-sm text-gray-500 mt-2">
-                        JPG, JPEG, PNG, atau WEBP. Maksimal 2 MB.
+                    <p class="text-sm text-gray-500 mt-1">
+                        Gunakan foto untuk profil akun Anda.
                     </p>
 
 
-                    <button type="submit"
-                            class="mt-5
-                                   bg-[#713f24]
-                                   text-white
-                                   px-6 py-3
-                                   rounded-xl
-                                   font-semibold
-                                   hover:bg-[#5c321d]
-                                   transition">
+                    <div class="flex justify-center mt-7">
 
-                        📷 Ganti Foto
+                        @if($user->profile_photo)
 
-                    </button>
+                            <img id="photoPreview"
+                                 src="{{ asset('storage/' . $user->profile_photo) }}"
+                                 alt="Foto Profil"
+                                 class="profile-photo w-32 h-32 rounded-full object-cover border-4 border-[#6b3f28] shadow-md">
 
-                </form>
+                        @else
+
+                            <div id="photoPlaceholder"
+                                 class="profile-photo w-32 h-32 rounded-full bg-[#f4eee9] border-4 border-[#6b3f28] flex items-center justify-center brown">
+
+                                <svg class="w-14 h-14"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.5"
+                                     viewBox="0 0 24 24">
+
+                                    <circle cx="12"
+                                            cy="8"
+                                            r="3"/>
+
+                                    <path stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          d="M5 20a7 7 0 0114 0"/>
+
+                                </svg>
+
+                            </div>
+
+                            <img id="photoPreview"
+                                 class="hidden w-32 h-32 rounded-full object-cover border-4 border-[#6b3f28] shadow-md">
+
+                        @endif
+
+                    </div>
 
 
-                <!-- HAPUS FOTO -->
+                    <div class="text-center mt-5">
 
-                @if($user->profile_photo)
+                        <h4 class="text-lg font-bold text-gray-800">
+                            {{ $user->name }}
+                        </h4>
 
+                        <p class="text-sm text-gray-500 mt-1">
+                            {{ $user->email }}
+                        </p>
+
+                    </div>
+
+
+                    <!-- FORM FOTO -->
                     <form method="POST"
-                          action="{{ route('profile.photo.delete') }}"
-                          class="mt-3">
+                          action="{{ route('profile.photo.update') }}"
+                          enctype="multipart/form-data"
+                          class="mt-6">
 
                         @csrf
 
-                        @method('DELETE')
+                        <label class="block text-sm font-semibold brown mb-2">
+                            Pilih Foto Baru
+                        </label>
+
+                        <input id="profilePhoto"
+                               type="file"
+                               name="profile_photo"
+                               accept="image/jpeg,image/png,image/webp"
+                               required
+                               class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white">
+
+                        <p class="text-xs text-gray-500 mt-2">
+                            JPG, JPEG, PNG, atau WEBP. Maksimal 2 MB.
+                        </p>
 
                         <button type="submit"
-                                onclick="return confirm('Yakin ingin menghapus foto profil?')"
-                                class="text-red-600
-                                       font-semibold
-                                       hover:text-red-800">
+                                class="btn mt-4 w-full bg-[#6b3f28] hover:bg-[#57321f] text-white px-5 py-3 rounded-lg font-semibold">
 
-                            🗑 Hapus Foto Profil
+                            Simpan Foto
 
                         </button>
 
                     </form>
 
-                @endif
 
-            </div>
+                    <!-- HAPUS FOTO -->
+                    @if($user->profile_photo)
 
+                        <form method="POST"
+                              action="{{ route('profile.photo.delete') }}"
+                              class="mt-3">
 
-            <!-- ================= INFORMASI PROFIL ================= -->
+                            @csrf
 
-            <div class="card rounded-2xl p-7 mb-6">
+                            @method('DELETE')
 
-                <div class="flex items-center gap-4 mb-7">
+                            <button type="submit"
+                                    onclick="return confirm('Yakin ingin menghapus foto profil?')"
+                                    class="w-full text-sm text-red-600 hover:text-red-800 font-semibold py-2">
 
-                    <div class="w-14 h-14
-                                rounded-full
-                                bg-[#f7e9dc]
-                                flex items-center
-                                justify-center
-                                text-3xl">
+                                Hapus Foto Profil
 
-                        👤
+                            </button>
 
-                    </div>
+                        </form>
 
-                    <div>
-
-                        <h3 class="text-xl font-bold brown">
-                            Informasi Profil
-                        </h3>
-
-                        <p class="text-sm text-gray-500">
-                            Ubah nama dan email akun Anda.
-                        </p>
-
-                    </div>
+                    @endif
 
                 </div>
 
 
-                <form method="POST"
-                      action="{{ route('profile.update') }}">
+                <!-- INFORMASI PROFIL -->
+                <div class="xl:col-span-2 card bg-white rounded-xl border border-gray-200 p-6">
 
-                    @csrf
+                    <h3 class="text-xl font-bold brown">
+                        Informasi Profil
+                    </h3>
 
-                    @method('PATCH')
-
-
-                    <!-- NAME -->
-
-                    <div class="mb-5">
-
-                        <label class="block
-                                      font-semibold
-                                      text-sm
-                                      brown
-                                      mb-2">
-
-                            Nama Lengkap
-
-                        </label>
-
-                        <input type="text"
-                               name="name"
-                               value="{{ old('name', $user->name) }}"
-                               required
-                               class="w-full
-                                      border border-gray-300
-                                      rounded-xl
-                                      px-4 py-3">
-
-                    </div>
+                    <p class="text-sm text-gray-500 mt-1 mb-7">
+                        Perbarui nama dan alamat email akun Anda.
+                    </p>
 
 
-                    <!-- EMAIL -->
+                    <form method="POST"
+                          action="{{ route('profile.update') }}">
 
-                    <div class="mb-6">
+                        @csrf
 
-                        <label class="block
-                                      font-semibold
-                                      text-sm
-                                      brown
-                                      mb-2">
-
-                            Email
-
-                        </label>
-
-                        <input type="email"
-                               name="email"
-                               value="{{ old('email', $user->email) }}"
-                               required
-                               class="w-full
-                                      border border-gray-300
-                                      rounded-xl
-                                      px-4 py-3">
-
-                    </div>
+                        @method('PATCH')
 
 
-                    <button type="submit"
-                            class="bg-[#713f24]
-                                   text-white
-                                   px-6 py-3
-                                   rounded-xl
-                                   font-semibold
-                                   hover:bg-[#5c321d]
-                                   transition">
+                        <div class="mb-5">
 
-                        Simpan Perubahan
+                            <label class="block text-sm font-semibold brown mb-2">
+                                Nama Lengkap
+                            </label>
 
-                    </button>
+                            <input type="text"
+                                   name="name"
+                                   value="{{ old('name', $user->name) }}"
+                                   required
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-3">
 
-                </form>
-
-            </div>
+                        </div>
 
 
-            <!-- ================= PASSWORD ================= -->
+                        <div class="mb-6">
 
-            <div class="card rounded-2xl p-7">
+                            <label class="block text-sm font-semibold brown mb-2">
+                                Email
+                            </label>
 
-                <div class="flex items-center gap-4 mb-7">
+                            <input type="email"
+                                   name="email"
+                                   value="{{ old('email', $user->email) }}"
+                                   required
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-3">
 
-                    <div class="w-14 h-14
-                                rounded-full
-                                bg-yellow-100
-                                flex items-center
-                                justify-center
-                                text-3xl">
+                        </div>
 
-                        🔒
 
-                    </div>
+                        <button type="submit"
+                                class="btn bg-[#d96b24] hover:bg-[#c45d1b] text-white px-6 py-3 rounded-lg font-semibold">
 
-                    <div>
+                            Simpan Perubahan
 
-                        <h3 class="text-xl font-bold brown">
-                            Keamanan Akun
-                        </h3>
+                        </button>
 
-                        <p class="text-sm text-gray-500">
-                            Ganti password akun Anda.
-                        </p>
-
-                    </div>
+                    </form>
 
                 </div>
 
 
-                <form method="POST"
-                      action="{{ route('profile.password') }}">
+                <!-- KEAMANAN -->
+                <div class="xl:col-span-3 card bg-white rounded-xl border border-gray-200 p-6">
 
-                    @csrf
+                    <h3 class="text-xl font-bold brown">
+                        Keamanan Akun
+                    </h3>
 
-                    @method('PUT')
-
-
-                    <!-- PASSWORD LAMA -->
-
-                    <div class="mb-5">
-
-                        <label class="block
-                                      font-semibold
-                                      text-sm
-                                      brown
-                                      mb-2">
-
-                            Password Saat Ini
-
-                        </label>
-
-                        <input type="password"
-                               name="current_password"
-                               required
-                               class="w-full
-                                      border border-gray-300
-                                      rounded-xl
-                                      px-4 py-3">
-
-                    </div>
+                    <p class="text-sm text-gray-500 mt-1 mb-7">
+                        Ubah password untuk menjaga keamanan akun Anda.
+                    </p>
 
 
-                    <!-- PASSWORD BARU -->
+                    <form method="POST"
+                          action="{{ route('profile.password') }}">
 
-                    <div class="mb-5">
+                        @csrf
 
-                        <label class="block
-                                      font-semibold
-                                      text-sm
-                                      brown
-                                      mb-2">
-
-                            Password Baru
-
-                        </label>
-
-                        <input type="password"
-                               name="password"
-                               required
-                               class="w-full
-                                      border border-gray-300
-                                      rounded-xl
-                                      px-4 py-3">
-
-                    </div>
+                        @method('PATCH')
 
 
-                    <!-- CONFIRM -->
-
-                    <div class="mb-6">
-
-                        <label class="block
-                                      font-semibold
-                                      text-sm
-                                      brown
-                                      mb-2">
-
-                            Konfirmasi Password Baru
-
-                        </label>
-
-                        <input type="password"
-                               name="password_confirmation"
-                               required
-                               class="w-full
-                                      border border-gray-300
-                                      rounded-xl
-                                      px-4 py-3">
-
-                    </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
 
-                    <button type="submit"
-                            class="bg-[#713f24]
-                                   text-white
-                                   px-6 py-3
-                                   rounded-xl
-                                   font-semibold
-                                   hover:bg-[#5c321d]
-                                   transition">
+                            <div>
 
-                        Ubah Password
+                                <label class="block text-sm font-semibold brown mb-2">
+                                    Password Saat Ini
+                                </label>
 
-                    </button>
+                                <input type="password"
+                                       name="current_password"
+                                       required
+                                       class="w-full border border-gray-300 rounded-lg px-4 py-3">
 
-                </form>
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-sm font-semibold brown mb-2">
+                                    Password Baru
+                                </label>
+
+                                <input type="password"
+                                       name="password"
+                                       required
+                                       class="w-full border border-gray-300 rounded-lg px-4 py-3">
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-sm font-semibold brown mb-2">
+                                    Konfirmasi Password Baru
+                                </label>
+
+                                <input type="password"
+                                       name="password_confirmation"
+                                       required
+                                       class="w-full border border-gray-300 rounded-lg px-4 py-3">
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="btn mt-6 bg-[#6b3f28] hover:bg-[#57321f] text-white px-6 py-3 rounded-lg font-semibold">
+
+                            Ubah Password
+
+                        </button>
+
+                    </form>
+
+                </div>
 
             </div>
 
 
-            <!-- FOOTER -->
-
-            <div class="text-center
-                        text-sm
-                        text-gray-400
-                        mt-8">
+            <div class="text-center text-sm text-gray-400 mt-8">
 
                 © {{ date('Y') }}
-                Book Stock SMKN5 ·
-                Sistem Restock Buku Perpustakaan
+                Book Stock SMKN 5 Kabupaten Tangerang
 
             </div>
 
@@ -784,6 +818,44 @@
     </main>
 
 </div>
+
+
+<script>
+
+    const photoInput = document.getElementById('profilePhoto');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoPlaceholder = document.getElementById('photoPlaceholder');
+
+    if (photoInput) {
+
+        photoInput.addEventListener('change', function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                photoPreview.src = e.target.result;
+                photoPreview.classList.remove('hidden');
+
+                if (photoPlaceholder) {
+                    photoPlaceholder.classList.add('hidden');
+                }
+
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+    }
+
+</script>
 
 </body>
 </html>

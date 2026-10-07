@@ -249,17 +249,17 @@
     <!-- MAIN -->
     <main class="ml-64 w-full min-h-screen">
 
-        <!-- TOPBAR -->
-        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center">
+                <!-- TOPBAR -->
+        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
 
             <div>
 
                 <h2 class="text-2xl font-bold brown">
-                    Data Buku
+                    Dashboard
                 </h2>
 
-                <p class="text-sm text-gray-500 mt-1">
-                    Kelola data buku perpustakaan.
+                <p id="greeting-text" class="text-sm text-gray-500 mt-1">
+                    Selamat datang kembali, {{ Auth::user()->name }}.
                 </p>
 
             </div>
@@ -274,20 +274,49 @@
                     </p>
 
                     <p class="text-xs text-gray-500">
-                        Administrator
+                        {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
                     </p>
 
                 </div>
 
-                <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center">
 
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <circle cx="12" cy="8" r="3"/>
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M5 20a7 7 0 0114 0"/>
-                    </svg>
+                @if(Auth::user()->profile_photo)
 
-                </div>
+                    <img
+                        src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
+                        alt="Foto Profil"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-[#6b3f28]"
+                    >
+
+                @else
+
+                    <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center shadow-inner">
+
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <circle
+                                cx="12"
+                                cy="8"
+                                r="3"
+                            />
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M5 20a7 7 0 0114 0"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                @endif
 
             </div>
 
@@ -360,7 +389,7 @@
                                 </th>
 
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide brown">
-                                    Penulis
+                                    Kategori
                                 </th>
 
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide brown">
@@ -397,7 +426,7 @@
 
 
                                     <td class="px-6 py-4 text-sm text-gray-600">
-                                        {{ $book->author ?? '-' }}
+                                        {{ $book->category->name ?? '-' }}
                                     </td>
 
 
@@ -416,24 +445,25 @@
 
                                     <td class="px-6 py-4">
 
-                                        <div class="flex justify-center gap-2">
+                                            <div class="flex justify-center gap-2">
 
-                                            <a href="#"
-                                               class="action-btn px-3 py-1.5 rounded-md bg-[#f4eee9] brown text-xs font-semibold hover:bg-[#eadfd7]">
+                                                <!-- Tombol Edit -->
+                                                <a href="{{ route('books.edit', $book->id) }}"
+                                                class="action-btn px-3 py-1.5 rounded-md bg-[#f4eee9] brown text-xs font-semibold hover:bg-[#eadfd7]">
+                                                    Edit
+                                                </a>
 
-                                                Edit
+                                                <!-- Tombol Hapus -->
+                                                <form action="{{ route('books.destroy', $book->id) }}" method="POST" onsubmit="return confirm('Apakah kamu yakin ingin menghapus buku ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="action-btn px-3 py-1.5 rounded-md bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100">
+                                                        Hapus
+                                                    </button>
+                                                </form>
 
-                                            </a>
-
-
-                                            <a href="#"
-                                               class="action-btn px-3 py-1.5 rounded-md bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100">
-
-                                                Hapus
-
-                                            </a>
-
-                                        </div>
+                                            </div>
 
                                     </td>
 

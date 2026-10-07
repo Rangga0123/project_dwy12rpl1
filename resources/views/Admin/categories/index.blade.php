@@ -487,60 +487,74 @@
     <main class="ml-64 w-full min-h-screen">
 
 
-        <!-- TOPBAR -->
+                <!-- TOPBAR -->
         <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
 
             <div>
 
                 <h2 class="text-2xl font-bold brown">
-                    Kategori Buku
+                    Dashboard
                 </h2>
 
-                <p class="text-sm text-gray-500 mt-1">
-                    Kelola kategori pengelompokan buku perpustakaan
+                <p id="greeting-text" class="text-sm text-gray-500 mt-1">
+                    Selamat datang kembali, {{ Auth::user()->name }}.
                 </p>
 
             </div>
 
 
-            <!-- USER -->
             <div class="flex items-center gap-3">
 
                 <div class="text-right">
 
                     <p class="font-semibold text-gray-800">
-                        {{ Auth::user()->name ?? 'Admin' }}
+                        {{ Auth::user()->name }}
                     </p>
 
                     <p class="text-xs text-gray-500">
-                        Administrator
+                        {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
                     </p>
 
                 </div>
 
-                <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center shadow-inner">
 
-                    <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        viewBox="0 0 24 24"
+                @if(Auth::user()->profile_photo)
+
+                    <img
+                        src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
+                        alt="Foto Profil"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-[#6b3f28]"
                     >
-                        <circle
-                            cx="12"
-                            cy="8"
-                            r="3"
-                        />
 
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M5 20a7 7 0 0114 0"
-                        />
-                    </svg>
+                @else
 
-                </div>
+                    <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center shadow-inner">
+
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <circle
+                                cx="12"
+                                cy="8"
+                                r="3"
+                            />
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M5 20a7 7 0 0114 0"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                @endif
 
             </div>
 

@@ -13,9 +13,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Menampilkan halaman profile.
-     */
     public function edit(Request $request): View
     {
         return view('profile.edit', [
@@ -23,10 +20,6 @@ class ProfileController extends Controller
         ]);
     }
 
-
-    /**
-     * Update nama dan email.
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
@@ -43,10 +36,6 @@ class ProfileController extends Controller
             ->with('success', 'Profil berhasil diperbarui.');
     }
 
-
-    /**
-     * Update foto profile.
-     */
     public function updatePhoto(Request $request): RedirectResponse
     {
         $request->validate([
@@ -65,12 +54,10 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Hapus foto lama jika ada
         if ($user->profile_photo) {
             Storage::disk('public')->delete($user->profile_photo);
         }
 
-        // Simpan foto baru
         $path = $request->file('profile_photo')
             ->store('profile-photos', 'public');
 
@@ -82,10 +69,6 @@ class ProfileController extends Controller
             ->with('success_photo', 'Foto profil berhasil diperbarui.');
     }
 
-
-    /**
-     * Hapus foto profile.
-     */
     public function deletePhoto(Request $request): RedirectResponse
     {
         $user = $request->user();
@@ -102,10 +85,6 @@ class ProfileController extends Controller
             ->with('success_photo', 'Foto profil berhasil dihapus.');
     }
 
-
-    /**
-     * Update password.
-     */
     public function updatePassword(Request $request): RedirectResponse
     {
         $request->validate([
@@ -129,10 +108,6 @@ class ProfileController extends Controller
             ->with('success_password', 'Password berhasil diubah.');
     }
 
-
-    /**
-     * Hapus akun.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
@@ -141,7 +116,6 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Hapus foto profil sebelum akun dihapus
         if ($user->profile_photo) {
             Storage::disk('public')->delete($user->profile_photo);
         }

@@ -411,12 +411,12 @@
 
                                         <td>
                                             <strong>
-                                                {{ $request->restock->title ?? '-' }}
+                                                {{ $request->book->title ?? '-' }}
                                             </strong>
 
-                                            @if($request->restock)
+                                            @if($request->book)
                                                 <div class="catatan">
-                                                    {{ $request->restock->author }}
+                                                    {{ $request->book->author }}
                                                 </div>
                                             @endif
                                         </td>

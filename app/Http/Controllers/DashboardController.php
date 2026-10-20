@@ -12,23 +12,37 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        // Total buku
         $totalBuku = Book::count();
 
-        // Dashboard Admin
+        // =========================
+        // DASHBOARD ADMIN
+        // =========================
         if ($user->role === 'admin') {
+
             $totalStok = Book::sum('stock');
 
-            // Total pengajuan restock
+            // Total seluruh pengajuan
             $totalPengajuan = RestockRequest::count();
 
-            // Pengajuan yang masih menunggu
+            // Pengajuan menunggu
             $totalMenunggu = RestockRequest::where(
                 'status',
                 'menunggu'
             )->count();
 
-            // Pengajuan terbaru untuk tabel dashboard admin
+            // Pengajuan disetujui dihitung sebagai restock selesai
+            $totalRestockSelesai = RestockRequest::where(
+                'status',
+                'disetujui'
+            )->count();
+
+            // Pengajuan ditolak
+            $totalDitolak = RestockRequest::where(
+                'status',
+                'ditolak'
+            )->count();
+
+            // Lima pengajuan terbaru
             $pengajuanTerbaru = RestockRequest::with([
                 'book',
                 'user'
@@ -42,18 +56,40 @@ class DashboardController extends Controller
                 'totalStok',
                 'totalPengajuan',
                 'totalMenunggu',
+                'totalRestockSelesai',
+                'totalDitolak',
                 'pengajuanTerbaru'
             ));
         }
 
-        // Dashboard User
+        // =========================
+        // DASHBOARD USER
+        // =========================
+
         $totalPengajuan = RestockRequest::where(
             'user_id',
             $user->id
         )->count();
 
-        $totalMenunggu = RestockRequest::where('user_id', $user->id)
+        $totalMenunggu = RestockRequest::where(
+            'user_id',
+            $user->id
+        )
             ->where('status', 'menunggu')
+            ->count();
+
+        $totalDisetujui = RestockRequest::where(
+            'user_id',
+            $user->id
+        )
+            ->where('status', 'disetujui')
+            ->count();
+
+        $totalDitolak = RestockRequest::where(
+            'user_id',
+            $user->id
+        )
+            ->where('status', 'ditolak')
             ->count();
 
         $pengajuanTerbaru = RestockRequest::with('book')
@@ -66,6 +102,8 @@ class DashboardController extends Controller
             'totalBuku',
             'totalPengajuan',
             'totalMenunggu',
+            'totalDisetujui',
+            'totalDitolak',
             'pengajuanTerbaru'
         ));
     }

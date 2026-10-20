@@ -1,506 +1,545 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Restock - Book Stock SMKN 5</title>
 
-    <title>Riwayat Restock - Book Stock SMKN5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --brown: #70432d;
+            --brown-dark: #5d3523;
+            --orange: #d96b24;
+            --page: #f6f3f0;
+            --line: #e9e1db;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
-            background: #f7f4f0;
-            color: #5c321d;
+            background: var(--page);
+            color: #292524;
         }
 
-        .layout {
-            display: flex;
-            min-height: 100vh;
+        a, button {
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* SIDEBAR */
         .sidebar {
-            width: 250px;
-            background: #713f24;
+            width: 230px;
+            min-width: 230px;
+            background: var(--brown);
             color: white;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            padding: 24px 14px;
+            flex-shrink: 0;
+            z-index: 30;
+            transition: width .25s ease, min-width .25s ease,
+                        margin-left .25s ease, transform .25s ease;
         }
 
-        .logo {
-            text-align: center;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,.25);
+        .brand-area {
+            border-bottom: 1px solid rgba(255,255,255,.16);
         }
 
-        .logo-icon {
-            font-size: 48px;
+        .brand-logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 15px;
+            background: #fff;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,.1);
         }
 
-        .logo h2 {
-            margin: 8px 0 5px;
-            font-size: 22px;
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 5px;
         }
 
-        .logo p {
-            margin: 0;
-            font-size: 13px;
-            opacity: .9;
-        }
-
-        .nav {
-            margin-top: 25px;
-        }
-
-        .nav a {
+        .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            color: white;
+            gap: 13px;
+            min-height: 43px;
+            padding: 10px 13px;
+            border-radius: 8px;
+            color: rgba(255,255,255,.94);
+            font-size: 13px;
+            font-weight: 600;
             text-decoration: none;
-            padding: 14px 16px;
-            margin-bottom: 6px;
-            border-radius: 10px;
-            transition: .2s;
+            transition: background .18s ease, transform .18s ease;
         }
 
-        .nav a:hover,
-        .nav a.active {
-            background: #e87518;
+        .sidebar-item:hover {
+            background: rgba(255,255,255,.11);
+            transform: translateX(2px);
         }
 
-        .nav-icon {
-            width: 25px;
+        .sidebar-active {
+            background: var(--orange);
+            color: #fff;
+            box-shadow: 0 3px 8px rgba(0,0,0,.1);
+        }
+
+        .sidebar-active:hover {
+            background: #c95e1b;
+        }
+
+        .menu-icon {
+            width: 19px;
             text-align: center;
-            font-size: 20px;
-        }
-
-        /* MAIN */
-        .main {
-            margin-left: 250px;
-            width: calc(100% - 250px);
-            min-height: 100vh;
+            font-size: 17px;
+            flex-shrink: 0;
         }
 
         .topbar {
-            height: 68px;
-            background: white;
-            border-bottom: 2px solid #713f24;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 35px;
+            height: 76px;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
-        .menu {
-            font-size: 28px;
-            color: #713f24;
-        }
+        .brown { color: var(--brown); }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: bold;
-        }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: #713f24;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background: #f1e5dc;
+            color: var(--brown);
+            border: 1px solid #eaded5;
+            font-size: 17px;
+            flex-shrink: 0;
         }
 
-        .content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 35px;
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .page-title h1 {
-            margin: 0;
-            font-size: 32px;
+        .hamburger {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: var(--brown);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background .18s ease;
         }
 
-        .page-title p {
-            margin-top: 7px;
-            color: #6d7280;
-        }
+        .hamburger:hover { background: #f5eee8; }
 
         .card {
-            background: white;
-            border: 2px solid #9a542b;
-            border-radius: 16px;
-            margin-top: 25px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,.06);
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            box-shadow: 0 2px 7px rgba(55,35,24,.035);
         }
 
-        .card-header {
-            padding: 22px 25px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .table-head {
+            background: #f8f5f2;
+            color: var(--brown);
         }
 
-        .card-header h2 {
-            margin: 0;
-            font-size: 21px;
-        }
-
-        .btn-add {
-            background: #713f24;
-            color: white;
-            text-decoration: none;
-            padding: 11px 17px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .btn-add:hover {
-            background: #e87518;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #faf6f1;
-            color: #713f24;
-            padding: 16px;
-            text-align: left;
-            font-size: 14px;
-            border-bottom: 2px solid #9a542b;
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #eee;
-            color: #4b5563;
-        }
-
-        tr:hover {
-            background: #fffaf5;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 55px 20px;
-            color: #777;
-        }
-
-        .empty-icon {
-            font-size: 45px;
-            margin-bottom: 10px;
-        }
-
-        /* STATUS */
-        .status {
+        .status-badge {
             display: inline-block;
-            padding: 7px 13px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
+            border-radius: 999px;
+            padding: 5px 11px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
         }
 
-        .menunggu {
-            background: #fff3cd;
-            color: #856404;
+        .status-menunggu {
+            background: #ffedd5;
+            color: #c2410c;
         }
 
-        .disetujui {
-            background: #d1fae5;
-            color: #047857;
+        .status-disetujui {
+            background: #dcfce7;
+            color: #15803d;
         }
 
-        .ditolak {
+        .status-ditolak {
             background: #fee2e2;
             color: #b91c1c;
         }
 
-        .catatan {
-            font-size: 13px;
-            color: #777;
-            margin-top: 5px;
+        .sidebar-backdrop { display: none; }
+
+        @keyframes rise-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @media(max-width: 800px) {
+        .page-content {
+            animation: rise-in .4s ease both;
+        }
+
+        @media (min-width: 1024px) {
             .sidebar {
-                width: 210px;
+                overflow: hidden;
             }
 
-            .main {
-                margin-left: 210px;
-                width: calc(100% - 210px);
+            body.sidebar-collapsed .sidebar {
+                width: 0;
+                min-width: 0;
+                margin-left: 0;
+                overflow: hidden;
+                border: none;
             }
 
-            .content {
-                padding: 20px;
+            body.sidebar-collapsed .sidebar > * {
+                visibility: hidden;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                transform: translateX(-100%);
+                height: 100vh;
+                height: 100dvh;
+                overflow-y: auto;
+                width: 250px;
+                min-width: 250px;
+            }
+
+            body.mobile-menu-open .sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-backdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(25,18,14,.42);
+                z-index: 25;
+            }
+
+            body.mobile-menu-open .sidebar-backdrop {
+                display: block;
+            }
+
+            .content-area {
+                padding: 24px 18px !important;
+            }
+
+            .topbar {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
             }
         }
     </style>
 </head>
 
 <body>
+<div class="flex min-h-screen">
 
-<div class="layout">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar min-h-screen flex flex-col">
 
-        <div class="logo">
-            <div class="logo-icon">📖</div>
+        <div class="brand-area px-5 py-6 text-center">
+            <div class="brand-logo mx-auto mb-3">
+                <img src="{{ asset('images/logo-smkn5.png') }}"
+                     alt="Logo SMKN 5 Kabupaten Tangerang">
+            </div>
 
-            <h2>Book Stock SMKN5</h2>
-
-            <p>
-                Sistem Restock Buku<br>
-                Perpustakaan
-            </p>
+            <div class="brand-copy">
+                <h1 class="text-lg font-bold tracking-tight leading-tight">
+                    Book Stock SMKN 5
+                </h1>
+                <p class="text-xs text-white/75 mt-2">Sistem Restock Buku</p>
+                <p class="text-xs text-white/75 mt-1">Perpustakaan</p>
+            </div>
         </div>
 
-        <nav class="nav">
+        <!-- MENU USER -->
+        <nav class="flex-1 px-3 py-5 space-y-1.5">
 
-            <a href="{{ route('dashboard') }}">
-                <span class="nav-icon">🏠</span>
-                Dashboard
+            <a href="{{ route('dashboard') }}" class="sidebar-item">
+                <span class="menu-icon">⌂</span>
+                <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('books.index') }}">
-                <span class="nav-icon">📚</span>
-                Data Buku
+            <a href="{{ route('books.index') }}" class="sidebar-item">
+                <span class="menu-icon">▤</span>
+                <span>Data Buku</span>
             </a>
 
-            <a href="{{ route('user.restock.create') }}">
-                <span class="nav-icon">📄</span>
-                Pengajuan Restock
+            <a href="{{ route('user.restock.create') }}" class="sidebar-item">
+                <span class="menu-icon">▧</span>
+                <span>Pengajuan Restock</span>
             </a>
 
-            <a href="{{ route('user.restock.history') }}" class="active">
-                <span class="nav-icon">🕘</span>
-                Riwayat Restock
+            <a href="{{ route('user.restock.history') }}"
+               class="sidebar-item sidebar-active"
+               aria-current="page">
+                <span class="menu-icon">◷</span>
+                <span>Riwayat Restock</span>
             </a>
+            
 
-            <a href="{{ route('profile.edit') }}">
-                <span class="nav-icon">👤</span>
-                Profil
+            <a href="{{ route('profile.edit') }}" class="sidebar-item">
+                <span class="menu-icon">♙</span>
+                <span>Profil</span>
             </a>
-
-            <a href="#"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <span class="nav-icon">🚪</span>
-                Logout
-            </a>
-
-            <form id="logout-form"
-                  method="POST"
-                  action="{{ route('logout') }}"
-                  style="display:none;">
-                @csrf
-            </form>
 
         </nav>
 
+        <!-- LOGOUT -->
+        <div class="px-3 pb-5 mt-auto">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit"
+                        class="sidebar-item w-full text-left hover:!bg-red-700">
+                    <span class="menu-icon">⇥</span>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+
     </aside>
 
+    <!-- KONTEN UTAMA -->
+    <main class="flex-1 min-w-0">
 
-    <!-- MAIN -->
-    <main class="main">
+        <!-- TOPBAR -->
+        <header class="topbar flex items-center justify-between px-7">
 
-        <header class="topbar">
-
-            <div class="menu">
+            <button type="button"
+                    id="menuToggle"
+                    class="hamburger text-2xl"
+                    aria-label="Buka atau tutup menu"
+                    aria-expanded="true">
                 ☰
-            </div>
+            </button>
 
-            <div class="user-info">
+            <a href="{{ route('profile.edit') }}"
+               class="flex items-center gap-3 no-underline">
 
-                <span>🔔</span>
-
-                <div class="avatar">
-                    👤
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-bold brown leading-5">
+                        {{ Auth::user()->name ?? 'User' }}
+                    </p>
+                    <p class="text-xs text-gray-500">User</p>
                 </div>
 
-                <div>
-                    {{ auth()->user()->name }}
-
-                    <small style="display:block;color:#777;font-weight:normal;">
-                        User
-                    </small>
+                <div class="user-avatar">
+                    @if (Auth::user() && Auth::user()->profile_photo)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
+                             alt="Foto profil">
+                    @else
+                        <span>♙</span>
+                    @endif
                 </div>
-
-            </div>
+            </a>
 
         </header>
 
+        <!-- RIWAYAT RESTOCK -->
+        <section class="content-area p-7 lg:p-8 page-content">
 
-        <section class="content">
-
-            <div class="page-title">
-
-                <h1>Riwayat Restock</h1>
-
-                <p>
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold brown tracking-tight">
+                    Riwayat Restock
+                </h2>
+                <p class="text-sm text-stone-500 mt-2">
                     Lihat semua pengajuan restock yang pernah Anda kirim.
                 </p>
-
             </div>
 
+            @if (session('success'))
+                <div class="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-            <div class="card">
+            <div class="card overflow-hidden">
 
-                <div class="card-header">
-
-                    <h2>Daftar Pengajuan Restock</h2>
+                <div class="px-5 sm:px-6 py-5 border-b border-stone-200
+                            flex flex-col sm:flex-row sm:items-center
+                            sm:justify-between gap-3">
+                    <div>
+                        <h3 class="text-lg font-bold brown">
+                            Daftar Pengajuan Restock
+                        </h3>
+                        <p class="text-sm text-stone-500 mt-1">
+                            Riwayat pengajuan yang telah Anda buat.
+                        </p>
+                    </div>
 
                     <a href="{{ route('user.restock.create') }}"
-                       class="btn-add">
+                       class="inline-flex items-center justify-center px-4 py-2.5
+                              rounded-lg bg-[#70432d] text-white text-sm font-semibold
+                              hover:bg-[#5d3523] transition">
                         + Pengajuan Baru
                     </a>
-
                 </div>
 
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[850px] text-sm">
 
-                @if($requests->count() > 0)
+                        <thead class="table-head">
+                            <tr class="text-left text-xs uppercase tracking-wide">
+                                <th class="px-4 py-4">No</th>
+                                <th class="px-4 py-4">Buku</th>
+                                <th class="px-4 py-4">Jumlah</th>
+                                <th class="px-4 py-4">Alasan</th>
+                                <th class="px-4 py-4">Tanggal</th>
+                                <th class="px-4 py-4">Status</th>
+                                <th class="px-4 py-4">Catatan Admin</th>
+                            </tr>
+                        </thead>
 
-                    <div class="table-wrapper">
+                        <tbody class="divide-y divide-stone-100">
 
-                        <table>
+                            @forelse ($requests as $request)
+                                <tr class="hover:bg-stone-50 transition-colors">
 
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Buku</th>
-                                    <th>Jumlah</th>
-                                    <th>Alasan</th>
-                                    <th>Tanggal</th>
-                                    <th>Status</th>
-                                    <th>Catatan Admin</th>
+                                    <td class="px-4 py-4 text-stone-500">
+                                        {{ $loop->iteration }}
+                                    </td>
+
+                                    <td class="px-4 py-4 font-semibold brown">
+                                        {{ $request->book->title ?? 'Buku tidak ditemukan' }}
+                                    </td>
+
+                                    <td class="px-4 py-4">
+                                        {{ $request->jumlah }}
+                                        buku
+                                    </td>
+
+                                    <td class="px-4 py-4 text-stone-600">
+                                        {{ $request->alasan ?: '-' }}
+                                    </td>
+
+                                    <td class="px-4 py-4 text-stone-600 whitespace-nowrap">
+                                        {{ $request->created_at?->format('d/m/Y H:i') ?? '-' }}
+                                    </td>
+
+                                    <td class="px-4 py-4">
+                                        @if ($request->status === 'menunggu')
+                                            <span class="status-badge status-menunggu">
+                                                Menunggu
+                                            </span>
+                                        @elseif ($request->status === 'disetujui')
+                                            <span class="status-badge status-disetujui">
+                                                Disetujui
+                                            </span>
+                                        @else
+                                            <span class="status-badge status-ditolak">
+                                                Ditolak
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    <td class="px-4 py-4 text-stone-600">
+                                        {{ $request->catatan_admin ?: '-' }}
+                                    </td>
+
                                 </tr>
-                            </thead>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-6 py-14 text-center">
+                                        <div class="text-3xl mb-3">▤</div>
+                                        <p class="font-semibold brown">
+                                            Belum ada pengajuan restock
+                                        </p>
+                                        <p class="text-sm text-stone-500 mt-2">
+                                            Pengajuan yang kamu buat akan muncul di sini.
+                                        </p>
+                                        <a href="{{ route('user.restock.create') }}"
+                                           class="inline-flex mt-5 px-4 py-2.5 rounded-lg
+                                                  bg-[#70432d] text-white text-sm font-semibold
+                                                  hover:bg-[#5d3523] transition">
+                                            + Ajukan Restock
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforelse
 
-                            <tbody>
-
-                                @foreach($requests as $request)
-
-                                    <tr>
-
-                                        <td>
-                                            {{ $loop->iteration }}
-                                        </td>
-
-                                        <td>
-                                            <strong>
-                                                {{ $request->book->title ?? '-' }}
-                                            </strong>
-
-                                            @if($request->book)
-                                                <div class="catatan">
-                                                    {{ $request->book->author }}
-                                                </div>
-                                            @endif
-                                        </td>
-
-                                        <td>
-                                            {{ $request->jumlah }} buku
-                                        </td>
-
-                                        <td>
-                                            {{ $request->alasan ?: '-' }}
-                                        </td>
-
-                                        <td>
-                                            {{ $request->created_at->format('d/m/Y H:i') }}
-                                        </td>
-
-                                        <td>
-
-                                            @if($request->status === 'menunggu')
-
-                                                <span class="status menunggu">
-                                                    Menunggu
-                                                </span>
-
-                                            @elseif($request->status === 'disetujui')
-
-                                                <span class="status disetujui">
-                                                    Disetujui
-                                                </span>
-
-                                            @elseif($request->status === 'ditolak')
-
-                                                <span class="status ditolak">
-                                                    Ditolak
-                                                </span>
-
-                                            @endif
-
-                                        </td>
-
-                                        <td>
-                                            {{ $request->catatan_admin ?: '-' }}
-                                        </td>
-
-                                    </tr>
-
-                                @endforeach
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                @else
-
-                    <div class="empty">
-
-                        <div class="empty-icon">
-                            📄
-                        </div>
-
-                        <h3>Belum Ada Pengajuan</h3>
-
-                        <p>
-                            Anda belum pernah membuat pengajuan restock.
-                        </p>
-
-                        <a href="{{ route('user.restock.create') }}"
-                           class="btn-add">
-                            Buat Pengajuan Restock
-                        </a>
-
-                    </div>
-
-                @endif
-
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <footer class="text-center text-xs text-stone-400 mt-7">
+                © {{ date('Y') }} Book Stock SMKN 5 · Sistem Restock Buku Perpustakaan
+            </footer>
 
         </section>
 
     </main>
-
 </div>
+
+<script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    menuToggle?.addEventListener('click', () => {
+        if (window.innerWidth < 1024) {
+            document.body.classList.toggle('mobile-menu-open');
+
+            menuToggle.setAttribute(
+                'aria-expanded',
+                document.body.classList.contains('mobile-menu-open')
+            );
+        } else {
+            document.body.classList.toggle('sidebar-collapsed');
+
+            menuToggle.setAttribute(
+                'aria-expanded',
+                !document.body.classList.contains('sidebar-collapsed')
+            );
+        }
+    });
+
+    sidebarBackdrop?.addEventListener('click', () => {
+        document.body.classList.remove('mobile-menu-open');
+        menuToggle?.setAttribute('aria-expanded', 'false');
+    });
+
+    document.querySelectorAll('.sidebar .sidebar-item').forEach((item) => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth < 1024) {
+                document.body.classList.remove('mobile-menu-open');
+            }
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024) {
+            document.body.classList.remove('mobile-menu-open');
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+        }
+    });
+</script>
 
 </body>
 </html>

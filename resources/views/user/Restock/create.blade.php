@@ -372,10 +372,6 @@
                 <span>Riwayat Restock</span>
             </a>
 
-            <a href="{{ route('user.restock.history') }}" class="sidebar-item">
-                <span class="menu-icon">↻</span>
-                <span>Status Restock</span>
-            </a>
 
             <a href="{{ route('profile.edit') }}" class="sidebar-item">
                 <span class="menu-icon">♙</span>

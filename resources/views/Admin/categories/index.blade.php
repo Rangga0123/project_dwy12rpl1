@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
         body {
             font-family: Arial, sans-serif;
             background: #f7f4f1;
+            margin: 0;
         }
 
         .sidebar {
@@ -126,10 +128,36 @@
         .school-logo:hover {
             transform: scale(1.06) rotate(2deg);
         }
+
+        /* TOPBAR: menyesuaikan Dashboard Admin */
+        .topbar {
+            min-height: 80px;
+            padding: 20px 28px;
+        }
+
+        .hamburger {
+            color: #6b3f28;
+            font-size: 26px;
+            line-height: 1;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .hamburger:hover {
+            color: #d96b24;
+        }
+
+        /* Tampilan layar kecil */
+        @media (max-width: 640px) {
+            .topbar {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 
-<body>
 
 <div class="min-h-screen flex">
 
@@ -270,7 +298,7 @@
 
             <!-- Supplier -->
             <a
-                href="#"
+                href="{{ route('suppliers.index') }}"
                 class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2"
             >
 
@@ -306,13 +334,12 @@
 
             </a>
 
-
+ 
             <!-- Pengajuan Restock -->
             <a
-                href="#"
+                href="{{ route('admin.restock.index') }}"
                 class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2"
             >
-
                 <svg
                     class="w-5 h-5"
                     fill="none"
@@ -325,7 +352,6 @@
                         stroke-linejoin="round"
                         d="M6 3h9l3 3v15H6V3z"
                     />
-
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -336,67 +362,6 @@
                 <span class="text-sm">
                     Pengajuan Restock
                 </span>
-
-            </a>
-
-
-            <!-- Riwayat Restock -->
-            <a
-                href="#"
-                class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2"
-            >
-
-                <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M4 5h16v14H4z"
-                    />
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8 9h8M8 12h8M8 15h5"
-                    />
-                </svg>
-
-                <span class="text-sm">
-                    Riwayat Restock
-                </span>
-
-            </a>
-
-
-            <!-- Laporan -->
-            <a
-                href="#"
-                class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2"
-            >
-
-                <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M5 20V10M12 20V4M19 20v-7"
-                    />
-                </svg>
-
-                <span class="text-sm">
-                    Laporan
-                </span>
-
             </a>
 
 
@@ -487,77 +452,64 @@
     <main class="ml-64 w-full min-h-screen">
 
 
-                <!-- TOPBAR -->
-        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
 
-            <div>
+        <!-- TOPBAR -->
+        <header class="topbar bg-white border-b border-gray-200 flex justify-between items-center sticky top-0 z-20 shadow-sm">
 
-                <h2 class="text-2xl font-bold brown">
-                    Dashboard
-                </h2>
+            <div class="flex items-center gap-4">
+                <button
+                    type="button"
+                    id="menuToggle"
+                    class="hamburger"
+                    aria-label="Buka atau tutup menu"
+                    aria-expanded="true">
+                    ☰
+                </button>
 
-                <p id="greeting-text" class="text-sm text-gray-500 mt-1">
-                    Selamat datang kembali, {{ Auth::user()->name }}.
-                </p>
-
+                <div>
+                    <h2 class="text-lg font-bold brown">Kategori Buku</h2>
+                    <p class="text-xs text-gray-500">
+                        Selamat datang, {{ Auth::user()->name }}!
+                    </p>
+                </div>
             </div>
 
+            <!-- PROFIL ADMIN: SAMA SEPERTI DASHBOARD -->
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 no-underline">
 
-            <div class="flex items-center gap-3">
-
-                <div class="text-right">
-
-                    <p class="font-semibold text-gray-800">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-gray-800">
                         {{ Auth::user()->name }}
                     </p>
 
                     <p class="text-xs text-gray-500">
                         {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
                     </p>
-
                 </div>
 
-
                 @if(Auth::user()->profile_photo)
-
                     <img
                         src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
                         alt="Foto Profil"
-                        class="w-10 h-10 rounded-full object-cover border-2 border-[#6b3f28]"
-                    >
-
+                        class="w-11 h-11 rounded-full object-cover border border-[#6b3f28]">
                 @else
-
-                    <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center shadow-inner">
-
+                    <div class="w-11 h-11 rounded-full border border-[#6b3f28] bg-white brown flex items-center justify-center">
                         <svg
-                            class="w-5 h-5"
+                            class="w-7 h-7"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="1.8"
-                            viewBox="0 0 24 24"
-                        >
-
-                            <circle
-                                cx="12"
-                                cy="8"
-                                r="3"
-                            />
-
+                            stroke-width="1.5"
+                            viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="3"/>
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                d="M5 20a7 7 0 0114 0"
-                            />
-
+                                d="M5 20a7 7 0 0114 0"/>
                         </svg>
-
                     </div>
-
                 @endif
 
-            </div>
-
+            </a>
         </header>
 
 
@@ -852,4 +804,44 @@
 </div>
 
 </body>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const main = document.querySelector('main');
+
+            if (!menuToggle || !sidebar || !main) {
+                console.error('Elemen hamburger tidak ditemukan.');
+                return;
+            }
+
+            let sidebarOpen = true;
+
+            menuToggle.addEventListener('click', function () {
+
+                sidebarOpen = !sidebarOpen;
+
+                if (sidebarOpen) {
+                    // Buka sidebar
+                    sidebar.style.transform = 'translateX(0)';
+                    main.style.marginLeft = '16rem';
+                    main.style.width = 'calc(100% - 16rem)';
+                    menuToggle.setAttribute('aria-expanded', 'true');
+
+                } else {
+                    // Tutup sidebar
+                    sidebar.style.transform = 'translateX(-100%)';
+                    main.style.marginLeft = '0';
+                    main.style.width = '100%';
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                }
+
+            });
+
+        });
+        </script>
+
+    </body>
 </html>

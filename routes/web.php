@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RestockRequestController;
 use App\Http\Controllers\AdminRestockRequestController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 // HALAMAN AWAL
@@ -31,11 +32,21 @@ Route::middleware('auth')->group(function () {
         [BookController::class, 'processRestock']
     )->name('books.restock');
 
+
     // ==============================
     // KATEGORI BUKU
     // ==============================
     Route::resource('categories', CategoryController::class)
         ->except(['show', 'edit', 'update']);
+
+
+    // ==============================
+    // SUPPLIER
+    // ==============================
+    Route::resource('suppliers', SupplierController::class)
+        ->only(['index', 'store', 'destroy'])
+        ->names('suppliers');
+
 
     // ==============================
     // PENGAJUAN RESTOCK USER
@@ -65,6 +76,7 @@ Route::middleware('auth')->group(function () {
         [RestockRequestController::class, 'history']
     )->name('user.restock.history');
 
+
     // ==============================
     // KELOLA PENGAJUAN RESTOCK ADMIN
     // ==============================
@@ -86,6 +98,7 @@ Route::middleware('auth')->group(function () {
         '/admin/pengajuan-restock/{id}/tolak',
         [AdminRestockRequestController::class, 'reject']
     )->name('admin.restock.reject');
+
 
     // ==============================
     // PROFIL
@@ -127,6 +140,7 @@ Route::middleware('auth')->group(function () {
         [ProfileController::class, 'destroy']
     )->name('profile.destroy');
 });
+
 
 // ROUTE LOGIN, REGISTER, LOGOUT, DAN AUTENTIKASI
 require __DIR__.'/auth.php';

@@ -377,7 +377,7 @@
                 <span class="menu-label">Data Buku</span>
             </a>
 
-            <a href="{{ route('user.restock.create') }}"
+            <a href="{{ route('user.restock.index') }}"
                class="sidebar-item">
                 <span class="menu-icon">▧</span>
                 <span class="menu-label">Pengajuan Restock</span>
@@ -389,11 +389,6 @@
                 <span class="menu-label">Riwayat Restock</span>
             </a>
 
-            <a href="{{ route('user.restock.history') }}"
-               class="sidebar-item">
-                <span class="menu-icon">↻</span>
-                <span class="menu-label">Status Restock</span>
-            </a>
 
             <a href="{{ route('profile.edit') }}"
                class="sidebar-item">

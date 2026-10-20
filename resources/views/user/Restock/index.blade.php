@@ -17,7 +17,9 @@
             --line: #e9e1db;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -108,7 +110,9 @@
             z-index: 20;
         }
 
-        .brown { color: var(--brown); }
+        .brown {
+            color: var(--brown);
+        }
 
         .page-title {
             color: var(--brown);
@@ -131,21 +135,7 @@
             border-color: #ddc9ba;
         }
 
-        .stat-label {
-            font-size: 12px;
-            color: #737373;
-            font-weight: 600;
-        }
-
-        .stat-number {
-            font-size: 29px;
-            line-height: 1.15;
-            font-weight: 700;
-            color: var(--brown);
-            margin-top: 9px;
-        }
-
-        .stat-icon, .info-icon {
+        .info-icon {
             width: 43px;
             height: 43px;
             border-radius: 10px;
@@ -155,21 +145,6 @@
             background: #f5eee8;
             color: var(--brown);
             flex-shrink: 0;
-        }
-
-        .table-head {
-            background: #f8f5f2;
-            color: var(--brown);
-        }
-
-        .soft-link {
-            color: var(--brown);
-            text-decoration: none;
-            transition: color .18s ease;
-        }
-
-        .soft-link:hover {
-            color: var(--orange);
         }
 
         .user-avatar {
@@ -208,17 +183,6 @@
             background: #f5eee8;
         }
 
-        .empty-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            background: #f5eee8;
-            color: var(--brown);
-            display: grid;
-            place-items: center;
-            font-size: 23px;
-        }
-
         .sidebar-backdrop {
             display: none;
         }
@@ -243,30 +207,12 @@
             transform: translateY(-1px);
         }
 
-        .secondary-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: #f5eee8;
-            color: var(--brown);
-            border: 1px solid #eaded5;
-            border-radius: 8px;
-            padding: 11px 15px;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .secondary-btn:hover {
-            background: #eee1d7;
-        }
-
         @keyframes rise-in {
             from {
                 opacity: 0;
                 transform: translateY(9px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -338,13 +284,6 @@
 </head>
 
 <body>
-@php
-    $requests = $requests ?? collect();
-
-    $totalPengajuan = $requests->count();
-    $totalMenunggu = $requests->where('status', 'menunggu')->count();
-    $totalDisetujui = $requests->where('status', 'disetujui')->count();
-@endphp
 
 <div class="flex min-h-screen">
 
@@ -353,6 +292,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar min-h-screen flex flex-col">
 
+        <!-- LOGO DAN IDENTITAS -->
         <div class="brand-area px-5 py-6 text-center">
             <div class="brand-logo mx-auto mb-3">
                 <img
@@ -374,6 +314,7 @@
             </p>
         </div>
 
+        <!-- MENU NAVBAR -->
         <nav class="flex-1 px-3 py-5 space-y-1.5">
 
             <a href="{{ route('dashboard') }}" class="sidebar-item">
@@ -395,20 +336,13 @@
                 <span>Pengajuan Restock</span>
             </a>
 
+            <!-- RIWAYAT HANYA MELALUI MENU INI -->
             <a
                 href="{{ route('user.restock.history') }}"
                 class="sidebar-item {{ request()->routeIs('user.restock.history') ? 'sidebar-active' : '' }}"
             >
                 <span class="menu-icon">◷</span>
                 <span>Riwayat Restock</span>
-            </a>
-
-            <a
-                href="{{ route('user.restock.history') }}"
-                class="sidebar-item"
-            >
-                <span class="menu-icon">↻</span>
-                <span>Status Restock</span>
             </a>
 
             <a href="{{ route('profile.edit') }}" class="sidebar-item">
@@ -418,6 +352,7 @@
 
         </nav>
 
+        <!-- LOGOUT -->
         <div class="px-3 pb-5 mt-auto">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -431,6 +366,7 @@
                 </button>
             </form>
         </div>
+
     </aside>
 
     <!-- KONTEN UTAMA -->
@@ -497,7 +433,7 @@
                         <span class="font-semibold brown">
                             {{ Auth::user()->name ?? 'User' }}
                         </span>.
-                        Kelola pengajuan penambahan stok buku di sini.
+                        Ajukan penambahan stok buku perpustakaan di sini.
                     </p>
                 </div>
 
@@ -530,6 +466,7 @@
                 </div>
             @endif
 
+            <!-- VALIDASI -->
             @if ($errors->any())
                 <div
                     class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
@@ -547,68 +484,9 @@
                 </div>
             @endif
 
-            <!-- RINGKASAN -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-
-                <div class="card p-5">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="stat-label">TOTAL PENGAJUAN</p>
-
-                            <h3 class="stat-number">
-                                {{ $totalPengajuan }}
-                            </h3>
-
-                            <p class="text-xs text-stone-500 mt-2">
-                                Semua pengajuan yang kamu kirim
-                            </p>
-                        </div>
-
-                        <div class="stat-icon">▧</div>
-                    </div>
-                </div>
-
-                <div class="card p-5">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="stat-label">MENUNGGU</p>
-
-                            <h3 class="stat-number">
-                                {{ $totalMenunggu }}
-                            </h3>
-
-                            <p class="text-xs text-stone-500 mt-2">
-                                Menunggu keputusan admin
-                            </p>
-                        </div>
-
-                        <div class="stat-icon">◷</div>
-                    </div>
-                </div>
-
-                <div class="card p-5">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="stat-label">DISETUJUI</p>
-
-                            <h3 class="stat-number">
-                                {{ $totalDisetujui }}
-                            </h3>
-
-                            <p class="text-xs text-stone-500 mt-2">
-                                Pengajuan yang disetujui admin
-                            </p>
-                        </div>
-
-                        <div class="stat-icon">✓</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- BANNER DAN TOMBOL -->
-            <div class="card p-6 sm:p-8 mb-6">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <!-- BANNER BUAT PENGAJUAN -->
+            <div class="card p-6 sm:p-8 mb-7">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
 
                     <div class="flex items-start gap-4">
                         <div class="info-icon">▤</div>
@@ -626,15 +504,14 @@
                             </h3>
 
                             <p class="text-sm text-stone-600 mt-3 leading-6">
-                                Pilih buku dari Data Buku, tentukan jumlah yang
-                                dibutuhkan, lalu kirim pengajuan kepada admin
-                                untuk ditinjau.
+                                Pilih buku yang membutuhkan penambahan stok,
+                                tentukan jumlah yang dibutuhkan, lalu kirim
+                                pengajuan kepada admin untuk ditinjau.
                             </p>
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
-
+                    <div class="flex shrink-0">
                         <a
                             href="{{ route('user.restock.create') }}"
                             class="primary-btn"
@@ -642,136 +519,13 @@
                             <span class="text-lg leading-none">＋</span>
                             Buat Pengajuan
                         </a>
-
-                        <a
-                            href="{{ route('user.restock.history') }}"
-                            class="secondary-btn"
-                        >
-                            <span>◷</span>
-                            Lihat Riwayat
-                        </a>
-
                     </div>
+
                 </div>
             </div>
 
-            <!-- TABEL PENGAJUAN -->
-            <div class="card overflow-hidden">
-
-                <div class="px-5 sm:px-6 py-5 border-b border-stone-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                        <h3 class="text-lg font-bold brown">
-                            Daftar Pengajuan Saya
-                        </h3>
-
-                        <p class="text-sm text-stone-500 mt-1">
-                            Pantau status dan catatan dari admin.
-                        </p>
-                    </div>
-
-                    <a
-                        href="{{ route('user.restock.history') }}"
-                        class="soft-link text-sm font-semibold"
-                    >
-                        Riwayat Lengkap →
-                    </a>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[760px]">
-
-                        <thead class="table-head">
-                            <tr class="text-left text-xs uppercase tracking-wide">
-                                <th class="px-5 py-4">No</th>
-                                <th class="px-5 py-4">Nama Buku</th>
-                                <th class="px-5 py-4">Jumlah</th>
-                                <th class="px-5 py-4">Tanggal</th>
-                                <th class="px-5 py-4">Status</th>
-                                <th class="px-5 py-4">Catatan Admin</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @forelse ($requests as $item)
-                                <tr class="border-t border-stone-100 hover:bg-stone-50">
-
-                                    <td class="px-5 py-4">
-                                        {{ $loop->iteration }}
-                                    </td>
-
-                                    <td class="px-5 py-4 font-semibold brown">
-                                        {{ $item->book?->title ?? 'Buku tidak ditemukan' }}
-                                    </td>
-
-                                    <td class="px-5 py-4">
-                                        {{ $item->jumlah }}
-                                    </td>
-
-                                    <td class="px-5 py-4">
-                                        {{ $item->created_at?->format('d-m-Y') ?? '-' }}
-                                    </td>
-
-                                    <td class="px-5 py-4">
-                                        @if ($item->status === 'menunggu')
-                                            <span class="inline-block rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                                                Menunggu
-                                            </span>
-                                        @elseif ($item->status === 'disetujui')
-                                            <span class="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                                                Disetujui
-                                            </span>
-                                        @elseif ($item->status === 'ditolak')
-                                            <span class="inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
-                                                Ditolak
-                                            </span>
-                                        @else
-                                            <span class="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                                                {{ ucfirst($item->status ?? 'Belum ada status') }}
-                                            </span>
-                                        @endif
-                                    </td>
-
-                                    <td class="px-5 py-4 text-sm text-stone-600">
-                                        {{ $item->catatan_admin ?: '-' }}
-                                    </td>
-
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center">
-                                        <div class="flex flex-col items-center">
-
-                                            <div class="empty-icon mb-4">
-                                                ▤
-                                            </div>
-
-                                            <h4 class="font-semibold text-base brown">
-                                                Belum ada pengajuan restock
-                                            </h4>
-
-                                            <p class="text-sm text-stone-500 mt-2 max-w-md">
-                                                Pengajuan yang kamu kirim akan muncul di sini.
-                                            </p>
-
-                                            <a
-                                                href="{{ route('user.restock.create') }}"
-                                                class="primary-btn mt-5"
-                                            >
-                                                ＋ Buat Pengajuan
-                                            </a>
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-
-                    </table>
-                </div>
-            </div>
-
-            <!-- CARA PENGAJUAN -->
-            <div class="mt-7 mb-4">
+            <!-- CARA MENGAJUKAN RESTOCK -->
+            <div class="mb-4">
                 <h3 class="text-lg font-bold brown">
                     Cara Mengajukan Restock
                 </h3>
@@ -783,10 +537,14 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
+                <!-- LANGKAH 1 -->
                 <div class="card p-5">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="info-icon">01</div>
-                        <h4 class="font-bold brown">Pilih Buku</h4>
+
+                        <h4 class="font-bold brown">
+                            Pilih Buku
+                        </h4>
                     </div>
 
                     <p class="text-sm text-stone-600 leading-6">
@@ -794,10 +552,14 @@
                     </p>
                 </div>
 
+                <!-- LANGKAH 2 -->
                 <div class="card p-5">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="info-icon">02</div>
-                        <h4 class="font-bold brown">Isi Pengajuan</h4>
+
+                        <h4 class="font-bold brown">
+                            Isi Pengajuan
+                        </h4>
                     </div>
 
                     <p class="text-sm text-stone-600 leading-6">
@@ -805,19 +567,25 @@
                     </p>
                 </div>
 
+                <!-- LANGKAH 3 -->
                 <div class="card p-5">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="info-icon">03</div>
-                        <h4 class="font-bold brown">Pantau Status</h4>
+
+                        <h4 class="font-bold brown">
+                            Kirim Pengajuan
+                        </h4>
                     </div>
 
                     <p class="text-sm text-stone-600 leading-6">
-                        Periksa apakah pengajuan menunggu, disetujui, atau ditolak.
+                        Kirim permintaan kepada admin untuk ditinjau dan
+                        mendapatkan keputusan.
                     </p>
                 </div>
 
             </div>
 
+            <!-- FOOTER -->
             <footer class="text-center text-xs text-stone-400 mt-7">
                 © {{ date('Y') }} Book Stock SMKN 5 · Sistem Restock Buku Perpustakaan
             </footer>
@@ -826,6 +594,7 @@
     </main>
 </div>
 
+<!-- JAVASCRIPT HAMBURGER -->
 <script>
     const menuToggle = document.getElementById('menuToggle');
     const sidebarBackdrop = document.getElementById('sidebarBackdrop');

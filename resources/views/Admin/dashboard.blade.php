@@ -249,7 +249,7 @@
             </a>
 
             <!-- SUPPLIER -->
-            <a href="#"
+            <a href="{{ route('suppliers.index') }}"
                class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18"/>
@@ -267,25 +267,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v4h4M9 12h6M9 15h6"/>
                 </svg>
                 <span class="text-sm">Pengajuan Restock</span>
-            </a>
-
-            <!-- RIWAYAT RESTOCK -->
-            <a href="#"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v14H4z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 9h8M8 12h8M8 15h5"/>
-                </svg>
-                <span class="text-sm">Riwayat Restock</span>
-            </a>
-
-            <!-- LAPORAN -->
-            <a href="#"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 20V10M12 20V4M19 20v-7"/>
-                </svg>
-                <span class="text-sm">Laporan</span>
             </a>
 
             <!-- PROFIL -->
@@ -419,112 +400,128 @@
             <!-- BAGIAN BAWAH -->
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-                <!-- RINGKASAN -->
+               
+                <!-- RINGKASAN RESTOCK -->
                 <div class="xl:col-span-2 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
 
-                    <div class="mb-6">
-                        <h3 class="text-xl font-bold brown">Ringkasan Restock</h3>
-                        <p class="text-sm text-gray-500 mt-1">
-                            Status pengajuan restock buku
-                        </p>
-                    </div>
-
-                    <!-- MENUNGGU -->
-                    <div class="mb-6">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-600">Menunggu</span>
-                            <span class="font-semibold">{{ $totalMenunggu ?? 0 }}</span>
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <h3 class="text-lg font-bold brown">Ringkasan Restock</h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                Ringkasan status pengajuan buku
+                            </p>
                         </div>
 
-                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div class="progress-bar h-full bg-yellow-400 rounded-full transition-all duration-1000"
-                                 style="width:0%" data-width="30%"></div>
+                        <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-xl">
+                            ▤
                         </div>
                     </div>
 
-                    <!-- DIPROSES -->
-                    <div class="mb-6">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-600">Diproses</span>
-                            <span class="font-semibold">{{ $totalDiproses ?? 0 }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <!-- MENUNGGU -->
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/60 p-5">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span>
+                                <span class="text-sm font-medium text-gray-600">
+                                    Menunggu
+                                </span>
+                            </div>
+
+                            <div class="flex items-end justify-between">
+                                <span class="text-3xl font-bold text-orange-700">
+                                    {{ $totalMenunggu ?? 0 }}
+                                </span>
+                                <span class="text-xs text-gray-500 pb-1">
+                                    Pengajuan
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div class="progress-bar h-full bg-blue-500 rounded-full transition-all duration-1000"
-                                 style="width:0%" data-width="50%"></div>
+                        <!-- SELESAI -->
+                        <div class="rounded-xl border border-green-100 bg-green-50/60 p-5">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                                <span class="text-sm font-medium text-gray-600">
+                                    Selesai
+                                </span>
+                            </div>
+
+                            <div class="flex items-end justify-between">
+                                <span class="text-3xl font-bold text-green-700">
+                                    {{ $totalRestockSelesai ?? 0 }}
+                                </span>
+                                <span class="text-xs text-gray-500 pb-1">
+                                    Pengajuan
+                                </span>
+                            </div>
                         </div>
+
                     </div>
-
-                    <!-- SELESAI -->
-                    <div>
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-600">Selesai</span>
-                            <span class="font-semibold">{{ $totalRestockSelesai ?? 0 }}</span>
-                        </div>
-
-                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div class="progress-bar h-full bg-green-500 rounded-full transition-all duration-1000"
-                                 style="width:0%" data-width="80%"></div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- AKSI CEPAT -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
 
-                    <h3 class="text-xl font-bold brown mb-5">Aksi Cepat</h3>
+                    <!-- AKSI CEPAT -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
 
-                    <a href="{{ route('books.create') }}"
-                       class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] mb-3">
+                        <h3 class="text-lg font-bold brown mb-4">Aksi Cepat</h3>
 
-                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
+                        <!-- TAMBAH BUKU -->
+                        <a href="{{ route('books.create') }}"
+                        class="quick-item flex items-center gap-3 p-3 rounded-lg bg-[#f8f5f2] mb-2.5">
+
+                            <div class="w-9 h-9 flex-shrink-0 rounded-lg bg-white flex items-center justify-center brown border border-gray-100">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                    stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 5v14M5 12h14"/>
+                                </svg>
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold brown">Tambah Buku</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Tambahkan data buku baru</p>
+                            </div>
+
+                            <svg class="w-4 h-4 ml-auto flex-shrink-0 text-gray-400"
+                                fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m9 18 6-6-6-6"/>
                             </svg>
-                        </div>
 
-                        <div>
-                            <p class="font-semibold brown">Tambah Buku</p>
-                            <p class="text-xs text-gray-500">Menambahkan data buku</p>
-                        </div>
+                        </a>
 
-                    </a>
+                        <!-- PENGAJUAN RESTOCK -->
+                        <a href="{{ route('admin.restock.index') }}"
+                        class="quick-item flex items-center gap-3 p-3 rounded-lg bg-[#f8f5f2]">
 
-                    <a href="{{ route('admin.restock.index') }}"
-                       class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9] mb-3">
+                            <div class="w-9 h-9 flex-shrink-0 rounded-lg bg-white flex items-center justify-center brown border border-gray-100">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                    stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6 3h9l3 3v15H6V3z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12h6M9 15h6"/>
+                                </svg>
+                            </div>
 
-                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h9l3 3v15H6V3z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6M9 15h6"/>
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold brown">Pengajuan Restock</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Kelola pengajuan buku</p>
+                            </div>
+
+                            <svg class="w-4 h-4 ml-auto flex-shrink-0 text-gray-400"
+                                fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m9 18 6-6-6-6"/>
                             </svg>
-                        </div>
 
-                        <div>
-                            <p class="font-semibold brown">Pengajuan Restock</p>
-                            <p class="text-xs text-gray-500">Kelola pengajuan restock</p>
-                        </div>
+                        </a>
 
-                    </a>
+                    </div>
 
-                    <a href="#"
-                       class="quick-item flex items-center gap-4 p-4 rounded-lg bg-[#f4eee9]">
-
-                        <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center brown shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 20V10M12 20V4M19 20v-7"/>
-                            </svg>
-                        </div>
-
-                        <div>
-                            <p class="font-semibold brown">Lihat Laporan</p>
-                            <p class="text-xs text-gray-500">Melihat laporan restock</p>
-                        </div>
-
-                    </a>
-
-                </div>
 
             </div>
 

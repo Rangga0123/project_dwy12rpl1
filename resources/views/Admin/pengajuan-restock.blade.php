@@ -305,7 +305,7 @@
                 <span class="text-sm">Kategori Buku</span>
             </a>
 
-            <a href="#"
+            <a href="{{ route('suppliers.index') }}"
                class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5"/>
@@ -320,23 +320,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v4h4M9 12h6M9 15h6"/>
                 </svg>
                 <span class="text-sm">Pengajuan Restock</span>
-            </a>
-
-            <a href="#"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v14H4z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 9h8M8 12h8M8 15h5"/>
-                </svg>
-                <span class="text-sm">Riwayat Restock</span>
-            </a>
-
-            <a href="#"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 20V10M12 20V4M19 20v-7"/>
-                </svg>
-                <span class="text-sm">Laporan</span>
             </a>
 
             <a href="{{ route('profile.edit') }}"

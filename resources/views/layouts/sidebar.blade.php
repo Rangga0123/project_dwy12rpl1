@@ -114,37 +114,6 @@
         </a>
 
 
-        <!-- SUPPLIER -->
-        <a href="#"
-           class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-
-            <svg class="w-5 h-5"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="1.8"
-                 viewBox="0 0 24 24">
-
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M3 21h18"/>
-
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M5 21V7l7-4 7 4v14"/>
-
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 21v-5h6v5M9 9h.01M12 9h.01M15 9h.01"/>
-
-            </svg>
-
-            <span class="text-sm">
-                Supplier
-            </span>
-
-        </a>
-
-
         <!-- PENGAJUAN RESTOCK -->
         <a href="{{ route('user.restock.create') }}"
            class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2

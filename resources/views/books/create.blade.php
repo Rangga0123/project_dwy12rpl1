@@ -8,9 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -25,13 +23,8 @@
             transition: transform .25s ease;
         }
 
-        .brown {
-            color: #6b3f28;
-        }
-
-        .menu-active {
-            background: #d96b24;
-        }
+        .brown { color: #6b3f28; }
+        .menu-active { background: #d96b24; }
 
         .menu-item {
             transition: background .25s ease, transform .25s ease;
@@ -50,23 +43,32 @@
             transform: scale(1.06) rotate(2deg);
         }
 
-        .hamburger {
+        .hamburger,
+        .fullscreen-btn {
             width: 40px;
             height: 40px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
             border: none;
             border-radius: 8px;
             background: transparent;
             color: #6b3f28;
-            font-size: 25px;
             cursor: pointer;
-            flex-shrink: 0;
+            transition: background .2s ease, color .2s ease;
         }
 
-        .hamburger:hover {
+        .hamburger { font-size: 25px; }
+
+        .hamburger:hover,
+        .fullscreen-btn:hover {
             background: #f4eee9;
+        }
+
+        .fullscreen-btn svg {
+            width: 21px;
+            height: 21px;
         }
 
         .page-enter {
@@ -74,19 +76,11 @@
         }
 
         @keyframes pageEnter {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .form-card {
-            transition: box-shadow .25s ease;
-        }
+        .form-card { transition: box-shadow .25s ease; }
 
         .form-control {
             transition: border-color .2s ease, box-shadow .2s ease;
@@ -102,15 +96,10 @@
             transition: background .2s ease, transform .2s ease;
         }
 
-        .action-btn:hover {
-            transform: translateY(-1px);
-        }
+        .action-btn:hover { transform: translateY(-1px); }
 
-        .sidebar-backdrop {
-            display: none;
-        }
+        .sidebar-backdrop { display: none; }
 
-        /* DESKTOP: SIDEBAR BISA DISEMBUNYIKAN */
         @media (min-width: 1024px) {
             .sidebar {
                 position: fixed;
@@ -135,7 +124,6 @@
             }
         }
 
-        /* HP DAN TABLET */
         @media (max-width: 1023px) {
             .sidebar {
                 position: fixed;
@@ -169,13 +157,16 @@
                 display: block;
             }
 
-            .page-content {
-                padding: 20px !important;
+            .page-content { padding: 20px !important; }
+            .topbar { padding: 16px !important; }
+
+            .hamburger,
+            .fullscreen-btn {
+                width: 36px;
+                height: 36px;
             }
 
-            .topbar {
-                padding: 16px !important;
-            }
+            .topbar-left { gap: 6px !important; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -188,16 +179,13 @@
 </head>
 
 <body>
-
 <div class="min-h-screen">
 
-    <!-- BACKDROP MENU HP -->
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- SIDEBAR ADMIN -->
     <aside class="sidebar min-h-screen text-white shadow-lg flex flex-col">
 
-        <!-- LOGO SEKOLAH -->
         <div class="p-6 text-center border-b border-white/15">
             <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-md school-logo overflow-hidden">
                 <img
@@ -207,13 +195,11 @@
             </div>
 
             <h1 class="text-xl font-bold">Book Stock</h1>
-
             <p class="text-xs text-white/70 mt-1">
                 SMKN 5 Kabupaten Tangerang
             </p>
         </div>
 
-        <!-- MENU -->
         <nav class="mt-5 px-3 flex-1">
 
             <a href="{{ route('dashboard') }}"
@@ -254,16 +240,6 @@
                 <span class="text-sm">Kategori Buku</span>
             </a>
 
-            <a href="{{ route('suppliers.index') }}"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5"/>
-                </svg>
-                <span class="text-sm">Supplier</span>
-            </a>
-
             <a href="{{ route('admin.restock.index') }}"
                class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none"
@@ -286,14 +262,11 @@
                 </svg>
                 <span class="text-sm">Profil</span>
             </a>
-
         </nav>
 
-        <!-- LOGOUT -->
         <div class="px-3 pb-5 mt-5">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-
                 <button type="submit"
                     class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80 text-left">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none"
@@ -307,16 +280,16 @@
                 </button>
             </form>
         </div>
-
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="min-h-screen">
 
-        <!-- NAVBAR SAMA SEPERTI DASHBOARD -->
         <header class="topbar bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center sticky top-0 z-20 shadow-sm">
 
-            <div class="flex items-center gap-4">
+            <div class="topbar-left flex items-center gap-4 min-w-0">
+
+                <!-- HAMBURGER -->
                 <button
                     type="button"
                     id="menuToggle"
@@ -326,7 +299,27 @@
                     ☰
                 </button>
 
-                <div>
+                <!-- TOMBOL ZOOM / FULLSCREEN -->
+                <button
+                    type="button"
+                    id="fullscreenToggle"
+                    class="fullscreen-btn"
+                    aria-label="Masuk mode layar penuh"
+                    title="Layar penuh">
+
+                    <svg id="fullscreenIcon"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M3 16v3a2 2 0 002 2h3"/>
+                    </svg>
+                </button>
+
+                <div class="min-w-0">
                     <h2 class="text-lg font-bold brown">Tambah Buku</h2>
                     <p class="text-xs text-gray-500">
                         Formulir penambahan data koleksi buku baru
@@ -336,13 +329,12 @@
 
             <!-- PROFIL ADMIN -->
             <a href="{{ route('profile.edit') }}"
-               class="flex items-center gap-3">
+               class="flex items-center gap-3 flex-shrink-0">
 
                 <div class="text-right hidden sm:block">
                     <p class="font-semibold text-gray-800">
                         {{ Auth::user()->name }}
                     </p>
-
                     <p class="text-xs text-gray-500">
                         {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
                     </p>
@@ -364,13 +356,11 @@
                     </div>
                 @endif
             </a>
-
         </header>
 
         <!-- FORM TAMBAH BUKU -->
         <section class="page-content p-8 page-enter">
 
-            <!-- BREADCRUMB DAN JUDUL -->
             <div class="mb-6">
                 <p class="text-sm text-gray-500 mb-2">
                     <a href="{{ route('dashboard') }}" class="hover:underline">Dashboard</a>
@@ -380,13 +370,11 @@
                 </p>
 
                 <h1 class="text-2xl font-bold brown">Tambah Buku Baru</h1>
-
                 <p class="text-sm text-gray-500 mt-2">
                     Isi informasi buku yang akan ditambahkan ke perpustakaan.
                 </p>
             </div>
 
-            <!-- NOTIFIKASI VALIDASI -->
             @if($errors->any())
                 <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                     <p class="font-semibold mb-2">Periksa kembali data yang kamu masukkan:</p>
@@ -404,7 +392,6 @@
                 </div>
             @endif
 
-            <!-- KARTU FORM -->
             <div class="form-card bg-white rounded-xl border border-gray-200 shadow-sm p-6 max-w-2xl">
 
                 <div class="mb-6 pb-4 border-b border-gray-100">
@@ -417,12 +404,10 @@
                 <form action="{{ route('books.store') }}" method="POST">
                     @csrf
 
-                    <!-- JUDUL BUKU -->
                     <div class="mb-5">
                         <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
                             Judul Buku <span class="text-red-500">*</span>
                         </label>
-
                         <input
                             id="title"
                             type="text"
@@ -433,7 +418,66 @@
                             required>
                     </div>
 
-                    <!-- KATEGORI -->
+                    <div class="mb-5">
+                        <label for="penerbit" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Penerbit <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            id="penerbit"
+                            type="text"
+                            name="penerbit"
+                            value="{{ old('penerbit') }}"
+                            class="form-control w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"
+                            placeholder="Masukkan nama penerbit..."
+                            required>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="pengarang" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Pengarang <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            id="pengarang"
+                            type="text"
+                            name="pengarang"
+                            value="{{ old('pengarang') }}"
+                            class="form-control w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"
+                            placeholder="Masukkan nama pengarang..."
+                            required>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="tahun_terbit" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Tahun Terbit <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            id="tahun_terbit"
+                            type="number"
+                            name="tahun_terbit"
+                            value="{{ old('tahun_terbit') }}"
+                            class="form-control w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"
+                            placeholder="Masukkan tahun terbit..."
+                            min="1900"
+                            max="{{ date('Y') + 1 }}"
+                            required>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="tahun_bantuan" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Tahun Bantuan <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            id="tahun_bantuan"
+                            type="number"
+                            name="tahun_bantuan"
+                            value="{{ old('tahun_bantuan') }}"
+                            class="form-control w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"
+                            placeholder="Masukkan tahun bantuan..."
+                            min="1900"
+                            max="{{ date('Y') + 1 }}"
+                            required>
+                    </div>
+
                     <div class="mb-5">
                         <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">
                             Kategori Buku <span class="text-red-500">*</span>
@@ -463,7 +507,6 @@
                         @endif
                     </div>
 
-                    <!-- STOK -->
                     <div class="mb-6">
                         <label for="stock" class="block text-sm font-semibold text-gray-700 mb-2">
                             Jumlah Stok <span class="text-red-500">*</span>
@@ -490,7 +533,6 @@
                         </p>
                     </div>
 
-                    <!-- TOMBOL -->
                     <div class="flex flex-col-reverse sm:flex-row sm:items-center gap-3 pt-4 border-t border-gray-100">
 
                         <a
@@ -511,15 +553,11 @@
 
                             Simpan Buku
                         </button>
-
                     </div>
                 </form>
             </div>
-
         </section>
-
     </main>
-
 </div>
 
 <script>
@@ -530,7 +568,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // HAMBURGER DESKTOP DAN HP
     menuToggle?.addEventListener('click', function () {
-
         if (window.innerWidth < 1024) {
             document.body.classList.toggle('mobile-menu-open');
 
@@ -538,7 +575,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 'aria-expanded',
                 document.body.classList.contains('mobile-menu-open')
             );
-
         } else {
             document.body.classList.toggle('sidebar-hidden');
 
@@ -575,6 +611,47 @@ document.addEventListener('DOMContentLoaded', function () {
         menuToggle?.setAttribute('aria-expanded', 'true');
     });
 
+    // ==========================================
+    // TOMBOL ZOOM / FULLSCREEN
+    // ==========================================
+    const fullscreenToggle = document.getElementById('fullscreenToggle');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+    function updateFullscreenButton() {
+        const isFullscreen = Boolean(document.fullscreenElement);
+
+        fullscreenToggle?.setAttribute(
+            'aria-label',
+            isFullscreen ? 'Keluar dari layar penuh' : 'Masuk mode layar penuh'
+        );
+
+        fullscreenToggle?.setAttribute(
+            'title',
+            isFullscreen ? 'Keluar dari layar penuh' : 'Layar penuh'
+        );
+
+        if (fullscreenIcon) {
+            fullscreenIcon.innerHTML = isFullscreen
+                ? '<path stroke-linecap="round" stroke-linejoin="round" d="M8 3v5H3M16 3v5h5M3 16h5v5M21 16h-5v5"/>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M3 16v3a2 2 0 002 2h3"/>';
+        }
+    }
+
+    fullscreenToggle?.addEventListener('click', async function () {
+        try {
+            if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        } catch (error) {
+            console.error('Mode layar penuh tidak dapat diaktifkan:', error);
+        }
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+
+    updateFullscreenButton();
 });
 </script>
 

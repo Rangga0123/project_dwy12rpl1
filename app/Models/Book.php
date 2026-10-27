@@ -9,11 +9,14 @@ class Book extends Model
 {
     use HasFactory;
 
-    // Ubah kembali ke 'books' karena data buku disimpan di tabel books
     protected $table = 'books';
 
     protected $fillable = [
         'title',
+        'penerbit',
+        'pengarang',
+        'tahun_terbit',
+        'tahun_bantuan',
         'category_id',
         'stock',
     ];

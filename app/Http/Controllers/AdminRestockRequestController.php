@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\RestockRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -24,11 +25,40 @@ class AdminRestockRequestController extends Controller
     {
         $this->pastikanAdmin();
 
+        // Mengambil seluruh pengajuan beserta data user dan buku.
         $requests = RestockRequest::with(['user', 'book'])
             ->latest()
             ->get();
 
-        return view('Admin.pengajuan-restock', compact('requests'));
+        // Mengambil data buku untuk dropdown atau pilihan buku di Blade.
+        $books = Book::all();
+
+        // Statistik pengajuan restock.
+        $totalPengajuan = RestockRequest::count();
+
+        $totalMenunggu = RestockRequest::where(
+            'status',
+            'menunggu'
+        )->count();
+
+        $totalDisetujui = RestockRequest::where(
+            'status',
+            'disetujui'
+        )->count();
+
+        $totalDitolak = RestockRequest::where(
+            'status',
+            'ditolak'
+        )->count();
+
+        return view('Admin.pengajuan-restock', compact(
+            'requests',
+            'books',
+            'totalPengajuan',
+            'totalMenunggu',
+            'totalDisetujui',
+            'totalDitolak'
+        ));
     }
 
     /**
@@ -45,7 +75,10 @@ class AdminRestockRequestController extends Controller
         $pengajuan = RestockRequest::findOrFail($id);
 
         if ($pengajuan->status !== 'menunggu') {
-            return back()->with('error', 'Pengajuan ini sudah diproses.');
+            return back()->with(
+                'error',
+                'Pengajuan ini sudah diproses.'
+            );
         }
 
         $pengajuan->update([
@@ -53,7 +86,10 @@ class AdminRestockRequestController extends Controller
             'catatan_admin' => $request->input('catatan_admin'),
         ]);
 
-        return back()->with('success', 'Pengajuan berhasil disetujui.');
+        return back()->with(
+            'success',
+            'Pengajuan berhasil disetujui.'
+        );
     }
 
     /**
@@ -72,7 +108,10 @@ class AdminRestockRequestController extends Controller
         $pengajuan = RestockRequest::findOrFail($id);
 
         if ($pengajuan->status !== 'menunggu') {
-            return back()->with('error', 'Pengajuan ini sudah diproses.');
+            return back()->with(
+                'error',
+                'Pengajuan ini sudah diproses.'
+            );
         }
 
         $pengajuan->update([
@@ -80,6 +119,9 @@ class AdminRestockRequestController extends Controller
             'catatan_admin' => $request->input('catatan_admin'),
         ]);
 
-        return back()->with('success', 'Pengajuan berhasil ditolak.');
+        return back()->with(
+            'success',
+            'Pengajuan berhasil ditolak.'
+        );
     }
 }

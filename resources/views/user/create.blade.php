@@ -1,231 +1,326 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Pengajuan Restock')
 
-    <title>Pengajuan Restock - Book Stock SMKN5</title>
+@push('styles')
+<style>
+    .restock-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
+    .restock-header {
+        margin-bottom: 25px;
+    }
+
+    .restock-header h1 {
+        margin: 0 0 8px;
+        color: #70432d;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .restock-header p {
+        margin: 0;
+        color: #78716c;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .restock-card {
+        padding: 30px;
+        background: #fff;
+        border: 1px solid #e9e1db;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(60, 35, 20, 0.06);
+    }
+
+    .restock-success {
+        margin-bottom: 20px;
+        padding: 14px 18px;
+        color: #18733c;
+        background: #e8f8ee;
+        border: 1px solid #a8dfbc;
+        border-radius: 10px;
+        line-height: 1.6;
+    }
+
+    .restock-errors {
+        margin-bottom: 20px;
+        padding: 14px 18px;
+        color: #b42318;
+        background: #fff0f0;
+        border: 1px solid #f0b8b8;
+        border-radius: 10px;
+    }
+
+    .restock-errors ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+        list-style: disc;
+    }
+
+    .restock-group {
+        margin-bottom: 22px;
+    }
+
+    .restock-group label {
+        display: block;
+        margin-bottom: 9px;
+        color: #44403c;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .restock-control {
+        display: block;
+        width: 100%;
+        padding: 13px 15px;
+        color: #292524;
+        background: #fff;
+        border: 1px solid #d6cec7;
+        border-radius: 9px;
+        outline: none;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .restock-control:focus {
+        border-color: #d96b24;
+        box-shadow: 0 0 0 3px rgba(217, 107, 36, .13);
+    }
+
+    .restock-group select {
+        cursor: pointer;
+    }
+
+    .restock-group textarea {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .restock-help {
+        margin-top: 7px;
+        color: #78716c;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .restock-error {
+        margin-top: 7px;
+        color: #c62828;
+        font-size: 13px;
+    }
+
+    .restock-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 5px;
+    }
+
+    .restock-submit {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 23px;
+        color: #fff;
+        background: #d96b24;
+        border: none;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s, transform .2s;
+    }
+
+    .restock-submit:hover {
+        background: #c45b1b;
+        transform: translateY(-1px);
+    }
+
+    .restock-back {
+        display: inline-block;
+        margin-top: 22px;
+        color: #70432d;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .restock-back:hover {
+        color: #d96b24;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 1023px) {
+        .restock-page {
+            padding: 24px 18px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .restock-page {
+            padding: 20px 15px;
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f3ef;
-            color: #5a2f18;
+        .restock-header h1 {
+            font-size: 25px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 20px;
+        .restock-card {
+            padding: 20px 16px;
+            border-radius: 12px;
         }
 
-        .header {
-            margin-bottom: 25px;
-        }
-
-        .header h1 {
-            margin: 0 0 8px;
-            font-size: 32px;
-        }
-
-        .header p {
-            margin: 0;
-            color: #777;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #e0d2c8;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-        }
-
-        .success {
-            background: #e8f8ee;
-            border: 1px solid #a8dfbc;
-            color: #18733c;
-            padding: 14px 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        select,
-        input,
-        textarea {
+        .restock-submit {
             width: 100%;
-            padding: 13px 15px;
-            border: 1px solid #ccc;
-            border-radius: 9px;
-            font-size: 15px;
-            outline: none;
         }
+    }
+</style>
+@endpush
 
-        select:focus,
-        input:focus,
-        textarea:focus {
-            border-color: #8b451f;
-        }
+@section('content')
 
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
+<div class="restock-page">
 
-        .error {
-            color: #c62828;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .button {
-            border: none;
-            background: #8b451f;
-            color: white;
-            padding: 13px 25px;
-            border-radius: 9px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background: #6f3517;
-        }
-
-        .back {
-            display: inline-block;
-            margin-top: 20px;
-            color: #8b451f;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .back:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <div class="header">
+    {{-- HEADER HALAMAN --}}
+    <div class="restock-header">
         <h1>Pengajuan Restock</h1>
-        <p>Ajukan penambahan stok buku perpustakaan.</p>
+        <p>Ajukan penambahan stok buku perpustakaan SMKN 5.</p>
     </div>
 
-    @if(session('success'))
-        <div class="success">
+    {{-- NOTIFIKASI BERHASIL --}}
+    @if (session('success'))
+        <div class="restock-success">
             ✓ {{ session('success') }}
         </div>
     @endif
 
-    <div class="card">
+    {{-- NOTIFIKASI VALIDASI --}}
+    @if ($errors->any())
+        <div class="restock-errors">
+            <strong>Pengajuan belum dapat dikirim.</strong>
 
-        <form action="{{ route('user.restock.store') }}" method="POST">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
+    {{-- FORM PENGAJUAN --}}
+    <div class="restock-card">
+
+        <form
+            action="{{ route('user.restock.store') }}"
+            method="POST"
+        >
             @csrf
 
-            <div class="form-group">
+            {{-- PILIH BUKU --}}
+            <div class="restock-group">
                 <label for="book_id">Pilih Buku</label>
 
-                <select name="book_id" id="book_id" required>
-
+                <select
+                    name="book_id"
+                    id="book_id"
+                    class="restock-control"
+                    required
+                >
                     <option value="">-- Pilih Buku --</option>
 
-                    @foreach($books as $book)
-
-                        <option value="{{ $book->id }}"
-                            {{ old('book_id') == $book->id ? 'selected' : '' }}>
-
+                    @forelse ($books as $book)
+                        <option
+                            value="{{ $book->id }}"
+                            {{ (string) old('book_id') === (string) $book->id ? 'selected' : '' }}
+                        >
                             {{ $book->title }}
                             — Stok saat ini: {{ $book->stock }}
-
                         </option>
-
-                    @endforeach
-
+                    @empty
+                        <option value="" disabled>
+                            Belum ada data buku
+                        </option>
+                    @endforelse
                 </select>
 
                 @error('book_id')
-                    <div class="error">{{ $message }}</div>
+                    <div class="restock-error">
+                        {{ $message }}
+                    </div>
                 @enderror
             </div>
 
-
-            <div class="form-group">
-
-                <label for="jumlah">
-                    Jumlah Restock
-                </label>
+            {{-- JUMLAH RESTOCK --}}
+            <div class="restock-group">
+                <label for="jumlah">Jumlah Restock</label>
 
                 <input
                     type="number"
                     name="jumlah"
                     id="jumlah"
+                    class="restock-control"
                     min="1"
+                    step="1"
                     value="{{ old('jumlah') }}"
                     placeholder="Masukkan jumlah buku"
                     required
                 >
 
-                @error('jumlah')
-                    <div class="error">{{ $message }}</div>
-                @enderror
+                <div class="restock-help">
+                    Masukkan jumlah buku yang ingin diajukan.
+                </div>
 
+                @error('jumlah')
+                    <div class="restock-error">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
 
-
-            <div class="form-group">
-
-                <label for="alasan">
-                    Alasan Pengajuan
-                </label>
+            {{-- ALASAN PENGAJUAN --}}
+            <div class="restock-group">
+                <label for="alasan">Alasan Pengajuan</label>
 
                 <textarea
                     name="alasan"
                     id="alasan"
+                    class="restock-control"
+                    maxlength="1000"
                     placeholder="Contoh: Stok buku sudah hampir habis."
                 >{{ old('alasan') }}</textarea>
 
                 @error('alasan')
-                    <div class="error">{{ $message }}</div>
+                    <div class="restock-error">
+                        {{ $message }}
+                    </div>
                 @enderror
-
             </div>
 
-
-            <button type="submit" class="button">
-                Kirim Pengajuan
-            </button>
+            {{-- TOMBOL --}}
+            <div class="restock-actions">
+                <button type="submit" class="restock-submit">
+                    <span>✓</span>
+                    <span>Kirim Pengajuan</span>
+                </button>
+            </div>
 
         </form>
 
     </div>
 
-    <a href="{{ route('dashboard') }}" class="back">
+    {{-- KEMBALI KE DASHBOARD --}}
+    <a href="{{ route('dashboard') }}" class="restock-back">
         ← Kembali ke Dashboard
     </a>
 
 </div>
 
-</body>
-</html>
+@endsection

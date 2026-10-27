@@ -1,644 +1,263 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('user.layouts.app')
 
-    <title>Pengajuan Restock - Book Stock SMKN 5</title>
+@section('title', 'Pengajuan Restock')
 
-    <script src="https://cdn.tailwindcss.com"></script>
+@push('styles')
+<style>
+    .page-title {
+        color: var(--brown);
+        letter-spacing: -.45px;
+    }
 
-    <style>
-        :root {
-            --brown: #70432d;
-            --brown-dark: #5d3523;
-            --orange: #d96b24;
-            --page: #f6f3f0;
-            --line: #e9e1db;
+    .restock-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 2px 7px rgba(55,35,24,.035);
+        transition: transform .2s ease, box-shadow .2s ease,
+                    border-color .2s ease;
+        animation: rise-in .45s both;
+    }
+
+    .restock-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 18px rgba(55,35,24,.075);
+        border-color: #ddc9ba;
+    }
+
+    .info-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 21px;
+        background: #f5eee8;
+        color: var(--brown);
+        flex-shrink: 0;
+    }
+
+    .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        background: var(--brown);
+        color: white;
+        border-radius: 8px;
+        padding: 12px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s ease, transform .2s ease;
+    }
+
+    .primary-btn:hover {
+        background: var(--brown-dark);
+        transform: translateY(-1px);
+    }
+
+    @keyframes rise-in {
+        from {
+            opacity: 0;
+            transform: translateY(9px);
         }
-
-        * {
-            box-sizing: border-box;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--page);
-            color: #292524;
+    @media (prefers-reduced-motion: reduce) {
+        .restock-card {
+            animation: none;
+            transition: none;
         }
+    }
+</style>
+@endpush
 
-        a, button {
-            -webkit-tap-highlight-color: transparent;
-        }
+@section('content')
 
-        .sidebar {
-            width: 230px;
-            min-width: 230px;
-            background: var(--brown);
-            color: white;
-            flex-shrink: 0;
-            z-index: 30;
-            transition: width .25s ease, min-width .25s ease,
-                margin-left .25s ease, transform .25s ease;
-        }
+<section class="content-area p-7 lg:p-8">
 
-        .brand-area {
-            border-bottom: 1px solid rgba(255,255,255,.16);
-        }
-
-        .brand-logo {
-            width: 58px;
-            height: 58px;
-            border-radius: 15px;
-            background: #fff;
-            display: grid;
-            place-items: center;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,.10);
-        }
-
-        .brand-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 5px;
-        }
-
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            min-height: 43px;
-            padding: 10px 13px;
-            border-radius: 8px;
-            color: rgba(255,255,255,.94);
-            font-size: 13px;
-            font-weight: 600;
-            transition: background .18s ease, transform .18s ease;
-            text-decoration: none;
-        }
-
-        .sidebar-item:hover {
-            background: rgba(255,255,255,.11);
-            transform: translateX(2px);
-        }
-
-        .sidebar-active {
-            background: var(--orange);
-            color: white;
-            box-shadow: 0 3px 8px rgba(0,0,0,.1);
-        }
-
-        .sidebar-active:hover {
-            background: #c95e1b;
-        }
-
-        .menu-icon {
-            width: 19px;
-            text-align: center;
-            font-size: 17px;
-            flex-shrink: 0;
-        }
-
-        .topbar {
-            height: 76px;
-            background: white;
-            border-bottom: 1px solid var(--line);
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-
-        .brown {
-            color: var(--brown);
-        }
-
-        .page-title {
-            color: var(--brown);
-            letter-spacing: -.45px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            box-shadow: 0 2px 7px rgba(55,35,24,.035);
-            transition: transform .2s ease, box-shadow .2s ease,
-                border-color .2s ease;
-            animation: rise-in .45s both;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 18px rgba(55,35,24,.075);
-            border-color: #ddc9ba;
-        }
-
-        .info-icon {
-            width: 43px;
-            height: 43px;
-            border-radius: 10px;
-            display: grid;
-            place-items: center;
-            font-size: 21px;
-            background: #f5eee8;
-            color: var(--brown);
-            flex-shrink: 0;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            overflow: hidden;
-            background: #f1e5dc;
-            color: var(--brown);
-            border: 1px solid #eaded5;
-            font-size: 17px;
-            flex-shrink: 0;
-        }
-
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .hamburger {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            display: grid;
-            place-items: center;
-            color: var(--brown);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .hamburger:hover {
-            background: #f5eee8;
-        }
-
-        .sidebar-backdrop {
-            display: none;
-        }
-
-        .primary-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            background: var(--brown);
-            color: white;
-            border-radius: 8px;
-            padding: 12px 18px;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: background .2s ease, transform .2s ease;
-        }
-
-        .primary-btn:hover {
-            background: var(--brown-dark);
-            transform: translateY(-1px);
-        }
-
-        @keyframes rise-in {
-            from {
-                opacity: 0;
-                transform: translateY(9px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .sidebar {
-                overflow: hidden;
-            }
-
-            body.sidebar-collapsed .sidebar {
-                width: 0;
-                min-width: 0;
-                margin-left: 0;
-                overflow: hidden;
-                border: none;
-            }
-
-            body.sidebar-collapsed .sidebar > * {
-                visibility: hidden;
-            }
-        }
-
-        @media (max-width: 1023px) {
-            .sidebar {
-                position: fixed;
-                inset: 0 auto 0 0;
-                transform: translateX(-100%);
-                height: 100vh;
-                height: 100dvh;
-                overflow-y: auto;
-                width: 250px;
-                min-width: 250px;
-            }
-
-            body.mobile-menu-open .sidebar {
-                transform: translateX(0);
-            }
-
-            .sidebar-backdrop {
-                position: fixed;
-                inset: 0;
-                background: rgba(25,18,14,.42);
-                z-index: 25;
-            }
-
-            body.mobile-menu-open .sidebar-backdrop {
-                display: block;
-            }
-
-            .content-area {
-                padding: 24px 18px !important;
-            }
-
-            .topbar {
-                padding-left: 16px !important;
-                padding-right: 16px !important;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: .01ms !important;
-                transition-duration: .01ms !important;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="flex min-h-screen">
-
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar min-h-screen flex flex-col">
-
-        <!-- LOGO DAN IDENTITAS -->
-        <div class="brand-area px-5 py-6 text-center">
-            <div class="brand-logo mx-auto mb-3">
-                <img
-                    src="{{ asset('images/logo-smkn5.png') }}"
-                    alt="Logo SMKN 5 Kabupaten Tangerang"
-                >
-            </div>
-
-            <h1 class="text-lg font-bold tracking-tight leading-tight">
-                Book Stock SMKN 5
-            </h1>
-
-            <p class="text-xs text-white/75 mt-2">
-                Sistem Restock Buku
+    {{-- JUDUL HALAMAN --}}
+    <div
+        class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6"
+        style="animation: rise-in .4s both;"
+    >
+        <div>
+            <p class="text-xs uppercase tracking-wider text-stone-500 mb-2">
+                Sistem Informasi Perpustakaan
             </p>
 
-            <p class="text-xs text-white/75 mt-1">
-                Perpustakaan
+            <h2 class="page-title text-3xl font-bold">
+                Pengajuan Restock
+            </h2>
+
+            <p class="text-sm text-stone-600 mt-2">
+                Halo,
+                <span class="font-semibold brown">
+                    {{ Auth::user()->name ?? 'User' }}
+                </span>.
+                Ajukan penambahan stok buku perpustakaan di sini.
             </p>
         </div>
 
-        <!-- MENU NAVBAR -->
-        <nav class="flex-1 px-3 py-5 space-y-1.5">
+        <div>
+            <p class="text-xs text-stone-500">Hari ini</p>
 
-            <a href="{{ route('dashboard') }}" class="sidebar-item">
-                <span class="menu-icon">⌂</span>
-                <span>Dashboard</span>
-            </a>
+            <p class="text-sm font-semibold brown mt-1">
+                {{ now()->translatedFormat('d F Y') }}
+            </p>
+        </div>
+    </div>
 
-            <a href="{{ route('books.index') }}" class="sidebar-item">
-                <span class="menu-icon">▤</span>
-                <span>Data Buku</span>
-            </a>
+    {{-- PESAN BERHASIL --}}
+    @if (session('success'))
+        <div
+            class="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+            role="status"
+        >
+            {{ session('success') }}
+        </div>
+    @endif
 
-            <a
-                href="{{ route('user.restock.index') }}"
-                class="sidebar-item sidebar-active"
-                aria-current="page"
-            >
-                <span class="menu-icon">▧</span>
-                <span>Pengajuan Restock</span>
-            </a>
+    {{-- PESAN ERROR --}}
+    @if (session('error'))
+        <div
+            class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            role="alert"
+        >
+            {{ session('error') }}
+        </div>
+    @endif
 
-            <!-- RIWAYAT HANYA MELALUI MENU INI -->
-            <a
-                href="{{ route('user.restock.history') }}"
-                class="sidebar-item {{ request()->routeIs('user.restock.history') ? 'sidebar-active' : '' }}"
-            >
-                <span class="menu-icon">◷</span>
-                <span>Riwayat Restock</span>
-            </a>
+    {{-- VALIDASI --}}
+    @if ($errors->any())
+        <div
+            class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            role="alert"
+        >
+            <p class="font-bold mb-2">
+                Ada data yang perlu diperbaiki:
+            </p>
 
-            <a href="{{ route('profile.edit') }}" class="sidebar-item">
-                <span class="menu-icon">♙</span>
-                <span>Profil</span>
-            </a>
+            <ul class="list-disc pl-5 space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        </nav>
+    {{-- BANNER PENGAJUAN --}}
+    <div class="restock-card p-6 sm:p-8 mb-7">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
 
-        <!-- LOGOUT -->
-        <div class="px-3 pb-5 mt-auto">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
+            <div class="flex items-start gap-4">
+                <div class="info-icon">▤</div>
 
-                <button
-                    type="submit"
-                    class="sidebar-item w-full text-left hover:!bg-red-700"
+                <div class="max-w-2xl">
+                    <p
+                        class="text-xs font-bold uppercase tracking-wider"
+                        style="color: var(--orange);"
+                    >
+                        Layanan Perpustakaan
+                    </p>
+
+                    <h3 class="text-xl sm:text-2xl font-bold brown mt-2">
+                        Ajukan Penambahan Stok Buku
+                    </h3>
+
+                    <p class="text-sm text-stone-600 mt-3 leading-6">
+                        Pilih buku yang membutuhkan penambahan stok,
+                        tentukan jumlah yang dibutuhkan, lalu kirim
+                        pengajuan kepada admin untuk ditinjau.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex shrink-0">
+                <a
+                    href="{{ route('user.restock.create') }}"
+                    class="primary-btn"
                 >
-                    <span class="menu-icon">⇥</span>
-                    <span>Logout</span>
-                </button>
-            </form>
+                    <span class="text-lg leading-none">＋</span>
+                    Buat Pengajuan
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- PETUNJUK PENGAJUAN --}}
+    <div class="mb-4">
+        <h3 class="text-lg font-bold brown">
+            Cara Mengajukan Restock
+        </h3>
+
+        <p class="text-sm text-stone-500 mt-1">
+            Ikuti tiga langkah sederhana berikut.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        {{-- LANGKAH 1 --}}
+        <div class="restock-card p-5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="info-icon">01</div>
+
+                <h4 class="font-bold brown">
+                    Pilih Buku
+                </h4>
+            </div>
+
+            <p class="text-sm text-stone-600 leading-6">
+                Pilih buku yang terdaftar di Data Buku.
+            </p>
         </div>
 
-    </aside>
+        {{-- LANGKAH 2 --}}
+        <div class="restock-card p-5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="info-icon">02</div>
 
-    <!-- KONTEN UTAMA -->
-    <main class="flex-1 min-w-0">
-
-        <!-- TOPBAR -->
-        <header class="topbar flex items-center justify-between px-7">
-
-            <button
-                type="button"
-                id="menuToggle"
-                class="hamburger text-2xl"
-                aria-label="Buka atau tutup menu"
-                aria-expanded="true"
-            >
-                ☰
-            </button>
-
-            <a
-                href="{{ route('profile.edit') }}"
-                class="flex items-center gap-3 no-underline"
-            >
-                <div class="text-right hidden sm:block">
-                    <p class="text-sm font-bold brown leading-5">
-                        {{ Auth::user()->name ?? 'User' }}
-                    </p>
-
-                    <p class="text-xs text-gray-500">User</p>
-                </div>
-
-                <div class="user-avatar">
-                    @if (Auth::user()?->profile_photo)
-                        <img
-                            src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
-                            alt="Foto profil"
-                        >
-                    @else
-                        <span>♙</span>
-                    @endif
-                </div>
-            </a>
-
-        </header>
-
-        <!-- ISI HALAMAN -->
-        <section class="content-area p-7 lg:p-8">
-
-            <!-- JUDUL HALAMAN -->
-            <div
-                class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6"
-                style="animation: rise-in .4s both;"
-            >
-                <div>
-                    <p class="text-xs uppercase tracking-wider text-stone-500 mb-2">
-                        Sistem Informasi Perpustakaan
-                    </p>
-
-                    <h2 class="page-title text-3xl font-bold">
-                        Pengajuan Restock
-                    </h2>
-
-                    <p class="text-sm text-stone-600 mt-2">
-                        Halo,
-                        <span class="font-semibold brown">
-                            {{ Auth::user()->name ?? 'User' }}
-                        </span>.
-                        Ajukan penambahan stok buku perpustakaan di sini.
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-xs text-stone-500">Hari ini</p>
-
-                    <p class="text-sm font-semibold brown mt-1">
-                        {{ now()->translatedFormat('d F Y') }}
-                    </p>
-                </div>
+                <h4 class="font-bold brown">
+                    Isi Pengajuan
+                </h4>
             </div>
 
-            <!-- PESAN BERHASIL -->
-            @if (session('success'))
-                <div
-                    class="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
-                    role="status"
-                >
-                    {{ session('success') }}
-                </div>
-            @endif
+            <p class="text-sm text-stone-600 leading-6">
+                Masukkan jumlah buku dan alasan pengajuan.
+            </p>
+        </div>
 
-            <!-- PESAN ERROR -->
-            @if (session('error'))
-                <div
-                    class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-                    role="alert"
-                >
-                    {{ session('error') }}
-                </div>
-            @endif
+        {{-- LANGKAH 3 --}}
+        <div class="restock-card p-5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="info-icon">03</div>
 
-            <!-- VALIDASI -->
-            @if ($errors->any())
-                <div
-                    class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-                    role="alert"
-                >
-                    <p class="font-bold mb-2">
-                        Ada data yang perlu diperbaiki:
-                    </p>
-
-                    <ul class="list-disc pl-5 space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <!-- BANNER BUAT PENGAJUAN -->
-            <div class="card p-6 sm:p-8 mb-7">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-
-                    <div class="flex items-start gap-4">
-                        <div class="info-icon">▤</div>
-
-                        <div class="max-w-2xl">
-                            <p
-                                class="text-xs font-bold uppercase tracking-wider"
-                                style="color: var(--orange);"
-                            >
-                                Layanan Perpustakaan
-                            </p>
-
-                            <h3 class="text-xl sm:text-2xl font-bold brown mt-2">
-                                Ajukan Penambahan Stok Buku
-                            </h3>
-
-                            <p class="text-sm text-stone-600 mt-3 leading-6">
-                                Pilih buku yang membutuhkan penambahan stok,
-                                tentukan jumlah yang dibutuhkan, lalu kirim
-                                pengajuan kepada admin untuk ditinjau.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex shrink-0">
-                        <a
-                            href="{{ route('user.restock.create') }}"
-                            class="primary-btn"
-                        >
-                            <span class="text-lg leading-none">＋</span>
-                            Buat Pengajuan
-                        </a>
-                    </div>
-
-                </div>
+                <h4 class="font-bold brown">
+                    Kirim Pengajuan
+                </h4>
             </div>
 
-            <!-- CARA MENGAJUKAN RESTOCK -->
-            <div class="mb-4">
-                <h3 class="text-lg font-bold brown">
-                    Cara Mengajukan Restock
-                </h3>
+            <p class="text-sm text-stone-600 leading-6">
+                Kirim permintaan kepada admin untuk ditinjau
+                dan mendapatkan keputusan.
+            </p>
+        </div>
 
-                <p class="text-sm text-stone-500 mt-1">
-                    Ikuti tiga langkah sederhana berikut.
-                </p>
-            </div>
+    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {{-- FOOTER --}}
+    <footer class="text-center text-xs text-stone-400 mt-7">
+        © {{ date('Y') }} Book Stock SMKN 5 ·
+        Sistem Restock Buku Perpustakaan
+    </footer>
 
-                <!-- LANGKAH 1 -->
-                <div class="card p-5">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="info-icon">01</div>
+</section>
 
-                        <h4 class="font-bold brown">
-                            Pilih Buku
-                        </h4>
-                    </div>
-
-                    <p class="text-sm text-stone-600 leading-6">
-                        Pilih buku yang terdaftar di Data Buku.
-                    </p>
-                </div>
-
-                <!-- LANGKAH 2 -->
-                <div class="card p-5">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="info-icon">02</div>
-
-                        <h4 class="font-bold brown">
-                            Isi Pengajuan
-                        </h4>
-                    </div>
-
-                    <p class="text-sm text-stone-600 leading-6">
-                        Masukkan jumlah buku dan alasan pengajuan.
-                    </p>
-                </div>
-
-                <!-- LANGKAH 3 -->
-                <div class="card p-5">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="info-icon">03</div>
-
-                        <h4 class="font-bold brown">
-                            Kirim Pengajuan
-                        </h4>
-                    </div>
-
-                    <p class="text-sm text-stone-600 leading-6">
-                        Kirim permintaan kepada admin untuk ditinjau dan
-                        mendapatkan keputusan.
-                    </p>
-                </div>
-
-            </div>
-
-            <!-- FOOTER -->
-            <footer class="text-center text-xs text-stone-400 mt-7">
-                © {{ date('Y') }} Book Stock SMKN 5 · Sistem Restock Buku Perpustakaan
-            </footer>
-
-        </section>
-    </main>
-</div>
-
-<!-- JAVASCRIPT HAMBURGER -->
-<script>
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-
-    menuToggle?.addEventListener('click', () => {
-        if (window.innerWidth < 1024) {
-            document.body.classList.toggle('mobile-menu-open');
-
-            menuToggle.setAttribute(
-                'aria-expanded',
-                String(document.body.classList.contains('mobile-menu-open'))
-            );
-        } else {
-            document.body.classList.toggle('sidebar-collapsed');
-
-            menuToggle.setAttribute(
-                'aria-expanded',
-                String(!document.body.classList.contains('sidebar-collapsed'))
-            );
-        }
-    });
-
-    sidebarBackdrop?.addEventListener('click', () => {
-        document.body.classList.remove('mobile-menu-open');
-        menuToggle?.setAttribute('aria-expanded', 'false');
-    });
-
-    document.querySelectorAll('.sidebar a, .sidebar button').forEach(item => {
-        item.addEventListener('click', () => {
-            if (window.innerWidth < 1024) {
-                document.body.classList.remove('mobile-menu-open');
-                menuToggle?.setAttribute('aria-expanded', 'false');
-            }
-        });
-    });
-
-    window.addEventListener('resize', () => {
-        if (window.innerWidth >= 1024) {
-            document.body.classList.remove('mobile-menu-open');
-        } else {
-            document.body.classList.remove('sidebar-collapsed');
-        }
-    });
-</script>
-
-</body>
-</html>
+@endsection

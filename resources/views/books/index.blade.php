@@ -125,6 +125,10 @@
                             <tr class="bg-[#f4eee9] brown border-b border-gray-200">
                                 <th class="p-3">No</th>
                                 <th class="p-3">Judul Buku</th>
+                                <th class="p-3">Penerbit</th>
+                                <th class="p-3">Pengarang</th>
+                                <th class="p-3">Tahun Terbit</th>
+                                <th class="p-3">Tahun Bantuan</th>
                                 <th class="p-3">Kategori</th>
                                 <th class="p-3">Stok</th>
                                 <th class="p-3">Aksi</th>

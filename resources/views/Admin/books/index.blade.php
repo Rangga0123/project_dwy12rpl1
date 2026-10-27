@@ -1,598 +1,1228 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Buku - Book Stock SMKN 5</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+@extends('admin.layouts.app')
 
-    <style>
-        * { box-sizing: border-box; }
+@section('content')
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f4f1;
+<style>
+    .books-page {
+        padding: 24px;
+        color: #33271f;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .books-page * {
+        box-sizing: border-box;
+    }
+
+    .books-page .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .books-page .page-title {
+        margin: 0;
+        color: #6b3f28;
+        font-size: 27px;
+        font-weight: 800;
+    }
+
+    .books-page .page-subtitle {
+        margin: 7px 0 0;
+        color: #81756d;
+        font-size: 13px;
+    }
+
+    .books-page .header-actions,
+    .books-page .toolbar-left,
+    .books-page .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+    }
+
+    .books-page .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 14px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .2s;
+        white-space: nowrap;
+    }
+
+    .books-page .btn:hover {
+        filter: brightness(.95);
+        transform: translateY(-1px);
+    }
+
+    .books-page .btn-brown {
+        background: #6b3f28;
+        color: #fff;
+    }
+
+    .books-page .btn-green {
+        background: #198754;
+        color: #fff;
+    }
+
+    .books-page .btn-red {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .books-page .btn-outline {
+        border-color: #d5d0ca;
+        background: #fff;
+        color: #51443b;
+    }
+
+    .books-page .icon {
+        display: inline-flex;
+        width: 16px;
+        height: 16px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .books-page .icon svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .books-page .books-card {
+        overflow: visible;
+        background: #fff;
+        border: 1px solid #e8e1db;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(69, 43, 26, .05);
+    }
+
+    .books-page .card-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 20px 22px;
+        border-bottom: 1px solid #eee7e1;
+    }
+
+    .books-page .card-heading h2 {
+        margin: 0;
+        color: #6b3f28;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .books-page .card-heading p {
+        margin: 6px 0 0;
+        color: #85786e;
+        font-size: 12px;
+    }
+
+    .books-page .table-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 17px 22px;
+    }
+
+    .books-page .search-input {
+        width: 260px;
+        max-width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d5d0ca;
+        border-radius: 8px;
+        outline: none;
+        font-size: 12px;
+    }
+
+    .books-page .search-input:focus {
+        border-color: #d96b24;
+        box-shadow: 0 0 0 3px rgba(217, 107, 36, .12);
+    }
+
+    .books-page .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        padding: 0 22px 20px;
+    }
+
+    .books-page .book-table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        border: 1px solid #d5d0ca !important;
+        background: #fff;
+        font-size: 12px;
+    }
+
+    .books-page .book-table th,
+    .books-page .book-table td {
+        padding: 12px;
+        border: 1px solid #d5d0ca !important;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .books-page .book-table thead th {
+        background: #f4e9df;
+        color: #6b3f28;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .books-page .book-table tbody tr:nth-child(even) {
+        background: #fcfaf8;
+    }
+
+    .books-page .book-table tbody tr:hover {
+        background: #fff2e8;
+    }
+
+    .books-page .text-center {
+        text-align: center !important;
+    }
+
+    .books-page .book-title {
+        min-width: 170px;
+        color: #392a20;
+        font-weight: 700;
+    }
+
+    .books-page .stock-badge {
+        display: inline-block;
+        min-width: 38px;
+        padding: 5px 9px;
+        border-radius: 6px;
+        background: #e8f7ee;
+        color: #187443;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .books-page .stock-low {
+        background: #fff0df;
+        color: #b45309;
+    }
+
+    .books-page .action-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .books-page .action-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 9px;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .books-page .action-btn:hover {
+        filter: brightness(.93);
+    }
+
+    .books-page .action-detail {
+        background: #6b3f28;
+    }
+
+    .books-page .action-edit {
+        background: #d96b24;
+    }
+
+    .books-page .action-delete {
+        background: #dc3545;
+    }
+
+    .books-page .action-buttons form {
+        margin: 0;
+    }
+
+    .books-page .empty-message {
+        padding: 35px !important;
+        color: #887d74;
+        text-align: center !important;
+    }
+
+    .books-page .alert {
+        margin-bottom: 18px;
+        padding: 13px 16px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+    .books-page .alert-success {
+        border-color: #a7dfbb;
+        background: #e9f8ee;
+        color: #176c38;
+    }
+
+    .books-page .alert-error {
+        border-color: #f1b9bd;
+        background: #fff0f1;
+        color: #a5222b;
+    }
+
+    /* Column Visibility */
+    .books-page .column-visibility-wrapper {
+        position: relative;
+    }
+
+    .books-page .column-visibility-menu {
+        position: absolute;
+        z-index: 1000;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 220px;
+        max-height: 330px;
+        overflow-y: auto;
+        padding: 12px;
+        border: 1px solid #e3d8ce;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, .14);
+    }
+
+    .books-page .column-visibility-menu[hidden] {
+        display: none !important;
+    }
+
+    .books-page .column-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee5dd;
+        color: #6b3f28;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .books-page .column-menu-reset {
+        padding: 4px 7px;
+        border: none;
+        border-radius: 5px;
+        background: #fff0e4;
+        color: #6b3f28;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .books-page .column-option {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 5px;
+        border-radius: 5px;
+        color: #51443b;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .books-page .column-option:hover {
+        background: #fff4eb;
+    }
+
+    .books-page .column-option input {
+        width: 15px;
+        height: 15px;
+        accent-color: #d96b24;
+        cursor: pointer;
+    }
+
+    .books-page .column-menu-footer {
+        margin-top: 8px;
+        padding-top: 9px;
+        border-top: 1px solid #eee5dd;
+        color: #8a7c70;
+        font-size: 10px;
+    }
+
+    .books-page .pagination-info {
+        padding: 0 22px 20px;
+        color: #81756d;
+        font-size: 11px;
+    }
+
+    .books-page .import-input {
+        display: none;
+    }
+
+    /* Modal Detail Buku */
+    .book-detail-modal[hidden] {
+        display: none !important;
+    }
+
+    .book-detail-modal {
+        position: fixed;
+        z-index: 99999;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: rgba(31, 23, 18, .55);
+        backdrop-filter: blur(3px);
+    }
+
+    .book-detail-dialog {
+        width: 100%;
+        max-width: 760px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 13px;
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+        animation: detailAppear .18s ease-out;
+    }
+
+    @keyframes detailAppear {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
         }
 
-        .sidebar {
-            background: #6b3f28;
-            width: 256px;
-            flex-shrink: 0;
-            transition: transform .25s ease;
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .book-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 22px 24px;
+        border-bottom: 1px solid #eee7e1;
+    }
+
+    .book-detail-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .book-detail-symbol {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #fff0e4;
+        color: #6b3f28;
+    }
+
+    .book-detail-symbol svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .book-detail-header h2 {
+        margin: 0;
+        color: #6b3f28;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .book-detail-header p {
+        margin: 6px 0 0;
+        color: #81756d;
+        font-size: 12px;
+    }
+
+    .book-detail-close {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        width: 33px;
+        height: 33px;
+        border: 1px solid #d5d0ca;
+        border-radius: 8px;
+        background: #fff;
+        color: #6b3f28;
+        font-size: 23px;
+        line-height: 1;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .book-detail-close:hover {
+        border-color: #d96b24;
+        background: #fff0e4;
+        color: #d96b24;
+    }
+
+    .book-detail-body {
+        padding: 20px 24px 24px;
+    }
+
+    .book-detail-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #d9dfe5;
+        font-size: 13px;
+    }
+
+    .book-detail-table th,
+    .book-detail-table td {
+        padding: 13px 14px;
+        border: 1px solid #d9dfe5;
+        text-align: left;
+        vertical-align: middle;
+        overflow-wrap: anywhere;
+    }
+
+    .book-detail-table th {
+        width: 29%;
+        background: #fcfaf8;
+        color: #392a20;
+        font-weight: 700;
+    }
+
+    .book-detail-table td {
+        color: #51443b;
+    }
+
+    .book-detail-stock {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 5px;
+        background: #e8f7ee;
+        color: #187443;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .book-detail-stock.low {
+        background: #fff0df;
+        color: #b45309;
+    }
+
+    @media (max-width: 768px) {
+        .books-page {
+            padding: 15px;
         }
 
-        .brown { color: #6b3f28; }
-        .menu-active { background: #d96b24; }
-
-        .menu-item {
-            transition: background .25s ease, transform .25s ease;
+        .books-page .page-title {
+            font-size: 23px;
         }
 
-        .menu-item:hover {
-            background: rgba(255,255,255,.12);
-            transform: translateX(4px);
+        .books-page .table-toolbar {
+            align-items: flex-start;
         }
 
-        .card, .action-btn {
-            transition: all .25s ease;
+        .books-page .toolbar-left,
+        .books-page .toolbar-right {
+            width: 100%;
         }
 
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 22px rgba(74,45,30,.10);
+        .books-page .search-input {
+            width: 100%;
         }
 
-        .action-btn:hover { transform: translateY(-1px); }
-
-        .page-enter {
-            animation: pageEnter .5s ease forwards;
+        .books-page .column-visibility-menu {
+            left: auto;
+            right: 0;
         }
 
-        @keyframes pageEnter {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        .book-detail-modal {
+            padding: 10px;
         }
 
-        /* HAMBURGER SAMA DENGAN DASHBOARD */
-        .hamburger {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            border-radius: 8px;
-            background: transparent;
-            color: #6b3f28;
-            font-size: 25px;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: background .2s ease;
+        .book-detail-header,
+        .book-detail-body {
+            padding: 17px;
         }
 
-        .hamburger:hover { background: #f4eee9; }
-
-        /* TOPBAR SAMA DENGAN DASHBOARD */
-        .topbar {
-            min-height: 77px;
-            padding: 20px 32px;
-            background: #fff;
+        .book-detail-table th,
+        .book-detail-table td {
+            padding: 10px;
+            font-size: 12px;
         }
 
-        .sidebar-backdrop { display: none; }
+        .book-detail-table th {
+            width: 37%;
+        }
+    }
 
-        /* DESKTOP */
-        @media (min-width: 1024px) {
-            .sidebar {
-                position: fixed;
-                inset: 0 auto 0 0;
-                height: 100vh;
-                overflow-y: auto;
-                z-index: 40;
-            }
-
-            body.sidebar-hidden .sidebar {
-                transform: translateX(-100%);
-            }
-
-            body.sidebar-hidden main {
-                margin-left: 0 !important;
-                width: 100%;
-            }
-
-            body:not(.sidebar-hidden) main {
-                margin-left: 256px;
-                width: calc(100% - 256px);
-            }
+    @media print {
+        .books-page .page-header,
+        .books-page .table-toolbar,
+        .books-page .action-buttons,
+        .book-detail-modal {
+            display: none !important;
         }
 
-        /* HP DAN TABLET */
-        @media (max-width: 1023px) {
-            .sidebar {
-                position: fixed;
-                inset: 0 auto 0 0;
-                width: 256px;
-                height: 100vh;
-                height: 100dvh;
-                overflow-y: auto;
-                transform: translateX(-100%);
-                z-index: 40;
-            }
-
-            body.mobile-menu-open .sidebar {
-                transform: translateX(0);
-            }
-
-            body main {
-                margin-left: 0 !important;
-                width: 100%;
-            }
-
-            .sidebar-backdrop {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,.4);
-                z-index: 30;
-            }
-
-            body.mobile-menu-open .sidebar-backdrop {
-                display: block;
-            }
-
-            .page-content { padding: 20px !important; }
-            .topbar { padding: 16px !important; }
+        .books-page {
+            padding: 0;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: .01ms !important;
-                transition-duration: .01ms !important;
-            }
+        .books-page .table-wrapper {
+            overflow: visible;
+            padding: 0;
         }
-    </style>
-</head>
 
-<body>
-<div class="min-h-screen">
+        .books-page .book-table {
+            min-width: 0;
+            font-size: 10px;
+        }
+    }
+</style>
 
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="books-page">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar min-h-screen text-white shadow-lg flex flex-col">
-
-        <!-- LOGO -->
-        <div class="p-6 text-center border-b border-white/15">
-            <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-md overflow-hidden">
-                <img
-                    src="{{ asset('images/logo-smkn5.png') }}"
-                    alt="Logo SMKN 5 Kabupaten Tangerang"
-                    class="w-full h-full object-contain">
-            </div>
-
-            <h1 class="text-xl font-bold">Book Stock</h1>
-            <p class="text-xs text-white/70 mt-1">
-                SMKN 5 Kabupaten Tangerang
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Data Buku</h1>
+            <p class="page-subtitle">
+                Kelola data dan persediaan buku perpustakaan SMKN 5 Kabupaten Tangerang.
             </p>
         </div>
 
-        <!-- MENU ADMIN -->
-        <nav class="mt-5 px-3 flex-1">
-
-            <a href="{{ route('dashboard') }}"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M3 10.5L12 3l9 7.5"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5 9.5V21h14V9.5"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M9 21v-6h6v6"/>
-                </svg>
-                <span class="text-sm">Dashboard</span>
-            </a>
-
-            <a href="{{ route('books.index') }}"
-               class="menu-item menu-active flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5 4h12a2 2 0 012 2v13H7a2 2 0 01-2-2V4z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5 17a2 2 0 012-2h12"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M9 7h6M9 10h5"/>
-                </svg>
-                <span class="text-sm">Data Buku</span>
-            </a>
-
-            <a href="{{ route('categories.index') }}"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M3 6.5A2.5 2.5 0 015.5 4H10l2 2h6.5A2.5 2.5 0 0121 8.5v9A2.5 2.5 0 0118.5 20h-13A2.5 2.5 0 013 17.5v-11z"/>
-                </svg>
-                <span class="text-sm">Kategori Buku</span>
-            </a>
-
-            <a href="{{ route('suppliers.index') }}"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5"/>
-                </svg>
-                <span class="text-sm">Supplier</span>
-            </a>
-
-            <a href="{{ route('admin.restock.index') }}"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M6 3h9l3 3v15H6V3z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M14 3v4h4M9 12h6M9 15h6"/>
-                </svg>
-                <span class="text-sm">Pengajuan Restock</span>
-            </a>
-
-            <a href="{{ route('profile.edit') }}"
-               class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                     stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <circle cx="12" cy="8" r="3"/>
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5 20a7 7 0 0114 0"/>
-                </svg>
-                <span class="text-sm">Profil</span>
-            </a>
-
-        </nav>
-
-        <!-- LOGOUT -->
-        <div class="px-3 pb-5 mt-5">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                    class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/80 text-left">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none"
-                         stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M10 17l5-5-5-5M15 12H3"/>
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M21 19V5a2 2 0 00-2-2h-5"/>
+        <div class="header-actions">
+            <a href="{{ route('books.create') }}" class="btn btn-brown">
+                <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14"/>
                     </svg>
-                    <span class="text-sm">Logout</span>
-                </button>
-            </form>
+                </span>
+                Tambah Buku
+            </a>
+
+            <a href="{{ route('books.trash') }}" class="btn btn-red">
+                <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/>
+                    </svg>
+                </span>
+                Trash
+            </a>
+
+            <button type="button" id="importExcelBtn" class="btn btn-green">
+                <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/>
+                    </svg>
+                </span>
+                Import Excel
+            </button>
+
+            <input type="file" id="excelFile" class="import-input"
+                   accept=".xlsx,.xls,.csv">
+        </div>
+    </header>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-error">{{ session('error') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-error">
+            <strong>Terjadi kesalahan:</strong>
+            <ul style="margin:7px 0 0 20px;list-style:disc;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <section class="books-card">
+
+        <div class="card-heading">
+            <div>
+                <h2>Daftar Buku Perpustakaan</h2>
+                <p>Data buku yang tersimpan di sistem Book Stock SMKN 5.</p>
+            </div>
+
+            <div style="font-size:12px;color:#796b60;">
+                Total buku:
+                <strong style="color:#6b3f28;">{{ $books->count() }}</strong>
+            </div>
         </div>
 
-    </aside>
-
-    <!-- MAIN -->
-    <main class="min-h-screen">
-
-        <!-- TOPBAR -->
-        <header class="topbar bg-white border-b border-gray-200 flex justify-between items-center sticky top-0 z-20 shadow-sm">
-
-            <div class="flex items-center gap-4 min-w-0">
-                <button
-                    type="button"
-                    id="menuToggle"
-                    class="hamburger"
-                    aria-label="Buka atau tutup menu"
-                    aria-expanded="true">
-                    ☰
+        <div class="table-toolbar">
+            <div class="toolbar-left">
+                <button type="button" id="copyTableBtn" class="btn btn-outline">
+                    Copy
                 </button>
 
-                <div class="min-w-0">
-                    <h2 class="text-lg font-bold brown">Data Buku</h2>
-                    <p class="text-xs text-gray-500">
-                        Kelola data buku perpustakaan
-                    </p>
-                </div>
-            </div>
+                <button type="button" id="exportPdfBtn" class="btn btn-outline">
+                    Export PDF
+                </button>
 
-            <!-- PROFIL -->
-            <a href="{{ route('profile.edit') }}"
-               class="flex items-center gap-3 flex-shrink-0 ml-3">
+                <div class="column-visibility-wrapper">
+                    <button type="button"
+                            id="columnVisibilityBtn"
+                            class="btn btn-outline"
+                            aria-expanded="false"
+                            aria-controls="columnVisibilityMenu">
+                        Column Visibility
+                    </button>
 
-                <div class="text-right hidden sm:block">
-                    <p class="font-semibold text-gray-800">
-                        {{ Auth::user()->name }}
-                    </p>
-                    <p class="text-xs text-gray-500">
-                        {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
-                    </p>
-                </div>
+                    <div id="columnVisibilityMenu"
+                         class="column-visibility-menu"
+                         hidden>
 
-                @if(Auth::user()->profile_photo)
-                    <img
-                        src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
-                        alt="Foto Profil"
-                        class="w-10 h-10 rounded-full object-cover border-2 border-[#6b3f28]">
-                @else
-                    <div class="w-10 h-10 rounded-full bg-[#f4eee9] brown flex items-center justify-center shadow-inner">
-                        <svg class="w-5 h-5" fill="none"
-                             stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="3"/>
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M5 20a7 7 0 0114 0"/>
-                        </svg>
+                        <div class="column-menu-header">
+                            <span>Tampilkan Kolom</span>
+                            <button type="button" id="resetColumnsBtn"
+                                    class="column-menu-reset">Reset</button>
+                        </div>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="0" checked> No
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="1" checked> Judul Buku
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="2" checked> Penerbit
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="3" checked> Pengarang
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="4" checked> Tahun Terbit
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="5" checked> Tahun Bantuan
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="6" checked> Kategori
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="7" checked> Stok
+                        </label>
+
+                        <label class="column-option">
+                            <input type="checkbox" data-column="8" checked> Aksi
+                        </label>
+
+                        <div class="column-menu-footer">
+                            Centang untuk menampilkan kolom.
+                        </div>
                     </div>
-                @endif
-            </a>
-
-        </header>
-
-        <!-- KONTEN DATA BUKU -->
-        <section class="page-content p-8 page-enter">
-
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6">
-                <div>
-                    <p class="text-sm text-gray-500 mb-2">
-                        Dashboard / Data Buku
-                    </p>
-                    <h1 class="text-2xl font-bold brown">Daftar Buku</h1>
-                    <p class="text-sm text-gray-500 mt-2">
-                        Data buku yang tersedia di perpustakaan.
-                    </p>
                 </div>
-
-                <a href="{{ route('books.create') }}"
-                   class="action-btn inline-flex items-center justify-center gap-2 bg-[#6b3f28] hover:bg-[#56301f] text-white font-semibold py-2.5 px-4 rounded-lg shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                         stroke-width="1.8" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M12 5v14M5 12h14"/>
-                    </svg>
-                    Tambah Buku
-                </a>
             </div>
 
-            <!-- NOTIFIKASI -->
-            @if(session('success'))
-                <div class="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <!-- RINGKASAN -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-
-                <div class="card bg-white rounded-xl p-5 border border-gray-200">
-                    <p class="text-sm text-gray-500">Total Buku</p>
-                    <h3 class="text-3xl font-bold brown mt-3">
-                        {{ $books->count() }}
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Jenis buku terdaftar
-                    </p>
-                </div>
-
-                <div class="card bg-white rounded-xl p-5 border border-gray-200">
-                    <p class="text-sm text-gray-500">Total Stok Buku</p>
-                    <h3 class="text-3xl font-bold brown mt-3">
-                        {{ $books->sum('stock') }}
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Total unit buku
-                    </p>
-                </div>
-
+            <div class="toolbar-right">
+                <input type="search" id="searchInput"
+                       class="search-input"
+                       placeholder="Cari judul, penerbit, pengarang..."
+                       autocomplete="off">
             </div>
+        </div>
 
-            <!-- TABEL BUKU -->
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <div class="table-wrapper">
+            <table class="book-table" id="booksTable">
+                <thead>
+                <tr>
+                    <th data-col="0" class="text-center">No</th>
+                    <th data-col="1">Judul Buku</th>
+                    <th data-col="2">Penerbit</th>
+                    <th data-col="3">Pengarang</th>
+                    <th data-col="4" class="text-center">Tahun Terbit</th>
+                    <th data-col="5" class="text-center">Tahun Bantuan</th>
+                    <th data-col="6">Kategori</th>
+                    <th data-col="7" class="text-center">Stok</th>
+                    <th data-col="8" class="text-center">Aksi</th>
+                </tr>
+                </thead>
 
-                <div class="px-5 md:px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                    <div>
-                        <h3 class="font-bold brown text-lg">
-                            Data Buku Perpustakaan
-                        </h3>
-                        <p class="text-sm text-gray-500 mt-1">
-                            Daftar buku yang telah dimasukkan ke dalam sistem.
-                        </p>
-                    </div>
+                <tbody id="booksTableBody">
+                @forelse($books as $book)
+                    <tr>
+                        <td data-col="0" class="text-center">
+                            {{ $loop->iteration }}
+                        </td>
 
-                    <input
-                        id="bookSearch"
-                        type="text"
-                        placeholder="Cari judul atau kategori..."
-                        class="w-full sm:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400">
-                </div>
+                        <td data-col="1" class="book-title">
+                            {{ $book->title }}
+                        </td>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
+                        <td data-col="2">
+                            {{ $book->penerbit ?? '-' }}
+                        </td>
 
-                        <thead class="bg-[#f4eee9]">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide brown">No.</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide brown">Judul Buku</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide brown">Kategori</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide brown">Stok</th>
-                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide brown">Aksi</th>
-                            </tr>
-                        </thead>
+                        <td data-col="3">
+                            {{ $book->pengarang ?? '-' }}
+                        </td>
 
-                        <tbody id="bookTableBody" class="divide-y divide-gray-100">
+                        <td data-col="4" class="text-center">
+                            {{ $book->tahun_terbit ?? '-' }}
+                        </td>
 
-                            @forelse($books as $index => $book)
-                                <tr class="book-row hover:bg-[#faf7f4]"
-                                    data-search="{{ strtolower(($book->title ?? '') . ' ' . ($book->category->name ?? '')) }}">
+                        <td data-col="5" class="text-center">
+                            {{ $book->tahun_bantuan ?? '-' }}
+                        </td>
 
-                                    <td class="px-6 py-4 text-sm text-gray-500">
-                                        {{ $index + 1 }}
-                                    </td>
+                        <td data-col="6">
+                            {{ $book->category->name ?? $book->category->nama_kategori ?? '-' }}
+                        </td>
 
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-gray-800">
-                                            {{ $book->title ?? '-' }}
-                                        </p>
-                                    </td>
+                        <td data-col="7" class="text-center">
+                            <span class="stock-badge {{ $book->stock <= 5 ? 'stock-low' : '' }}">
+                                {{ $book->stock }} Buku
+                            </span>
+                        </td>
 
-                                    <td class="px-6 py-4 text-sm text-gray-600">
-                                        {{ $book->category->name ?? '-' }}
-                                    </td>
+                        <td data-col="8">
+                            <div class="action-buttons">
+                                <button type="button"
+                                        class="action-btn action-detail"
+                                        data-book-detail
+                                        data-title="{{ $book->title }}"
+                                        data-penerbit="{{ $book->penerbit ?? '-' }}"
+                                        data-pengarang="{{ $book->pengarang ?? '-' }}"
+                                        data-tahun-terbit="{{ $book->tahun_terbit ?? '-' }}"
+                                        data-tahun-bantuan="{{ $book->tahun_bantuan ?? '-' }}"
+                                        data-kategori="{{ $book->category->name ?? $book->category->nama_kategori ?? '-' }}"
+                                        data-stock="{{ $book->stock }}">
+                                    Detail
+                                </button>
 
-                                    <td class="px-6 py-4">
-                                        <span class="font-semibold brown">
-                                            {{ $book->stock ?? 0 }}
-                                        </span>
-                                        <span class="text-xs text-gray-400 ml-1">unit</span>
-                                    </td>
+                                <a href="{{ route('books.edit', $book->id) }}"
+                                   class="action-btn action-edit">
+                                    Edit
+                                </a>
 
-                                    <td class="px-6 py-4">
-                                        <div class="flex justify-center gap-2">
+                                <form action="{{ route('books.destroy', $book->id) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('Yakin ingin memindahkan buku ini ke Trash?')">
+                                    @csrf
+                                    @method('DELETE')
 
-                                            <a href="{{ route('books.edit', $book->id) }}"
-                                               class="action-btn px-3 py-1.5 rounded-md bg-[#f4eee9] brown text-xs font-semibold hover:bg-[#eadfd7]">
-                                                Edit
-                                            </a>
+                                    <button type="submit"
+                                            class="action-btn action-delete">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr id="emptyBooksRow">
+                        <td colspan="9" class="empty-message">
+                            Belum ada data buku yang tersedia.
+                        </td>
+                    </tr>
+                @endforelse
 
-                                            <form
-                                                action="{{ route('books.destroy', $book->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Apakah kamu yakin ingin menghapus buku ini?');">
-                                                @csrf
-                                                @method('DELETE')
+                <tr id="noSearchResult" hidden>
+                    <td colspan="9" class="empty-message">
+                        Data buku yang dicari tidak ditemukan.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-                                                <button type="submit"
-                                                    class="action-btn px-3 py-1.5 rounded-md bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100">
-                                                    Hapus
-                                                </button>
-                                            </form>
+        <div class="pagination-info" id="tableInfo">
+            Menampilkan {{ $books->count() }} data buku.
+        </div>
 
-                                        </div>
-                                    </td>
-                                </tr>
-
-                            @empty
-                                <tr id="emptyBooks">
-                                    <td colspan="5" class="px-6 py-14 text-center">
-                                        <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-[#f4eee9] brown flex items-center justify-center">
-                                            <svg class="w-6 h-6" fill="none"
-                                                 stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                      d="M5 4h12a2 2 0 012 2v13H7a2 2 0 01-2-2V4z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                      d="M5 17a2 2 0 012-2h12"/>
-                                            </svg>
-                                        </div>
-                                        <p class="font-semibold text-gray-700">
-                                            Belum ada data buku
-                                        </p>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Tambahkan buku untuk mulai mengelola data.
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforelse
-
-                            <tr id="noSearchResult" class="hidden">
-                                <td colspan="5" class="px-6 py-10 text-center text-gray-500">
-                                    Buku yang kamu cari tidak ditemukan.
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="px-6 py-4 border-t border-gray-200 text-xs text-gray-500">
-                    Total {{ $books->count() }} jenis buku terdaftar.
-                </div>
-
-            </div>
-        </section>
-    </main>
+    </section>
 </div>
+
+{{-- Modal detail: hanya menggunakan tombol X di pojok kanan atas --}}
+<div id="bookDetailModal"
+     class="book-detail-modal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="bookDetailTitle"
+     hidden>
+
+    <div class="book-detail-dialog">
+
+        <div class="book-detail-header">
+            <div class="book-detail-heading">
+                <div class="book-detail-symbol" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+                        <path d="M8 7h8M8 11h8"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h2 id="bookDetailTitle">Detail Buku</h2>
+                    <p>Informasi lengkap buku perpustakaan.</p>
+                </div>
+            </div>
+
+            <button type="button"
+                    id="closeBookDetail"
+                    class="book-detail-close"
+                    aria-label="Tutup detail buku"
+                    title="Tutup">
+                &times;
+            </button>
+        </div>
+
+        <div class="book-detail-body">
+            <table class="book-detail-table">
+                <tbody>
+                <tr>
+                    <th scope="row">Judul Buku</th>
+                    <td id="detailTitle">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Pengarang</th>
+                    <td id="detailPengarang">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Penerbit</th>
+                    <td id="detailPenerbit">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tahun Terbit</th>
+                    <td id="detailTahunTerbit">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tahun Bantuan</th>
+                    <td id="detailTahunBantuan">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Kategori</th>
+                    <td id="detailKategori">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Stok</th>
+                    <td>
+                        <span id="detailStock" class="book-detail-stock">-</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-
-    // HAMBURGER DESKTOP DAN HP
-    menuToggle?.addEventListener('click', function () {
-
-        if (window.innerWidth < 1024) {
-            document.body.classList.toggle('mobile-menu-open');
-
-            menuToggle.setAttribute(
-                'aria-expanded',
-                document.body.classList.contains('mobile-menu-open')
-            );
-
-        } else {
-            document.body.classList.toggle('sidebar-hidden');
-
-            menuToggle.setAttribute(
-                'aria-expanded',
-                !document.body.classList.contains('sidebar-hidden')
-            );
-        }
-    });
-
-    // TUTUP SIDEBAR HP DENGAN BACKDROP
-    sidebarBackdrop?.addEventListener('click', function () {
-        document.body.classList.remove('mobile-menu-open');
-        menuToggle?.setAttribute('aria-expanded', 'false');
-    });
-
-    // TUTUP MENU HP SETELAH MENU DIPILIH
-    document.querySelectorAll('.sidebar a, .sidebar button').forEach(function (item) {
-        item.addEventListener('click', function () {
-            if (window.innerWidth < 1024) {
-                document.body.classList.remove('mobile-menu-open');
-                menuToggle?.setAttribute('aria-expanded', 'false');
-            }
-        });
-    });
-
-    // RESET SIDEBAR SAAT UKURAN LAYAR BERUBAH
-    window.addEventListener('resize', function () {
-        document.body.classList.remove('mobile-menu-open', 'sidebar-hidden');
-        menuToggle?.setAttribute('aria-expanded', 'true');
-    });
-
-    // PENCARIAN DATA BUKU
-    const searchInput = document.getElementById('bookSearch');
-    const rows = Array.from(document.querySelectorAll('.book-row'));
+    const table = document.getElementById('booksTable');
+    const menu = document.getElementById('columnVisibilityMenu');
+    const toggleButton = document.getElementById('columnVisibilityBtn');
+    const resetButton = document.getElementById('resetColumnsBtn');
+    const searchInput = document.getElementById('searchInput');
+    const copyButton = document.getElementById('copyTableBtn');
+    const pdfButton = document.getElementById('exportPdfBtn');
+    const fileInput = document.getElementById('excelFile');
+    const importButton = document.getElementById('importExcelBtn');
+    const tableInfo = document.getElementById('tableInfo');
     const noSearchResult = document.getElementById('noSearchResult');
 
-    searchInput?.addEventListener('input', function () {
-        const keyword = this.value.toLowerCase().trim();
-        let visible = 0;
+    if (!table) return;
 
-        rows.forEach(function (row) {
-            const match = (row.dataset.search || '').includes(keyword);
-            row.classList.toggle('hidden', !match);
+    // COLUMN VISIBILITY
+    const columnCheckboxes = menu.querySelectorAll('input[data-column]');
 
-            if (match) visible++;
+    function setColumnVisibility(columnIndex, visible) {
+        table.querySelectorAll('[data-col="' + columnIndex + '"]')
+            .forEach(function (cell) {
+                cell.hidden = !visible;
+            });
+    }
+
+    function applyColumnVisibility() {
+        columnCheckboxes.forEach(function (checkbox) {
+            setColumnVisibility(checkbox.dataset.column, checkbox.checked);
         });
+    }
 
-        if (noSearchResult) {
-            noSearchResult.classList.toggle(
-                'hidden',
-                rows.length === 0 || visible > 0
-            );
+    columnCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            setColumnVisibility(this.dataset.column, this.checked);
+        });
+    });
+
+    toggleButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        menu.hidden = !menu.hidden;
+        toggleButton.setAttribute('aria-expanded', String(!menu.hidden));
+    });
+
+    menu.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!menu.hidden &&
+            !menu.contains(event.target) &&
+            !toggleButton.contains(event.target)) {
+            menu.hidden = true;
+            toggleButton.setAttribute('aria-expanded', 'false');
         }
     });
 
+    resetButton.addEventListener('click', function () {
+        columnCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = true;
+        });
+
+        applyColumnVisibility();
+    });
+
+    applyColumnVisibility();
+
+    // SEARCH
+    function filterBooks() {
+        const query = searchInput.value.trim().toLocaleLowerCase('id');
+
+        const rows = Array.from(table.querySelectorAll('tbody tr'))
+            .filter(function (row) {
+                return row.id !== 'noSearchResult' &&
+                       row.id !== 'emptyBooksRow';
+            });
+
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+            const matches = row.textContent.toLocaleLowerCase('id').includes(query);
+            row.hidden = !matches;
+
+            if (matches) visibleCount++;
+        });
+
+        const emptyBooksRow = document.getElementById('emptyBooksRow');
+
+        if (emptyBooksRow) {
+            emptyBooksRow.hidden = rows.length > 0;
+        }
+
+        noSearchResult.hidden = !(rows.length > 0 && visibleCount === 0);
+
+        tableInfo.textContent = 'Menampilkan ' + visibleCount +
+            ' dari ' + rows.length + ' data buku.';
+    }
+
+    searchInput.addEventListener('input', filterBooks);
+
+    // COPY TABLE
+    copyButton.addEventListener('click', async function () {
+        const headers = Array.from(table.querySelectorAll('thead th'))
+            .filter(cell => !cell.hidden)
+            .map(cell => cell.innerText.trim());
+
+        const rows = Array.from(table.querySelectorAll('tbody tr'))
+            .filter(row => !row.hidden &&
+                row.id !== 'noSearchResult' &&
+                row.id !== 'emptyBooksRow');
+
+        const output = [headers.join('\t')];
+
+        rows.forEach(function (row) {
+            const cells = Array.from(row.children)
+                .filter(cell => !cell.hidden)
+                .map(cell => cell.innerText.trim().replace(/\s+/g, ' '));
+
+            output.push(cells.join('\t'));
+        });
+
+        try {
+            await navigator.clipboard.writeText(output.join('\n'));
+            alert('Data tabel berhasil disalin.');
+        } catch (error) {
+            const textarea = document.createElement('textarea');
+            textarea.value = output.join('\n');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            const success = document.execCommand('copy');
+            textarea.remove();
+
+            alert(success
+                ? 'Data tabel berhasil disalin.'
+                : 'Gagal menyalin data tabel.');
+        }
+    });
+
+    // EXPORT PDF melalui dialog cetak browser
+    pdfButton.addEventListener('click', function () {
+        window.print();
+    });
+
+    // IMPORT EXCEL: membaca pratinjau, belum menyimpan ke database
+    importButton.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        if (typeof XLSX === 'undefined') {
+            alert('Library Excel gagal dimuat. Periksa koneksi internet.');
+            this.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            try {
+                const workbook = XLSX.read(event.target.result, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const data = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+                if (!data.length) {
+                    alert('File Excel tidak memiliki data.');
+                    return;
+                }
+
+                alert(
+                    'File berhasil dibaca: ' + file.name +
+                    '\nJumlah baris data: ' + data.length +
+                    '\n\nIni hanya pratinjau. Data belum disimpan ke database.'
+                );
+
+                console.log('Pratinjau Excel:', data);
+            } catch (error) {
+                console.error(error);
+                alert('File Excel gagal dibaca. Pastikan format file benar.');
+            } finally {
+                fileInput.value = '';
+            }
+        };
+
+        reader.onerror = function () {
+            alert('File gagal dibaca.');
+            fileInput.value = '';
+        };
+
+        reader.readAsArrayBuffer(file);
+    });
+
+    // DETAIL MODAL
+    const detailModal = document.getElementById('bookDetailModal');
+    const closeDetailButton = document.getElementById('closeBookDetail');
+
+    const detailFields = {
+        title: document.getElementById('detailTitle'),
+        penerbit: document.getElementById('detailPenerbit'),
+        pengarang: document.getElementById('detailPengarang'),
+        tahunTerbit: document.getElementById('detailTahunTerbit'),
+        tahunBantuan: document.getElementById('detailTahunBantuan'),
+        kategori: document.getElementById('detailKategori'),
+        stock: document.getElementById('detailStock')
+    };
+
+    let previousFocus = null;
+
+    function showDetail(button) {
+        previousFocus = button;
+
+        detailFields.title.textContent = button.dataset.title || '-';
+        detailFields.penerbit.textContent = button.dataset.penerbit || '-';
+        detailFields.pengarang.textContent = button.dataset.pengarang || '-';
+        detailFields.tahunTerbit.textContent = button.dataset.tahunTerbit || '-';
+        detailFields.tahunBantuan.textContent = button.dataset.tahunBantuan || '-';
+        detailFields.kategori.textContent = button.dataset.kategori || '-';
+
+        const stock = Number(button.dataset.stock || 0);
+
+        detailFields.stock.textContent = stock + ' Buku';
+        detailFields.stock.classList.toggle('low', stock <= 5);
+
+        detailModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        closeDetailButton.focus();
+    }
+
+    function closeDetail() {
+        detailModal.hidden = true;
+        document.body.style.overflow = '';
+
+        if (previousFocus) {
+            previousFocus.focus();
+        }
+    }
+
+    document.querySelectorAll('[data-book-detail]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            showDetail(this);
+        });
+    });
+
+    // Hanya tombol X yang terlihat untuk menutup modal
+    closeDetailButton.addEventListener('click', closeDetail);
+
+    // Klik area gelap di luar detail juga menutup modal
+    detailModal.addEventListener('click', function (event) {
+        if (event.target === detailModal) {
+            closeDetail();
+        }
+    });
+
+    // Tombol Escape juga bisa digunakan untuk menutup modal
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !detailModal.hidden) {
+            closeDetail();
+        }
+    });
 });
 </script>
 
-</body>
-</html>
+@endsection

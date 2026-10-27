@@ -5,89 +5,171 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
-    // 1. Menampilkan daftar semua buku (Dipisah otomatis: Admin atau User)
+    /**
+     * Menampilkan daftar buku.
+     */
     public function index(Request $request)
     {
-        $user = $request->user();
-        $books = Book::all();
+        $books = Book::with('category')->get();
 
-        // Jika yang login adalah admin
-        if ($user && $user->role === 'admin') {
+        if ($request->user()?->role === 'admin') {
             return view('admin.books.index', compact('books'));
         }
 
-        // Jika yang login adalah user biasa
         return view('user.books.index', compact('books'));
     }
 
-    // 2. Form tambah buku baru
+    /**
+     * Form tambah buku.
+     */
     public function create()
     {
         $categories = Category::all();
+
         return view('books.create', compact('categories'));
     }
 
-    // 3. Menyimpan buku baru
+    /**
+     * Menyimpan buku baru.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'title'       => 'required',
-            'category_id' => 'required|exists:categories,id',
-            'stock'       => 'required|integer',
+        $validated = $request->validate([
+            'title'         => 'required|string|max:255',
+            'penerbit'      => 'required|string|max:255',
+            'pengarang'     => 'required|string|max:255',
+            'tahun_terbit'  => 'required|integer|min:1000|max:9999',
+            'tahun_bantuan' => 'required|integer|min:1000|max:9999',
+            'category_id'   => 'required|exists:categories,id',
+            'stock'         => 'required|integer|min:0',
         ]);
 
-        Book::create($request->only(['title', 'category_id', 'stock']));
+        Book::create($validated);
 
-        return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan!');
+        return redirect()
+            ->route('books.index')
+            ->with('success', 'Buku berhasil ditambahkan!');
     }
 
-    // 4. Form Edit buku
+    /**
+     * Form edit buku.
+     */
     public function edit($id)
     {
         $book = Book::findOrFail($id);
         $categories = Category::all();
+
         return view('books.edit', compact('book', 'categories'));
     }
 
-    // 5. Update data buku
+    /**
+     * Memperbarui data buku.
+     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'title'       => 'required',
-            'category_id' => 'required|exists:categories,id',
-            'stock'       => 'required|integer',
+        $validated = $request->validate([
+            'title'         => 'required|string|max:255',
+            'penerbit'      => 'required|string|max:255',
+            'pengarang'     => 'required|string|max:255',
+            'tahun_terbit'  => 'required|integer|min:1000|max:9999',
+            'tahun_bantuan' => 'required|integer|min:1000|max:9999',
+            'category_id'   => 'required|exists:categories,id',
+            'stock'         => 'required|integer|min:0',
         ]);
 
         $book = Book::findOrFail($id);
-        $book->update($request->only(['title', 'category_id', 'stock']));
+        $book->update($validated);
 
-        return redirect()->route('books.index')->with('success', 'Data buku berhasil diupdate!');
+        return redirect()
+            ->route('books.index')
+            ->with('success', 'Data buku berhasil diperbarui!');
     }
 
-    // 6. Logika khusus restock
+    /**
+     * Menambah stok buku.
+     */
     public function processRestock(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'added_stock' => 'required|integer|min:1',
         ]);
 
         $book = Book::findOrFail($id);
-        
-        $book->stock = $book->stock + $request->added_stock;
-        $book->save();
+        $book->increment('stock', $validated['added_stock']);
 
-        return redirect()->route('books.index')->with('success', 'Stok ' . $book->title . ' berhasil ditambah!');
+        return redirect()
+            ->route('books.index')
+            ->with('success', 'Stok buku ' . $book->title . ' berhasil ditambah!');
     }
 
-    // 7. Menghapus buku
+    /**
+     * Memindahkan buku ke Trash.
+     * Memerlukan SoftDeletes pada model dan tabel books.
+     */
     public function destroy($id)
     {
         $book = Book::findOrFail($id);
         $book->delete();
 
-        return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus!');
+        return redirect()
+            ->route('books.index')
+            ->with('success', 'Buku berhasil dipindahkan ke Trash!');
+    }
+
+    /**
+     * Menampilkan buku yang ada di Trash.
+     */
+    public function trash()
+    {
+        $books = Book::onlyTrashed()
+            ->with('category')
+            ->orderByDesc('deleted_at')
+            ->get();
+
+        return view('admin.books.trash', compact('books'));
+    }
+
+    /**
+     * Memulihkan buku dari Trash.
+     */
+    public function restore($id)
+    {
+        $book = Book::onlyTrashed()->findOrFail($id);
+        $book->restore();
+
+        return redirect()
+            ->route('books.trash')
+            ->with('success', 'Buku berhasil dipulihkan!');
+    }
+
+    /**
+     * Menghapus buku secara permanen.
+     */
+    public function forceDelete($id)
+    {
+        $book = Book::onlyTrashed()->findOrFail($id);
+        $book->forceDelete();
+
+        return redirect()
+            ->route('books.trash')
+            ->with('success', 'Buku berhasil dihapus secara permanen!');
+    }
+
+    /**
+     * Mengosongkan Trash.
+     */
+    public function emptyTrash()
+    {
+        DB::transaction(function () {
+            Book::onlyTrashed()->forceDelete();
+        });
+
+        return redirect()
+            ->route('books.trash')
+            ->with('success', 'Trash berhasil dikosongkan!');
     }
 }

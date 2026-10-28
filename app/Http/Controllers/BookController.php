@@ -10,17 +10,46 @@ use Illuminate\Support\Facades\DB;
 class BookController extends Controller
 {
     /**
-     * Menampilkan daftar buku.
+     * Menampilkan data buku.
+     * Pencarian dilakukan di database, dengan 5 buku per halaman.
      */
     public function index(Request $request)
     {
-        $books = Book::with('category')->get();
+        $search = trim($request->query('search', ''));
+
+        $books = Book::with('category')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('penerbit', 'like', '%' . $search . '%')
+                        ->orWhere('pengarang', 'like', '%' . $search . '%')
+                        ->orWhere('tahun_terbit', 'like', '%' . $search . '%')
+                        ->orWhere('tahun_bantuan', 'like', '%' . $search . '%')
+                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                            $categoryQuery->where('name', 'like', '%' . $search . '%')
+                                ->orWhere('nama_kategori', 'like', '%' . $search . '%');
+                        });
+                });
+            })
+            ->orderByDesc('id')
+            ->paginate(5)
+            ->withQueryString();
+
+        $totalBuku = Book::count();
 
         if ($request->user()?->role === 'admin') {
-            return view('admin.books.index', compact('books'));
+            return view('admin.books.index', compact(
+                'books',
+                'totalBuku',
+                'search'
+            ));
         }
 
-        return view('user.books.index', compact('books'));
+        return view('user.books.index', compact(
+            'books',
+            'totalBuku',
+            'search'
+        ));
     }
 
     /**
@@ -108,7 +137,6 @@ class BookController extends Controller
 
     /**
      * Memindahkan buku ke Trash.
-     * Memerlukan SoftDeletes pada model dan tabel books.
      */
     public function destroy($id)
     {

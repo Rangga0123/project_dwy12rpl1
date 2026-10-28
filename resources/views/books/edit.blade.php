@@ -129,6 +129,93 @@
         font-size: 13px;
     }
 
+    .edit-book-page .image-upload-box {
+        padding: 18px;
+        border: 2px dashed #d6c4b8;
+        border-radius: 10px;
+        background: #fcfaf8;
+        transition: border-color .2s, background .2s;
+    }
+
+    .edit-book-page .image-upload-box:hover {
+        border-color: #d96b24;
+        background: #fff8f2;
+    }
+
+    .edit-book-page .image-preview {
+        display: block;
+        width: 100%;
+        max-width: 260px;
+        max-height: 320px;
+        margin: 0 auto 12px;
+        object-fit: contain;
+        border: 1px solid #e8e1db;
+        border-radius: 9px;
+        background: #f7f4f1;
+    }
+
+    .edit-book-page .image-placeholder {
+        width: 100%;
+        max-width: 260px;
+        min-height: 150px;
+        margin: 0 auto 12px;
+        padding: 24px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 9px;
+        background: #f7f4f1;
+        color: #81756d;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .edit-book-page .image-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 12px;
+    }
+
+    .edit-book-page .image-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 37px;
+        padding: 9px 13px;
+        border: 1px solid #d5d0ca;
+        border-radius: 7px;
+        background: #fff;
+        color: #51443b;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s, color .2s;
+    }
+
+    .edit-book-page .image-btn:hover {
+        background: #f4eee9;
+    }
+
+    .edit-book-page .image-btn-remove {
+        border-color: #f1b9bd;
+        color: #b4232c;
+    }
+
+    .edit-book-page .image-btn-remove:hover {
+        background: #fff0f1;
+    }
+
+    .edit-book-page .image-help {
+        margin-top: 10px;
+        color: #81756d;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
     .edit-book-page .form-footer {
         display: flex;
         justify-content: space-between;
@@ -253,20 +340,24 @@
 
         <div class="form-card-header">
             <h2>Informasi Buku</h2>
-            <p>Ubah informasi pada kolom yang tersedia, lalu klik Simpan Perubahan.</p>
+            <p>
+                Ubah informasi dan gambar buku jika diperlukan, lalu klik Simpan Perubahan.
+            </p>
         </div>
 
         <div class="form-body">
 
             <form id="editBookForm"
                   action="{{ route('books.update', $book->id) }}"
-                  method="POST">
+                  method="POST"
+                  enctype="multipart/form-data">
 
                 @csrf
                 @method('PUT')
 
                 <div class="form-grid">
 
+                    <!-- JUDUL -->
                     <div class="form-group full-width">
                         <label for="title" class="form-label">
                             Judul Buku <span class="required">*</span>
@@ -288,6 +379,7 @@
                         @enderror
                     </div>
 
+                    <!-- PENERBIT -->
                     <div class="form-group">
                         <label for="penerbit" class="form-label">
                             Penerbit <span class="required">*</span>
@@ -309,6 +401,7 @@
                         @enderror
                     </div>
 
+                    <!-- PENGARANG -->
                     <div class="form-group">
                         <label for="pengarang" class="form-label">
                             Pengarang <span class="required">*</span>
@@ -330,6 +423,7 @@
                         @enderror
                     </div>
 
+                    <!-- TAHUN TERBIT -->
                     <div class="form-group">
                         <label for="tahun_terbit" class="form-label">
                             Tahun Terbit <span class="required">*</span>
@@ -352,6 +446,7 @@
                         @enderror
                     </div>
 
+                    <!-- TAHUN BANTUAN -->
                     <div class="form-group">
                         <label for="tahun_bantuan" class="form-label">
                             Tahun Bantuan <span class="required">*</span>
@@ -374,6 +469,7 @@
                         @enderror
                     </div>
 
+                    <!-- KATEGORI -->
                     <div class="form-group">
                         <label for="category_id" class="form-label">
                             Kategori <span class="required">*</span>
@@ -402,6 +498,7 @@
                         @enderror
                     </div>
 
+                    <!-- STOK -->
                     <div class="form-group">
                         <label for="stock" class="form-label">
                             Stok Buku <span class="required">*</span>
@@ -423,8 +520,102 @@
                         @enderror
                     </div>
 
+                    <!-- GAMBAR BUKU -->
+                    <div class="form-group full-width">
+                        <label for="image" class="form-label">
+                            Gambar Sampul Buku
+                            <span style="font-weight:400;color:#81756d;">
+                                (Opsional)
+                            </span>
+                        </label>
+
+                        <div class="image-upload-box">
+
+                            <!-- GAMBAR SAAT INI / PREVIEW GAMBAR BARU -->
+                            @if($book->image)
+                                <img
+                                    id="imagePreview"
+                                    class="image-preview"
+                                    src="{{ asset('storage/' . $book->image) }}"
+                                    alt="Sampul {{ $book->title }}"
+                                >
+
+                                <div
+                                    id="imagePlaceholder"
+                                    class="image-placeholder"
+                                    style="display:none;"
+                                >
+                                    <span>Belum ada gambar sampul.</span>
+                                </div>
+                            @else
+                                <img
+                                    id="imagePreview"
+                                    class="image-preview"
+                                    src=""
+                                    alt="Preview gambar sampul"
+                                    style="display:none;"
+                                >
+
+                                <div
+                                    id="imagePlaceholder"
+                                    class="image-placeholder"
+                                >
+                                    <svg width="38" height="38"
+                                         viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="1.5"
+                                         stroke-linecap="round"
+                                         stroke-linejoin="round"
+                                         aria-hidden="true">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="m21 15-5-5L5 21"/>
+                                    </svg>
+                                    <span>Belum ada gambar sampul.</span>
+                                </div>
+                            @endif
+
+                            <p
+                                id="imageFileName"
+                                style="display:none;text-align:center;font-size:12px;color:#51443b;margin-top:8px;overflow-wrap:anywhere;"
+                            ></p>
+
+                            <input
+                                type="file"
+                                id="image"
+                                name="image"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                class="form-control"
+                                style="margin-top:12px;"
+                            >
+
+                            <div class="image-actions">
+                                <button
+                                    type="button"
+                                    id="cancelNewImage"
+                                    class="image-btn"
+                                    style="display:none;"
+                                >
+                                    Batalkan Gambar Baru
+                                </button>
+                            </div>
+
+                            <p class="image-help">
+                                Pilih gambar baru jika ingin mengganti sampul buku.
+                                Jika tidak memilih gambar, sampul lama akan tetap digunakan.
+                                Format yang didukung: JPG, JPEG, PNG, WEBP. Maksimal 2 MB.
+                            </p>
+                        </div>
+
+                        @error('image')
+                            <div class="form-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                 </div>
 
+                <!-- TOMBOL FORM -->
                 <div class="form-footer">
                     <span style="color:#8a7c70;font-size:11px;">
                         <span class="required">*</span> Wajib diisi
@@ -461,13 +652,128 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('editBookForm');
     const saveButton = document.getElementById('saveBookBtn');
 
-    if (!form || !saveButton) return;
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
+    const imageFileName = document.getElementById('imageFileName');
+    const cancelNewImage = document.getElementById('cancelNewImage');
 
-    form.addEventListener('submit', function () {
-        if (!form.checkValidity()) return;
+    // Simpan gambar awal agar dapat dikembalikan jika pilihan dibatalkan.
+    const originalImageSrc = imagePreview ? imagePreview.getAttribute('src') : '';
+    const originalImageVisible = Boolean(originalImageSrc);
+
+    let previewUrl = null;
+
+    function showOriginalImage() {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+            previewUrl = null;
+        }
+
+        if (imageInput) {
+            imageInput.value = '';
+        }
+
+        if (imagePreview) {
+            if (originalImageVisible) {
+                imagePreview.src = originalImageSrc;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.removeAttribute('src');
+                imagePreview.style.display = 'none';
+            }
+        }
+
+        if (imagePlaceholder) {
+            imagePlaceholder.style.display =
+                originalImageVisible ? 'none' : 'flex';
+        }
+
+        if (imageFileName) {
+            imageFileName.textContent = '';
+            imageFileName.style.display = 'none';
+        }
+
+        if (cancelNewImage) {
+            cancelNewImage.style.display = 'none';
+        }
+    }
+
+    // PREVIEW GAMBAR PENGGANTI
+    imageInput?.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+
+        if (!file) {
+            showOriginalImage();
+            return;
+        }
+
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Format gambar harus JPG, JPEG, PNG, atau WEBP.');
+            showOriginalImage();
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2 MB.');
+            showOriginalImage();
+            return;
+        }
+
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        previewUrl = URL.createObjectURL(file);
+
+        imagePreview.src = previewUrl;
+        imagePreview.style.display = 'block';
+
+        if (imagePlaceholder) {
+            imagePlaceholder.style.display = 'none';
+        }
+
+        if (imageFileName) {
+            imageFileName.textContent = 'Gambar baru: ' + file.name;
+            imageFileName.style.display = 'block';
+        }
+
+        if (cancelNewImage) {
+            cancelNewImage.style.display = 'inline-flex';
+        }
+    });
+
+    // BATALKAN PILIHAN GAMBAR BARU
+    cancelNewImage?.addEventListener('click', function () {
+        showOriginalImage();
+    });
+
+    // CEGAH PENGIRIMAN GANDA
+    form?.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+            return;
+        }
+
+        if (saveButton.disabled) {
+            event.preventDefault();
+            return;
+        }
 
         saveButton.disabled = true;
         saveButton.textContent = 'Menyimpan...';
+    });
+
+    // Bersihkan URL preview sementara.
+    window.addEventListener('beforeunload', function () {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
     });
 });
 </script>

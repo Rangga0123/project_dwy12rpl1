@@ -20,6 +20,7 @@ class Book extends Model
         'tahun_bantuan',
         'category_id',
         'stock',
+        'image',
     ];
 
     public function category()

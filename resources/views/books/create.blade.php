@@ -98,6 +98,26 @@
 
         .action-btn:hover { transform: translateY(-1px); }
 
+        .upload-area {
+            border: 2px dashed #d6c4b8;
+            background: #fcfaf8;
+            transition: border-color .2s ease, background .2s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #d96b24;
+            background: #fff8f2;
+        }
+
+        #imagePreview {
+            display: none;
+            width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #f7f4f1;
+        }
+
         .sidebar-backdrop { display: none; }
 
         @media (min-width: 1024px) {
@@ -289,7 +309,6 @@
 
             <div class="topbar-left flex items-center gap-4 min-w-0">
 
-                <!-- HAMBURGER -->
                 <button
                     type="button"
                     id="menuToggle"
@@ -299,7 +318,6 @@
                     ☰
                 </button>
 
-                <!-- TOMBOL ZOOM / FULLSCREEN -->
                 <button
                     type="button"
                     id="fullscreenToggle"
@@ -327,7 +345,6 @@
                 </div>
             </div>
 
-            <!-- PROFIL ADMIN -->
             <a href="{{ route('profile.edit') }}"
                class="flex items-center gap-3 flex-shrink-0">
 
@@ -397,11 +414,16 @@
                 <div class="mb-6 pb-4 border-b border-gray-100">
                     <h3 class="text-lg font-bold brown">Informasi Buku</h3>
                     <p class="text-sm text-gray-500 mt-1">
-                        Lengkapi judul, kategori, dan jumlah stok buku.
+                        Lengkapi informasi, gambar, kategori, dan jumlah stok buku.
                     </p>
                 </div>
 
-                <form action="{{ route('books.store') }}" method="POST">
+                <!-- enctype WAJIB AGAR FILE GAMBAR BISA DIKIRIM -->
+                <form
+                    action="{{ route('books.store') }}"
+                    method="POST"
+                    enctype="multipart/form-data">
+
                     @csrf
 
                     <div class="mb-5">
@@ -457,7 +479,7 @@
                             value="{{ old('tahun_terbit') }}"
                             class="form-control w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"
                             placeholder="Masukkan tahun terbit..."
-                            min="1900"
+                            min="1000"
                             max="{{ date('Y') + 1 }}"
                             required>
                     </div>
@@ -473,9 +495,78 @@
                             value="{{ old('tahun_bantuan') }}"
                             class="form-control w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"
                             placeholder="Masukkan tahun bantuan..."
-                            min="1900"
+                            min="1000"
                             max="{{ date('Y') + 1 }}"
                             required>
+                    </div>
+
+                    <!-- UPLOAD GAMBAR BUKU -->
+                    <div class="mb-6">
+                        <label for="image" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Gambar Buku
+                            <span class="text-gray-400 font-normal">(Opsional)</span>
+                        </label>
+
+                        <div class="upload-area rounded-xl p-5">
+                            <label for="image" class="block cursor-pointer">
+                                <div class="text-center mb-4" id="uploadPlaceholder">
+                                    <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-orange-100 flex items-center justify-center">
+                                        <svg class="w-7 h-7 text-orange-700"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="1.7"
+                                             viewBox="0 0 24 24">
+                                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <path stroke-linecap="round"
+                                                  stroke-linejoin="round"
+                                                  d="M21 15l-5-5L5 21"/>
+                                        </svg>
+                                    </div>
+
+                                    <p class="text-sm font-semibold text-gray-700">
+                                        Klik untuk memilih gambar buku
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-2">
+                                        Format JPG, JPEG, PNG, atau WEBP
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Ukuran maksimal 2 MB
+                                    </p>
+                                </div>
+
+                                <img
+                                    id="imagePreview"
+                                    src=""
+                                    alt="Preview gambar buku"
+                                    class="mb-3">
+
+                                <p id="imageFileName"
+                                   class="hidden text-sm text-center font-medium text-gray-700 mt-3"></p>
+
+                                <input
+                                    id="image"
+                                    type="file"
+                                    name="image"
+                                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                    class="hidden">
+                            </label>
+
+                            <button
+                                type="button"
+                                id="removeImage"
+                                class="hidden mx-auto mt-3 text-sm font-semibold text-red-600 hover:text-red-800">
+                                Hapus gambar pilihan
+                            </button>
+                        </div>
+
+                        @error('image')
+                            <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                        @enderror
+
+                        <p class="text-xs text-gray-400 mt-2">
+                            Gambar akan digunakan sebagai foto sampul buku pada halaman Data Buku.
+                        </p>
                     </div>
 
                     <div class="mb-5">
@@ -609,6 +700,84 @@ document.addEventListener('DOMContentLoaded', function () {
         );
 
         menuToggle?.setAttribute('aria-expanded', 'true');
+    });
+
+    // ==========================================
+    // PREVIEW GAMBAR BUKU
+    // ==========================================
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const imageFileName = document.getElementById('imageFileName');
+    const removeImage = document.getElementById('removeImage');
+
+    let previewUrl = null;
+
+    imageInput?.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+
+        if (!file) {
+            clearImagePreview();
+            return;
+        }
+
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Format gambar harus JPG, JPEG, PNG, atau WEBP.');
+            this.value = '';
+            clearImagePreview();
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2 MB.');
+            this.value = '';
+            clearImagePreview();
+            return;
+        }
+
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        previewUrl = URL.createObjectURL(file);
+
+        imagePreview.src = previewUrl;
+        imagePreview.style.display = 'block';
+
+        uploadPlaceholder.classList.add('hidden');
+
+        imageFileName.textContent = file.name;
+        imageFileName.classList.remove('hidden');
+
+        removeImage.classList.remove('hidden');
+    });
+
+    function clearImagePreview() {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+            previewUrl = null;
+        }
+
+        imagePreview.removeAttribute('src');
+        imagePreview.style.display = 'none';
+
+        uploadPlaceholder.classList.remove('hidden');
+
+        imageFileName.textContent = '';
+        imageFileName.classList.add('hidden');
+
+        removeImage.classList.add('hidden');
+    }
+
+    removeImage?.addEventListener('click', function () {
+        imageInput.value = '';
+        clearImagePreview();
     });
 
     // ==========================================

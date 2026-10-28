@@ -178,6 +178,7 @@
     .books-page .book-table tbody tr:nth-child(even) { background: #fcfaf8; }
     .books-page .book-table tbody tr:hover { background: #fff2e8; }
     .books-page .book-table tr[hidden] { display: none !important; }
+    .books-page .book-table [data-col][hidden] { display: none !important; }
     .books-page .text-center { text-align: center !important; }
 
     .books-page .book-title {
@@ -251,7 +252,7 @@
         color: #a5222b;
     }
 
-    /* Column visibility */
+    /* Pengaturan kolom */
     .books-page .column-visibility-wrapper { position: relative; }
 
     .books-page .column-visibility-menu {
@@ -322,7 +323,7 @@
         font-size: 10px;
     }
 
-    /* Pagination bergaya seperti contoh */
+    /* Pagination */
     .books-page .pagination-info {
         padding: 0 22px 20px;
         color: var(--muted);
@@ -350,9 +351,7 @@
         cursor: pointer;
     }
 
-    .books-page .page-button:first-child {
-        border-radius: 5px 0 0 5px;
-    }
+    .books-page .page-button:first-child { border-radius: 5px 0 0 5px; }
 
     .books-page .page-button:last-child {
         border-right: 1px solid #ded8d2;
@@ -388,14 +387,14 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
-        background: rgba(31,23,18,.55);
+        background: rgba(31,23,18,.58);
         backdrop-filter: blur(3px);
     }
 
     .book-detail-dialog {
         width: 100%;
-        max-width: 760px;
-        max-height: 90vh;
+        max-width: 980px;
+        max-height: 92vh;
         overflow-y: auto;
         border-radius: 13px;
         background: #fff;
@@ -413,7 +412,7 @@
         justify-content: space-between;
         align-items: flex-start;
         gap: 15px;
-        padding: 22px 24px;
+        padding: 20px 24px;
         border-bottom: 1px solid #eee7e1;
     }
 
@@ -472,7 +471,46 @@
 
     .book-detail-close:hover { background: #fff0e4; color: #d96b24; }
 
-    .book-detail-body { padding: 20px 24px 24px; }
+    .book-detail-body { padding: 22px 24px 24px; }
+
+    /* Layout foto di kiri dan tabel di kanan.
+       Container foto otomatis hilang jika buku tidak memiliki gambar. */
+    .book-detail-layout {
+        display: grid;
+        grid-template-columns: 285px minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+    .book-detail-image-panel {
+        min-width: 0;
+        padding: 12px;
+        border: 1px solid #eadfd5;
+        border-radius: 11px;
+        background: #fcfaf8;
+    }
+
+    .book-detail-image-panel[hidden] { display: none !important; }
+
+    .book-detail-image {
+        display: block;
+        width: 100%;
+        height: 390px;
+        object-fit: contain;
+        object-position: center;
+        border: 1px solid #e4d7cb;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .book-detail-image-caption {
+        margin: 9px 0 0;
+        color: #81756d;
+        text-align: center;
+        font-size: 11px;
+    }
+
+    .book-detail-table-wrapper { min-width: 0; }
 
     .book-detail-table {
         width: 100%;
@@ -490,7 +528,7 @@
     }
 
     .book-detail-table th {
-        width: 29%;
+        width: 30%;
         background: #fcfaf8;
         color: #392a20;
     }
@@ -505,11 +543,25 @@
         .books-page .search-input { width: 100%; }
         .books-page .column-visibility-menu { left: auto; right: 0; }
         .books-page .pagination-info { padding: 0 14px 16px; }
+
         .book-detail-modal { padding: 10px; }
+
         .book-detail-header,
         .book-detail-body { padding: 17px; }
+
+        .book-detail-layout { grid-template-columns: 1fr; }
+
+        .book-detail-image-panel {
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        .book-detail-image { height: 360px; }
+
         .book-detail-table th,
         .book-detail-table td { padding: 10px; font-size: 12px; }
+
         .book-detail-table th { width: 37%; }
     }
 
@@ -519,6 +571,7 @@
         .books-page .action-buttons,
         .books-page .pagination-info,
         .book-detail-modal { display: none !important; }
+
         .books-page { padding: 0; }
         .books-page .table-wrapper { overflow: visible; padding: 0; }
         .books-page .book-table { min-width: 0; font-size: 10px; }
@@ -652,46 +705,64 @@
 
                 <tbody>
                     @forelse($books as $book)
+                        @php
+                            $kategori = optional($book->category)->name
+                                ?? optional($book->category)->nama_kategori
+                                ?? '-';
+
+                            $fotoBuku = $book->image
+                                ? asset('storage/' . $book->image)
+                                : '';
+                        @endphp
+
                         <tr>
                             <td data-col="0" class="text-center">
                                 {{ $books->firstItem() + $loop->index }}
                             </td>
+
                             <td data-col="1" class="book-title">{{ $book->title }}</td>
                             <td data-col="2">{{ $book->penerbit ?? '-' }}</td>
                             <td data-col="3">{{ $book->pengarang ?? '-' }}</td>
                             <td data-col="4" class="text-center">{{ $book->tahun_terbit ?? '-' }}</td>
                             <td data-col="5" class="text-center">{{ $book->tahun_bantuan ?? '-' }}</td>
-                            <td data-col="6">
-                                {{ $book->category->name ?? $book->category->nama_kategori ?? '-' }}
-                            </td>
+                            <td data-col="6">{{ $kategori }}</td>
+
                             <td data-col="7" class="text-center">
                                 <span class="stock-badge {{ $book->stock <= 5 ? 'stock-low' : '' }}">
                                     {{ $book->stock }} Buku
                                 </span>
                             </td>
+
                             <td data-col="8">
                                 <div class="action-buttons">
-                                    <button type="button" class="action-btn action-detail"
+                                    <button type="button"
+                                            class="action-btn action-detail"
                                             data-book-detail
                                             data-title="{{ $book->title }}"
                                             data-penerbit="{{ $book->penerbit ?? '-' }}"
                                             data-pengarang="{{ $book->pengarang ?? '-' }}"
                                             data-tahun-terbit="{{ $book->tahun_terbit ?? '-' }}"
                                             data-tahun-bantuan="{{ $book->tahun_bantuan ?? '-' }}"
-                                            data-kategori="{{ $book->category->name ?? $book->category->nama_kategori ?? '-' }}"
-                                            data-stock="{{ $book->stock }}">
+                                            data-kategori="{{ $kategori }}"
+                                            data-stock="{{ $book->stock }}"
+                                            data-image="{{ $fotoBuku }}">
                                         Detail
                                     </button>
 
                                     <a href="{{ route('books.edit', $book->id) }}"
-                                       class="action-btn action-edit">Edit</a>
+                                       class="action-btn action-edit">
+                                        Edit
+                                    </a>
 
                                     <form action="{{ route('books.destroy', $book->id) }}"
                                           method="POST"
                                           onsubmit="return confirm('Yakin ingin memindahkan buku ini ke Trash?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="action-btn action-delete">Hapus</button>
+
+                                        <button type="submit" class="action-btn action-delete">
+                                            Hapus
+                                        </button>
                                     </form>
                                 </div>
                             </td>
@@ -719,15 +790,14 @@
 
             @if($books->hasPages())
                 <nav class="books-pagination" aria-label="Navigasi halaman buku">
-                    {{-- sebelumnya --}}
                     @if($books->onFirstPage())
-                        <span class="page-button disabled">sebelumnya</span>
+                        <span class="page-button disabled">Sebelumnya</span>
                     @else
-                        <a href="{{ $books->previousPageUrl() }}"
-                           class="page-button">sebelumnya</a>
+                        <a href="{{ $books->previousPageUrl() }}" class="page-button">
+                            Sebelumnya
+                        </a>
                     @endif
 
-                    {{-- Nomor halaman --}}
                     @foreach($books->getUrlRange(1, $books->lastPage()) as $page => $url)
                         @if($page == $books->currentPage())
                             <span class="page-button active" aria-current="page">
@@ -738,12 +808,12 @@
                         @endif
                     @endforeach
 
-                    {{-- selanjuttnya --}}
                     @if($books->hasMorePages())
-                        <a href="{{ $books->nextPageUrl() }}"
-                           class="page-button">selanjutnya</a>
+                        <a href="{{ $books->nextPageUrl() }}" class="page-button">
+                            Selanjutnya
+                        </a>
                     @else
-                        <span class="page-button disabled">selanjutnya</span>
+                        <span class="page-button disabled">Selanjutnya</span>
                     @endif
                 </nav>
             @endif
@@ -752,8 +822,13 @@
 </div>
 
 {{-- Modal Detail Buku --}}
-<div id="bookDetailModal" class="book-detail-modal"
-     role="dialog" aria-modal="true" aria-labelledby="bookDetailTitle" hidden>
+<div id="bookDetailModal"
+     class="book-detail-modal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="bookDetailTitle"
+     hidden>
+
     <div class="book-detail-dialog">
         <div class="book-detail-header">
             <div class="book-detail-heading">
@@ -764,31 +839,73 @@
                         <path d="M8 7h8M8 11h8"/>
                     </svg>
                 </div>
+
                 <div>
                     <h2 id="bookDetailTitle">Detail Buku</h2>
                     <p>Informasi lengkap buku perpustakaan.</p>
                 </div>
             </div>
 
-            <button type="button" id="closeBookDetail" class="book-detail-close"
-                    aria-label="Tutup detail buku" title="Tutup">&times;</button>
+            <button type="button"
+                    id="closeBookDetail"
+                    class="book-detail-close"
+                    aria-label="Tutup detail buku"
+                    title="Tutup">
+                &times;
+            </button>
         </div>
 
         <div class="book-detail-body">
-            <table class="book-detail-table">
-                <tbody>
-                    <tr><th scope="row">Judul Buku</th><td id="detailTitle">-</td></tr>
-                    <tr><th scope="row">Pengarang</th><td id="detailPengarang">-</td></tr>
-                    <tr><th scope="row">Penerbit</th><td id="detailPenerbit">-</td></tr>
-                    <tr><th scope="row">Tahun Terbit</th><td id="detailTahunTerbit">-</td></tr>
-                    <tr><th scope="row">Tahun Bantuan</th><td id="detailTahunBantuan">-</td></tr>
-                    <tr><th scope="row">Kategori</th><td id="detailKategori">-</td></tr>
-                    <tr>
-                        <th scope="row">Stok</th>
-                        <td><span id="detailStock" class="book-detail-stock">-</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="book-detail-layout">
+
+                {{-- PANEL FOTO: disembunyikan jika tidak ada foto --}}
+                <div id="detailImagePanel" class="book-detail-image-panel" hidden>
+                    <img id="detailImage"
+                         class="book-detail-image"
+                         src=""
+                         alt="Foto sampul buku">
+
+                    <p class="book-detail-image-caption">Foto sampul buku</p>
+                </div>
+
+                <div class="book-detail-table-wrapper">
+                    <table class="book-detail-table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Judul Buku</th>
+                                <td id="detailTitle">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Pengarang</th>
+                                <td id="detailPengarang">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Penerbit</th>
+                                <td id="detailPenerbit">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tahun Terbit</th>
+                                <td id="detailTahunTerbit">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tahun Bantuan</th>
+                                <td id="detailTahunBantuan">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Kategori</th>
+                                <td id="detailKategori">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Stok</th>
+                                <td>
+                                    <span id="detailStock" class="book-detail-stock">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
@@ -853,25 +970,26 @@ document.addEventListener('DOMContentLoaded', function () {
         columnCheckboxes.forEach(function (checkbox) {
             checkbox.checked = true;
         });
+
         applyColumnVisibility();
     });
 
     applyColumnVisibility();
 
-    // PENCARIAN: gunakan pencarian server supaya bisa mencari seluruh buku,
-    // bukan hanya lima buku yang sedang tampil.
+    // PENCARIAN SERVER
     let searchTimer;
 
     searchInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();
+            clearTimeout(searchTimer);
             submitSearch();
         }
     });
 
     searchInput.addEventListener('input', function () {
         clearTimeout(searchTimer);
-        searchTimer = setTimeout(submitSearch, 450);
+        searchTimer = setTimeout(submitSearch, 600);
     });
 
     function submitSearch() {
@@ -885,10 +1003,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         url.searchParams.delete('page');
-        window.location.href = url.toString();
+
+        if (url.toString() !== window.location.href) {
+            window.location.href = url.toString();
+        }
     }
 
-    // COPY DATA PADA HALAMAN YANG SEDANG DIBUKA
+    // COPY DATA TABEL
     copyButton.addEventListener('click', async function () {
         const headers = Array.from(table.querySelectorAll('thead th'))
             .filter(cell => !cell.hidden)
@@ -900,10 +1021,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const output = [headers.join('\t')];
 
         rows.forEach(function (row) {
-            output.push(Array.from(row.children)
+            const cells = Array.from(row.querySelectorAll('td[data-col]'))
                 .filter(cell => !cell.hidden)
-                .map(cell => cell.innerText.trim().replace(/\s+/g, ' '))
-                .join('\t'));
+                .map(cell => cell.innerText.trim().replace(/\s+/g, ' '));
+
+            output.push(cells.join('\t'));
         });
 
         try {
@@ -916,18 +1038,20 @@ document.addEventListener('DOMContentLoaded', function () {
             textarea.style.opacity = '0';
             document.body.appendChild(textarea);
             textarea.select();
+
             const success = document.execCommand('copy');
             textarea.remove();
+
             alert(success ? 'Data berhasil disalin.' : 'Gagal menyalin data.');
         }
     });
 
-    // EXPORT PDF: membuka dialog cetak browser
+    // EXPORT PDF MELALUI DIALOG CETAK
     pdfButton.addEventListener('click', function () {
         window.print();
     });
 
-    // IMPORT EXCEL: pratinjau saja, belum menyimpan ke database
+    // IMPORT EXCEL: PRATINJAU, BELUM MENYIMPAN KE DATABASE
     importButton.addEventListener('click', function () {
         fileInput.click();
     });
@@ -955,9 +1079,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                alert('File berhasil dibaca: ' + file.name +
+                alert(
+                    'File berhasil dibaca: ' + file.name +
                     '\nJumlah baris data: ' + data.length +
-                    '\n\nIni hanya pratinjau. Data belum disimpan ke database.');
+                    '\n\nIni hanya pratinjau. Data belum disimpan ke database.'
+                );
 
                 console.log('Pratinjau Excel:', data);
             } catch (error) {
@@ -979,6 +1105,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // MODAL DETAIL BUKU
     const detailModal = document.getElementById('bookDetailModal');
     const closeDetailButton = document.getElementById('closeBookDetail');
+    const imagePanel = document.getElementById('detailImagePanel');
+    const detailImage = document.getElementById('detailImage');
 
     const detailFields = {
         title: document.getElementById('detailTitle'),
@@ -1003,8 +1131,27 @@ document.addEventListener('DOMContentLoaded', function () {
         detailFields.kategori.textContent = button.dataset.kategori || '-';
 
         const stock = Number(button.dataset.stock || 0);
+
         detailFields.stock.textContent = stock + ' Buku';
         detailFields.stock.classList.toggle('low', stock <= 5);
+
+        // PENTING:
+        // Tidak ada gambar = sembunyikan seluruh panel foto.
+        // Gambar ada = tampilkan panel foto.
+        const imageUrl = (button.dataset.image || '').trim();
+
+        detailImage.onerror = function () {
+            detailImage.removeAttribute('src');
+            imagePanel.hidden = true;
+        };
+
+        if (imageUrl) {
+            detailImage.src = imageUrl;
+            imagePanel.hidden = false;
+        } else {
+            detailImage.removeAttribute('src');
+            imagePanel.hidden = true;
+        }
 
         detailModal.hidden = false;
         document.body.style.overflow = 'hidden';
@@ -1015,7 +1162,11 @@ document.addEventListener('DOMContentLoaded', function () {
         detailModal.hidden = true;
         document.body.style.overflow = '';
 
-        if (previousFocus) previousFocus.focus();
+        detailImage.onerror = null;
+
+        if (previousFocus) {
+            previousFocus.focus();
+        }
     }
 
     document.querySelectorAll('[data-book-detail]').forEach(function (button) {
@@ -1027,7 +1178,9 @@ document.addEventListener('DOMContentLoaded', function () {
     closeDetailButton.addEventListener('click', closeDetail);
 
     detailModal.addEventListener('click', function (event) {
-        if (event.target === detailModal) closeDetail();
+        if (event.target === detailModal) {
+            closeDetail();
+        }
     });
 
     document.addEventListener('keydown', function (event) {

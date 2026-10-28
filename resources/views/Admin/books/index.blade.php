@@ -926,73 +926,112 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!table) return;
 
-    // COLUMN VISIBILITY
-    const columnCheckboxes = menu.querySelectorAll('input[data-column]');
+    // ==========================================
+    // COLUMN VISIBILITY - PERBAIKAN
+    // ==========================================
+    const columnCheckboxes = menu
+        ? menu.querySelectorAll('input[data-column]')
+        : [];
 
     function setColumnVisibility(columnIndex, visible) {
-        table.querySelectorAll('[data-col="' + columnIndex + ']').forEach(function (cell) {
-            cell.hidden = !visible;
+        const cells = table.querySelectorAll(
+            '[data-col="' + columnIndex + '"]'
+        );
+
+        cells.forEach(function (cell) {
+            if (visible) {
+                cell.hidden = false;
+                cell.style.removeProperty('display');
+            } else {
+                cell.hidden = true;
+                cell.style.setProperty('display', 'none', 'important');
+            }
         });
     }
 
     function applyColumnVisibility() {
         columnCheckboxes.forEach(function (checkbox) {
-            setColumnVisibility(checkbox.dataset.column, checkbox.checked);
+            setColumnVisibility(
+                checkbox.dataset.column,
+                checkbox.checked
+            );
         });
     }
 
     columnCheckboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
-            setColumnVisibility(this.dataset.column, this.checked);
+            setColumnVisibility(
+                this.dataset.column,
+                this.checked
+            );
         });
     });
 
-    toggleButton.addEventListener('click', function (event) {
-        event.stopPropagation();
-        menu.hidden = !menu.hidden;
-        toggleButton.setAttribute('aria-expanded', String(!menu.hidden));
-    });
+    if (toggleButton && menu) {
+        toggleButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
 
-    menu.addEventListener('click', function (event) {
-        event.stopPropagation();
-    });
+            menu.hidden = !menu.hidden;
 
-    document.addEventListener('click', function (event) {
-        if (!menu.hidden &&
-            !menu.contains(event.target) &&
-            !toggleButton.contains(event.target)) {
-            menu.hidden = true;
-            toggleButton.setAttribute('aria-expanded', 'false');
-        }
-    });
-
-    resetButton.addEventListener('click', function () {
-        columnCheckboxes.forEach(function (checkbox) {
-            checkbox.checked = true;
+            toggleButton.setAttribute(
+                'aria-expanded',
+                String(!menu.hidden)
+            );
         });
 
-        applyColumnVisibility();
-    });
+        menu.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
 
+        document.addEventListener('click', function (event) {
+            if (
+                !menu.hidden &&
+                !menu.contains(event.target) &&
+                !toggleButton.contains(event.target)
+            ) {
+                menu.hidden = true;
+                toggleButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    if (resetButton) {
+        resetButton.addEventListener('click', function () {
+            columnCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = true;
+            });
+
+            applyColumnVisibility();
+        });
+    }
+
+    // Terapkan pengaturan awal pada semua kolom.
     applyColumnVisibility();
 
+    // ==========================================
     // PENCARIAN SERVER
+    // ==========================================
     let searchTimer;
 
-    searchInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            clearTimeout(searchTimer);
-            submitSearch();
-        }
-    });
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                clearTimeout(searchTimer);
+                submitSearch();
+            }
+        });
 
-    searchInput.addEventListener('input', function () {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(submitSearch, 600);
-    });
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(submitSearch, 600);
+        });
+    }
 
     function submitSearch() {
+        if (!searchInput) return;
+
         const url = new URL(window.location.href);
         const value = searchInput.value.trim();
 
@@ -1009,100 +1048,157 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ==========================================
     // COPY DATA TABEL
-    copyButton.addEventListener('click', async function () {
-        const headers = Array.from(table.querySelectorAll('thead th'))
-            .filter(cell => !cell.hidden)
-            .map(cell => cell.innerText.trim());
+    // ==========================================
+    if (copyButton) {
+        copyButton.addEventListener('click', async function () {
+            const headers = Array.from(
+                table.querySelectorAll('thead th[data-col]')
+            )
+                .filter(function (cell) {
+                    return !cell.hidden;
+                })
+                .map(function (cell) {
+                    return cell.innerText.trim();
+                });
 
-        const rows = Array.from(table.querySelectorAll('tbody tr'))
-            .filter(row => !row.hidden && row.querySelector('[data-col]'));
+            const rows = Array.from(
+                table.querySelectorAll('tbody tr')
+            ).filter(function (row) {
+                return !row.hidden &&
+                    row.querySelector('td[data-col]');
+            });
 
-        const output = [headers.join('\t')];
+            const output = [headers.join('\t')];
 
-        rows.forEach(function (row) {
-            const cells = Array.from(row.querySelectorAll('td[data-col]'))
-                .filter(cell => !cell.hidden)
-                .map(cell => cell.innerText.trim().replace(/\s+/g, ' '));
+            rows.forEach(function (row) {
+                const cells = Array.from(
+                    row.querySelectorAll('td[data-col]')
+                )
+                    .filter(function (cell) {
+                        return !cell.hidden;
+                    })
+                    .map(function (cell) {
+                        return cell.innerText
+                            .trim()
+                            .replace(/\s+/g, ' ');
+                    });
 
-            output.push(cells.join('\t'));
-        });
+                output.push(cells.join('\t'));
+            });
 
-        try {
-            await navigator.clipboard.writeText(output.join('\n'));
-            alert('Data pada halaman ini berhasil disalin.');
-        } catch (error) {
-            const textarea = document.createElement('textarea');
-            textarea.value = output.join('\n');
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-
-            const success = document.execCommand('copy');
-            textarea.remove();
-
-            alert(success ? 'Data berhasil disalin.' : 'Gagal menyalin data.');
-        }
-    });
-
-    // EXPORT PDF MELALUI DIALOG CETAK
-    pdfButton.addEventListener('click', function () {
-        window.print();
-    });
-
-    // IMPORT EXCEL: PRATINJAU, BELUM MENYIMPAN KE DATABASE
-    importButton.addEventListener('click', function () {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
-
-        if (typeof XLSX === 'undefined') {
-            alert('Library Excel gagal dimuat. Periksa koneksi internet.');
-            this.value = '';
-            return;
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = function (event) {
             try {
-                const workbook = XLSX.read(event.target.result, { type: 'array' });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const data = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-
-                if (!data.length) {
-                    alert('File Excel tidak memiliki data.');
-                    return;
-                }
-
-                alert(
-                    'File berhasil dibaca: ' + file.name +
-                    '\nJumlah baris data: ' + data.length +
-                    '\n\nIni hanya pratinjau. Data belum disimpan ke database.'
+                await navigator.clipboard.writeText(
+                    output.join('\n')
                 );
 
-                console.log('Pratinjau Excel:', data);
+                alert('Data pada halaman ini berhasil disalin.');
             } catch (error) {
-                console.error(error);
-                alert('File Excel gagal dibaca. Pastikan format file benar.');
-            } finally {
-                fileInput.value = '';
+                const textarea = document.createElement('textarea');
+
+                textarea.value = output.join('\n');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+
+                document.body.appendChild(textarea);
+                textarea.select();
+
+                const success = document.execCommand('copy');
+                textarea.remove();
+
+                alert(
+                    success
+                        ? 'Data berhasil disalin.'
+                        : 'Gagal menyalin data.'
+                );
             }
-        };
+        });
+    }
 
-        reader.onerror = function () {
-            alert('File gagal dibaca.');
-            fileInput.value = '';
-        };
+    // ==========================================
+    // EXPORT PDF MELALUI DIALOG CETAK
+    // ==========================================
+    if (pdfButton) {
+        pdfButton.addEventListener('click', function () {
+            window.print();
+        });
+    }
 
-        reader.readAsArrayBuffer(file);
-    });
+    // ==========================================
+    // IMPORT EXCEL: PRATINJAU SAJA
+    // ==========================================
+    if (importButton && fileInput) {
+        importButton.addEventListener('click', function () {
+            fileInput.click();
+        });
 
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+
+            if (!file) return;
+
+            if (typeof XLSX === 'undefined') {
+                alert(
+                    'Library Excel gagal dimuat. Periksa koneksi internet.'
+                );
+                this.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                try {
+                    const workbook = XLSX.read(
+                        event.target.result,
+                        { type: 'array' }
+                    );
+
+                    const sheet = workbook.Sheets[
+                        workbook.SheetNames[0]
+                    ];
+
+                    const data = XLSX.utils.sheet_to_json(
+                        sheet,
+                        { defval: '' }
+                    );
+
+                    if (!data.length) {
+                        alert('File Excel tidak memiliki data.');
+                        return;
+                    }
+
+                    alert(
+                        'File berhasil dibaca: ' + file.name +
+                        '\nJumlah baris data: ' + data.length +
+                        '\n\nIni hanya pratinjau. Data belum disimpan ke database.'
+                    );
+
+                    console.log('Pratinjau Excel:', data);
+                } catch (error) {
+                    console.error(error);
+
+                    alert(
+                        'File Excel gagal dibaca. Pastikan format file benar.'
+                    );
+                } finally {
+                    fileInput.value = '';
+                }
+            };
+
+            reader.onerror = function () {
+                alert('File gagal dibaca.');
+                fileInput.value = '';
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    // ==========================================
     // MODAL DETAIL BUKU
+    // ==========================================
     const detailModal = document.getElementById('bookDetailModal');
     const closeDetailButton = document.getElementById('closeBookDetail');
     const imagePanel = document.getElementById('detailImagePanel');
@@ -1123,21 +1219,29 @@ document.addEventListener('DOMContentLoaded', function () {
     function showDetail(button) {
         previousFocus = button;
 
-        detailFields.title.textContent = button.dataset.title || '-';
-        detailFields.penerbit.textContent = button.dataset.penerbit || '-';
-        detailFields.pengarang.textContent = button.dataset.pengarang || '-';
-        detailFields.tahunTerbit.textContent = button.dataset.tahunTerbit || '-';
-        detailFields.tahunBantuan.textContent = button.dataset.tahunBantuan || '-';
-        detailFields.kategori.textContent = button.dataset.kategori || '-';
+        detailFields.title.textContent =
+            button.dataset.title || '-';
+
+        detailFields.penerbit.textContent =
+            button.dataset.penerbit || '-';
+
+        detailFields.pengarang.textContent =
+            button.dataset.pengarang || '-';
+
+        detailFields.tahunTerbit.textContent =
+            button.dataset.tahunTerbit || '-';
+
+        detailFields.tahunBantuan.textContent =
+            button.dataset.tahunBantuan || '-';
+
+        detailFields.kategori.textContent =
+            button.dataset.kategori || '-';
 
         const stock = Number(button.dataset.stock || 0);
 
         detailFields.stock.textContent = stock + ' Buku';
         detailFields.stock.classList.toggle('low', stock <= 5);
 
-        // PENTING:
-        // Tidak ada gambar = sembunyikan seluruh panel foto.
-        // Gambar ada = tampilkan panel foto.
         const imageUrl = (button.dataset.image || '').trim();
 
         detailImage.onerror = function () {
@@ -1146,8 +1250,8 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         if (imageUrl) {
-            detailImage.src = imageUrl;
             imagePanel.hidden = false;
+            detailImage.src = imageUrl;
         } else {
             detailImage.removeAttribute('src');
             imagePanel.hidden = true;
@@ -1155,6 +1259,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         detailModal.hidden = false;
         document.body.style.overflow = 'hidden';
+
         closeDetailButton.focus();
     }
 
@@ -1169,22 +1274,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    document.querySelectorAll('[data-book-detail]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            showDetail(this);
-        });
-    });
-
-    closeDetailButton.addEventListener('click', closeDetail);
-
-    detailModal.addEventListener('click', function (event) {
-        if (event.target === detailModal) {
-            closeDetail();
+    document.querySelectorAll('[data-book-detail]').forEach(
+        function (button) {
+            button.addEventListener('click', function () {
+                showDetail(this);
+            });
         }
-    });
+    );
+
+    if (closeDetailButton) {
+        closeDetailButton.addEventListener('click', closeDetail);
+    }
+
+    if (detailModal) {
+        detailModal.addEventListener('click', function (event) {
+            if (event.target === detailModal) {
+                closeDetail();
+            }
+        });
+    }
 
     document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && !detailModal.hidden) {
+        if (
+            event.key === 'Escape' &&
+            detailModal &&
+            !detailModal.hidden
+        ) {
             closeDetail();
         }
     });

@@ -7,31 +7,47 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookController extends Controller
 {
     /**
      * Menampilkan data buku.
-     * Pencarian dilakukan di database dengan 5 buku per halaman.
+     * Pencarian mendukung beberapa kata sekaligus.
+     * Tetap menampilkan 5 buku per halaman.
      */
     public function index(Request $request)
     {
-        $search = trim($request->query('search', ''));
+        $search = trim((string) $request->query('search', ''));
+
+        // Memisahkan kata pencarian berdasarkan spasi.
+        $searchTerms = preg_split(
+            '/\s+/u',
+            $search,
+            -1,
+            PREG_SPLIT_NO_EMPTY
+        ) ?: [];
 
         $books = Book::with('category')
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', '%' . $search . '%')
-                        ->orWhere('penerbit', 'like', '%' . $search . '%')
-                        ->orWhere('pengarang', 'like', '%' . $search . '%')
-                        ->orWhere('tahun_terbit', 'like', '%' . $search . '%')
-                        ->orWhere('tahun_bantuan', 'like', '%' . $search . '%')
-                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                            $categoryQuery
-                                ->where('name', 'like', '%' . $search . '%')
-                                ->orWhere('nama_kategori', 'like', '%' . $search . '%');
-                        });
-                });
+            ->when(!empty($searchTerms), function ($query) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $keyword = '%' . $term . '%';
+
+                    // Setiap kata harus cocok dengan minimal satu kolom.
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('title', 'like', $keyword)
+                            ->orWhere('penerbit', 'like', $keyword)
+                            ->orWhere('pengarang', 'like', $keyword)
+                            ->orWhere('tahun_terbit', 'like', $keyword)
+                            ->orWhere('tahun_bantuan', 'like', $keyword)
+                            ->orWhereHas('category', function ($categoryQuery) use ($keyword) {
+                                $categoryQuery->where(function ($categoryFields) use ($keyword) {
+                                    $categoryFields->where('name', 'like', $keyword)
+                                        ->orWhere('nama_kategori', 'like', $keyword);
+                                });
+                            });
+                    });
+                }
             })
             ->orderByDesc('id')
             ->paginate(5)
@@ -52,6 +68,55 @@ class BookController extends Controller
             'totalBuku',
             'search'
         ));
+    }
+
+    /**
+     * Mengunduh PDF seluruh data buku.
+     * Tidak menggunakan pagination.
+     */
+    public function exportPdf()
+    {
+        $books = Book::with('category')
+            ->orderByDesc('id')
+            ->get();
+
+        $pdf = Pdf::loadView('admin.books.pdf', [
+            'books' => $books,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('daftar-buku-perpustakaan.pdf');
+    }
+
+    /**
+     * Mengambil seluruh data buku untuk kebutuhan export PDF berbasis JSON.
+     */
+    public function exportPdfData()
+    {
+        $books = Book::with('category')
+            ->orderByDesc('id')
+            ->get()
+            ->values()
+            ->map(function ($book, $index) {
+                $kategori = optional($book->category)->name
+                    ?? optional($book->category)->nama_kategori
+                    ?? '-';
+
+                return [
+                    'no' => $index + 1,
+                    'judul' => $book->title ?? '-',
+                    'penerbit' => $book->penerbit ?? '-',
+                    'pengarang' => $book->pengarang ?? '-',
+                    'tahun_terbit' => $book->tahun_terbit ?? '-',
+                    'tahun_bantuan' => $book->tahun_bantuan ?? '-',
+                    'kategori' => $kategori,
+                    'stok' => $book->stock ?? 0,
+                ];
+            });
+
+        return response()->json([
+            'total' => $books->count(),
+            'books' => $books,
+        ]);
     }
 
     /**
@@ -79,9 +144,9 @@ class BookController extends Controller
             'stock'         => 'required|integer|min:0',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ], [
-            'image.image'  => 'File harus berupa gambar.',
-            'image.mimes'  => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
-            'image.max'    => 'Ukuran gambar maksimal 2 MB.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
+            'image.max'   => 'Ukuran gambar maksimal 2 MB.',
         ]);
 
         if ($request->hasFile('image')) {
@@ -122,26 +187,23 @@ class BookController extends Controller
             'stock'         => 'required|integer|min:0',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ], [
-            'image.image'  => 'File harus berupa gambar.',
-            'image.mimes'  => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
-            'image.max'    => 'Ukuran gambar maksimal 2 MB.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
+            'image.max'   => 'Ukuran gambar maksimal 2 MB.',
         ]);
 
         $book = Book::findOrFail($id);
 
         if ($request->hasFile('image')) {
-            // Simpan gambar baru terlebih dahulu.
             $newImage = $request->file('image')
                 ->store('book-images', 'public');
 
-            // Hapus gambar lama setelah gambar baru berhasil disimpan.
             if ($book->image) {
                 Storage::disk('public')->delete($book->image);
             }
 
             $validated['image'] = $newImage;
         } else {
-            // Pertahankan gambar lama jika tidak memilih gambar baru.
             unset($validated['image']);
         }
 
@@ -175,7 +237,6 @@ class BookController extends Controller
 
     /**
      * Memindahkan buku ke Trash (Soft Delete).
-     * Gambar tetap disimpan agar bisa digunakan kembali jika buku dipulihkan.
      */
     public function destroy($id)
     {
@@ -222,12 +283,14 @@ class BookController extends Controller
     {
         $book = Book::onlyTrashed()->findOrFail($id);
 
+        $image = $book->image;
+
         DB::transaction(function () use ($book) {
             $book->forceDelete();
         });
 
-        if ($book->image) {
-            Storage::disk('public')->delete($book->image);
+        if ($image) {
+            Storage::disk('public')->delete($image);
         }
 
         return redirect()
@@ -236,7 +299,7 @@ class BookController extends Controller
     }
 
     /**
-     * Mengosongkan Trash beserta gambar buku yang dihapus permanen.
+     * Mengosongkan Trash beserta gambar buku.
      */
     public function emptyTrash()
     {

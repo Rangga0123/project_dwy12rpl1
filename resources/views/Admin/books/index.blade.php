@@ -565,17 +565,121 @@
         .book-detail-table th { width: 37%; }
     }
 
-    @media print {
-        .books-page .page-header,
-        .books-page .table-toolbar,
-        .books-page .action-buttons,
-        .books-page .pagination-info,
-        .book-detail-modal { display: none !important; }
-
-        .books-page { padding: 0; }
-        .books-page .table-wrapper { overflow: visible; padding: 0; }
-        .books-page .book-table { min-width: 0; font-size: 10px; }
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
     }
+
+    /* Sembunyikan sidebar, topbar, dan semua elemen lain */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* Tampilkan hanya konten Data Buku */
+    .books-page,
+    .books-page * {
+        visibility: visible !important;
+    }
+
+    .books-page {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        color: #000 !important;
+        background: #fff !important;
+    }
+
+    /* Sembunyikan tombol dan elemen yang tidak diperlukan */
+    .books-page .header-actions,
+    .books-page .table-toolbar,
+    .books-page .action-buttons,
+    .books-page .pagination-info,
+    .books-page .alert,
+    .books-page .column-visibility-menu,
+    .book-detail-modal {
+        display: none !important;
+    }
+
+    /* Judul Data Buku tetap ditampilkan */
+    .books-page .page-header {
+        display: block !important;
+        margin: 0 0 12px !important;
+    }
+
+    .books-page .page-title {
+        font-size: 20px !important;
+        color: #000 !important;
+    }
+
+    .books-page .page-subtitle {
+        font-size: 11px !important;
+        color: #333 !important;
+    }
+
+    .books-page .books-card {
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+    }
+
+    .books-page .card-heading {
+        display: flex !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px solid #999 !important;
+    }
+
+    .books-page .card-heading h2 {
+        font-size: 14px !important;
+        color: #000 !important;
+    }
+
+    .books-page .card-heading p {
+        font-size: 10px !important;
+        color: #333 !important;
+    }
+
+    .books-page .table-wrapper {
+        width: 100% !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+
+    .books-page .book-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        border-collapse: collapse !important;
+        font-size: 9px !important;
+    }
+
+    .books-page .book-table th,
+    .books-page .book-table td {
+        padding: 6px !important;
+        border: 1px solid #777 !important;
+        color: #000 !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    .books-page .book-table thead th {
+        background: #eee !important;
+        color: #000 !important;
+    }
+
+    .books-page .book-table tbody tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .books-page .stock-badge,
+    .books-page .stock-low {
+        background: transparent !important;
+        color: #000 !important;
+        padding: 0 !important;
+    }
+}
 </style>
 
 <div class="books-page">
@@ -648,7 +752,11 @@
         <div class="table-toolbar">
             <div class="toolbar-left">
                 <button type="button" id="copyTableBtn" class="btn btn-outline">Copy</button>
-                <button type="button" id="exportPdfBtn" class="btn btn-outline">Export PDF</button>
+                <a href="{{ route('books.exportPdf') }}"
+                class="btn btn-outline"
+                id="exportPdfBtn">
+                 Export PDF
+                 </a>
 
                 <div class="column-visibility-wrapper">
                     <button type="button" id="columnVisibilityBtn"
@@ -661,7 +769,6 @@
                     <div id="columnVisibilityMenu" class="column-visibility-menu" hidden>
                         <div class="column-menu-header">
                             <span>Tampilkan Kolom</span>
-                            <button type="button" id="resetColumnsBtn" class="column-menu-reset">Reset</button>
                         </div>
 
                         <label class="column-option"><input type="checkbox" data-column="0" checked> No</label>
@@ -927,43 +1034,34 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!table) return;
 
     // ==========================================
-    // COLUMN VISIBILITY - PERBAIKAN
+    // COLUMN VISIBILITY
     // ==========================================
     const columnCheckboxes = menu
         ? menu.querySelectorAll('input[data-column]')
         : [];
 
     function setColumnVisibility(columnIndex, visible) {
-        const cells = table.querySelectorAll(
-            '[data-col="' + columnIndex + '"]'
-        );
+        table.querySelectorAll('[data-col="' + columnIndex + '"]')
+            .forEach(function (cell) {
+                cell.hidden = !visible;
 
-        cells.forEach(function (cell) {
-            if (visible) {
-                cell.hidden = false;
-                cell.style.removeProperty('display');
-            } else {
-                cell.hidden = true;
-                cell.style.setProperty('display', 'none', 'important');
-            }
-        });
+                if (visible) {
+                    cell.style.removeProperty('display');
+                } else {
+                    cell.style.setProperty('display', 'none', 'important');
+                }
+            });
     }
 
     function applyColumnVisibility() {
         columnCheckboxes.forEach(function (checkbox) {
-            setColumnVisibility(
-                checkbox.dataset.column,
-                checkbox.checked
-            );
+            setColumnVisibility(checkbox.dataset.column, checkbox.checked);
         });
     }
 
     columnCheckboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
-            setColumnVisibility(
-                this.dataset.column,
-                this.checked
-            );
+            setColumnVisibility(this.dataset.column, this.checked);
         });
     });
 
@@ -973,11 +1071,7 @@ document.addEventListener('DOMContentLoaded', function () {
             event.stopPropagation();
 
             menu.hidden = !menu.hidden;
-
-            toggleButton.setAttribute(
-                'aria-expanded',
-                String(!menu.hidden)
-            );
+            toggleButton.setAttribute('aria-expanded', String(!menu.hidden));
         });
 
         menu.addEventListener('click', function (event) {
@@ -1006,13 +1100,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Terapkan pengaturan awal pada semua kolom.
     applyColumnVisibility();
 
     // ==========================================
-    // PENCARIAN SERVER
+    // PENCARIAN SERVER - RESPONSIF
     // ==========================================
-    let searchTimer;
+    let searchTimer = null;
 
     if (searchInput) {
         searchInput.addEventListener('keydown', function (event) {
@@ -1025,15 +1118,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
         searchInput.addEventListener('input', function () {
             clearTimeout(searchTimer);
-            searchTimer = setTimeout(submitSearch, 600);
+
+            const value = searchInput.value.trim();
+
+            // Kalau kolom dikosongkan, langsung tampilkan semua buku.
+            if (value === '') {
+                submitSearch();
+                return;
+            }
+
+            // Pencarian otomatis setelah pengguna berhenti mengetik.
+            searchTimer = setTimeout(function () {
+                submitSearch();
+            }, 250);
         });
     }
 
     function submitSearch() {
         if (!searchInput) return;
 
-        const url = new URL(window.location.href);
         const value = searchInput.value.trim();
+        const url = new URL(window.location.href);
+        const currentSearch = url.searchParams.get('search') || '';
+
+        if (value === currentSearch) return;
 
         if (value) {
             url.searchParams.set('search', value);
@@ -1043,9 +1151,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         url.searchParams.delete('page');
 
-        if (url.toString() !== window.location.href) {
-            window.location.href = url.toString();
-        }
+        window.location.assign(url.toString());
     }
 
     // ==========================================
@@ -1066,8 +1172,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const rows = Array.from(
                 table.querySelectorAll('tbody tr')
             ).filter(function (row) {
-                return !row.hidden &&
-                    row.querySelector('td[data-col]');
+                return !row.hidden && row.querySelector('td[data-col]');
             });
 
             const output = [headers.join('\t')];
@@ -1080,23 +1185,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         return !cell.hidden;
                     })
                     .map(function (cell) {
-                        return cell.innerText
-                            .trim()
-                            .replace(/\s+/g, ' ');
+                        return cell.innerText.trim().replace(/\s+/g, ' ');
                     });
 
                 output.push(cells.join('\t'));
             });
 
             try {
-                await navigator.clipboard.writeText(
-                    output.join('\n')
-                );
-
+                await navigator.clipboard.writeText(output.join('\n'));
                 alert('Data pada halaman ini berhasil disalin.');
             } catch (error) {
                 const textarea = document.createElement('textarea');
-
                 textarea.value = output.join('\n');
                 textarea.style.position = 'fixed';
                 textarea.style.opacity = '0';
@@ -1107,26 +1206,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const success = document.execCommand('copy');
                 textarea.remove();
 
-                alert(
-                    success
-                        ? 'Data berhasil disalin.'
-                        : 'Gagal menyalin data.'
-                );
+                alert(success ? 'Data berhasil disalin.' : 'Gagal menyalin data.');
             }
         });
     }
 
     // ==========================================
-    // EXPORT PDF MELALUI DIALOG CETAK
-    // ==========================================
-    if (pdfButton) {
-        pdfButton.addEventListener('click', function () {
-            window.print();
-        });
-    }
-
-    // ==========================================
-    // IMPORT EXCEL: PRATINJAU SAJA
+    // IMPORT EXCEL - PRATINJAU
     // ==========================================
     if (importButton && fileInput) {
         importButton.addEventListener('click', function () {
@@ -1139,9 +1225,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!file) return;
 
             if (typeof XLSX === 'undefined') {
-                alert(
-                    'Library Excel gagal dimuat. Periksa koneksi internet.'
-                );
+                alert('Library Excel gagal dimuat. Periksa koneksi internet.');
                 this.value = '';
                 return;
             }
@@ -1150,19 +1234,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             reader.onload = function (event) {
                 try {
-                    const workbook = XLSX.read(
-                        event.target.result,
-                        { type: 'array' }
-                    );
+                    const workbook = XLSX.read(event.target.result, {
+                        type: 'array'
+                    });
 
-                    const sheet = workbook.Sheets[
-                        workbook.SheetNames[0]
-                    ];
-
-                    const data = XLSX.utils.sheet_to_json(
-                        sheet,
-                        { defval: '' }
-                    );
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const data = XLSX.utils.sheet_to_json(sheet, {
+                        defval: ''
+                    });
 
                     if (!data.length) {
                         alert('File Excel tidak memiliki data.');
@@ -1178,10 +1257,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('Pratinjau Excel:', data);
                 } catch (error) {
                     console.error(error);
-
-                    alert(
-                        'File Excel gagal dibaca. Pastikan format file benar.'
-                    );
+                    alert('File Excel gagal dibaca. Pastikan format file benar.');
                 } finally {
                     fileInput.value = '';
                 }
@@ -1219,26 +1295,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function showDetail(button) {
         previousFocus = button;
 
-        detailFields.title.textContent =
-            button.dataset.title || '-';
-
-        detailFields.penerbit.textContent =
-            button.dataset.penerbit || '-';
-
-        detailFields.pengarang.textContent =
-            button.dataset.pengarang || '-';
-
-        detailFields.tahunTerbit.textContent =
-            button.dataset.tahunTerbit || '-';
-
-        detailFields.tahunBantuan.textContent =
-            button.dataset.tahunBantuan || '-';
-
-        detailFields.kategori.textContent =
-            button.dataset.kategori || '-';
+        detailFields.title.textContent = button.dataset.title || '-';
+        detailFields.penerbit.textContent = button.dataset.penerbit || '-';
+        detailFields.pengarang.textContent = button.dataset.pengarang || '-';
+        detailFields.tahunTerbit.textContent = button.dataset.tahunTerbit || '-';
+        detailFields.tahunBantuan.textContent = button.dataset.tahunBantuan || '-';
+        detailFields.kategori.textContent = button.dataset.kategori || '-';
 
         const stock = Number(button.dataset.stock || 0);
-
         detailFields.stock.textContent = stock + ' Buku';
         detailFields.stock.classList.toggle('low', stock <= 5);
 
@@ -1259,14 +1323,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         detailModal.hidden = false;
         document.body.style.overflow = 'hidden';
-
         closeDetailButton.focus();
     }
 
     function closeDetail() {
         detailModal.hidden = true;
         document.body.style.overflow = '';
-
         detailImage.onerror = null;
 
         if (previousFocus) {
@@ -1274,13 +1336,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    document.querySelectorAll('[data-book-detail]').forEach(
-        function (button) {
-            button.addEventListener('click', function () {
-                showDetail(this);
-            });
-        }
-    );
+    document.querySelectorAll('[data-book-detail]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            showDetail(this);
+        });
+    });
 
     if (closeDetailButton) {
         closeDetailButton.addEventListener('click', closeDetail);

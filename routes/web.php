@@ -28,53 +28,51 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::middleware('auth')->group(function () {
 
     // ==========================================
-    // DATA BUKU
+    // EXPORT PDF DATA SELURUH BUKU
+    // HARUS SEBELUM ROUTE RESOURCE BOOKS
     // ==========================================
+    Route::get('/books/export-pdf', [BookController::class, 'exportPdf'])
+        ->name('books.exportPdf');
 
-    // Daftar buku, tambah, simpan, detail, edit, update, hapus
-    Route::resource('books', BookController::class);
+    Route::get('/books/export/pdf-data', [BookController::class, 'exportPdfData'])
+        ->name('books.export.pdf-data');
+
+    // ==========================================
+    // EXPORT DAN IMPORT EXCEL
+    // ==========================================
+    Route::post('/books/import-excel', [BookController::class, 'importExcel'])
+        ->name('books.importExcel');
+
+    Route::get('/books/export-excel', [BookController::class, 'exportExcel'])
+        ->name('books.exportExcel');
 
     // ==========================================
     // TRASH / SAMPAH BUKU
+    // ROUTE KHUSUS SEBELUM RESOURCE BOOKS
     // ==========================================
-
-    // Menampilkan buku yang sudah masuk Trash
     Route::get('/books-trash', [BookController::class, 'trash'])
         ->name('books.trash');
 
-    // Memulihkan buku dari Trash
     Route::patch('/books-trash/{id}/restore', [BookController::class, 'restore'])
         ->name('books.restore');
 
-    // Menghapus buku secara permanen
+    Route::delete('/books-trash/empty', [BookController::class, 'emptyTrash'])
+        ->name('books.emptyTrash');
+
     Route::delete('/books-trash/{id}/force-delete', [BookController::class, 'forceDelete'])
         ->name('books.forceDelete');
 
-    // Mengosongkan Trash
-    Route::delete('/books-trash/empty', [BookController::class, 'emptyTrash'])
-        ->name('books.emptyTrash');
+    // ==========================================
+    // RESOURCE DATA BUKU
+    // LETAKKAN SETELAH ROUTE KHUSUS BUKU
+    // ==========================================
+    Route::resource('books', BookController::class);
 
     // ==========================================
     // RESTOCK LANGSUNG DARI DATA BUKU
     // ==========================================
     Route::post('/books/{id}/restock', [BookController::class, 'processRestock'])
         ->name('books.restock');
-
-    // ==========================================
-    // IMPORT DAN EXPORT BUKU
-    // ==========================================
-
-    // Import Excel
-    Route::post('/books/import-excel', [BookController::class, 'importExcel'])
-        ->name('books.importExcel');
-
-    // Export Excel
-    Route::get('/books/export-excel', [BookController::class, 'exportExcel'])
-        ->name('books.exportExcel');
-
-    // Export PDF
-    Route::get('/books/export-pdf', [BookController::class, 'exportPdf'])
-        ->name('books.exportPdf');
 
     // ==========================================
     // KATEGORI BUKU
@@ -85,64 +83,48 @@ Route::middleware('auth')->group(function () {
     // ==========================================
     // PENGAJUAN RESTOCK USER
     // ==========================================
-
-    // Daftar pengajuan
     Route::get('/pengajuan-restock', [RestockRequestController::class, 'index'])
         ->name('user.restock.index');
 
-    // Form pengajuan baru
     Route::get('/pengajuan-restock/buat', [RestockRequestController::class, 'create'])
         ->name('user.restock.create');
 
-    // Simpan pengajuan
     Route::post('/pengajuan-restock', [RestockRequestController::class, 'store'])
         ->name('user.restock.store');
 
-    // Riwayat pengajuan
     Route::get('/riwayat-restock', [RestockRequestController::class, 'history'])
         ->name('user.restock.history');
 
     // ==========================================
     // KELOLA PENGAJUAN RESTOCK ADMIN
     // ==========================================
-
-    // Daftar pengajuan
     Route::get('/admin/pengajuan-restock', [AdminRestockRequestController::class, 'index'])
         ->name('admin.restock.index');
 
-    // Setujui pengajuan
     Route::patch('/admin/pengajuan-restock/{id}/setujui', [AdminRestockRequestController::class, 'approve'])
         ->name('admin.restock.approve');
 
-    // Tolak pengajuan
     Route::patch('/admin/pengajuan-restock/{id}/tolak', [AdminRestockRequestController::class, 'reject'])
         ->name('admin.restock.reject');
 
     // ==========================================
     // PROFIL
     // ==========================================
-
-    // Halaman profil
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
-    // Update informasi profil
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
 
-    // Upload foto profil
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])
         ->name('profile.photo.update');
 
-    // Hapus foto profil
     Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])
         ->name('profile.photo.delete');
 
-    // Update password
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])
         ->name('profile.password');
 
-    // Hapus akun
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 });

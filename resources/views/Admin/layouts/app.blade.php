@@ -209,13 +209,24 @@
                 <span class="text-sm">Kategori Buku</span>
             </a>
 
+            {{-- Pengajuan Restock: tidak aktif saat sedang di halaman Laporan Restock --}}
             <a href="{{ route('admin.restock.index') }}"
-               class="menu-item {{ request()->routeIs('admin.restock.*') ? 'menu-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+               class="menu-item {{ request()->routeIs('admin.restock.*') && !request()->routeIs('admin.restock.report') ? 'menu-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h9l3 3v15H6V3z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v4h4M9 12h6M9 15h6"/>
                 </svg>
                 <span class="text-sm">Pengajuan Restock</span>
+            </a>
+
+            {{-- Laporan Restock --}}
+            <a href="{{ route('admin.restock.report') }}"
+               class="menu-item {{ request()->routeIs('admin.restock.report') ? 'menu-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg mb-2">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16v-5M12 16V6M17 16v-3"/>
+                </svg>
+                <span class="text-sm">Laporan Restock</span>
             </a>
 
             <a href="{{ route('profile.edit') }}"

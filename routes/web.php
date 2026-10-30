@@ -5,6 +5,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RestockRequestController;
 use App\Http\Controllers\AdminRestockRequestController;
+use App\Http\Controllers\RestockReportController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/books/export-excel', [BookController::class, 'exportExcel'])
         ->name('books.exportExcel');
+
+    // Import data buku dari Excel (data dibaca di browser, disimpan lewat route ini)
+    Route::post('/books/import-rows', [BookController::class, 'importRows'])
+        ->name('books.importRows');
 
     // ==========================================
     // TRASH / SAMPAH BUKU
@@ -106,6 +111,15 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/admin/pengajuan-restock/{id}/tolak', [AdminRestockRequestController::class, 'reject'])
         ->name('admin.restock.reject');
+
+    // ==========================================
+    // LAPORAN RESTOCK ADMIN
+    // ==========================================
+    Route::get('/admin/laporan-restock', [RestockReportController::class, 'index'])
+        ->name('admin.restock.report');
+
+    Route::get('/admin/laporan-restock/pdf', [RestockReportController::class, 'exportPdf'])
+        ->name('admin.restock.report.pdf');
 
     // ==========================================
     // PROFIL

@@ -78,6 +78,30 @@
     .books-page .btn-green { background: #198754; color: #fff; }
     .books-page .btn-red { background: #dc3545; color: #fff; }
 
+    /* Semua tombol header sejajar dalam satu baris, ukuran seragam */
+    .books-page .header-actions {
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .books-page .header-actions .btn {
+        min-width: 130px;
+        height: 40px;
+        padding: 0 16px;
+    }
+
+    .books-page .excel-actions {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .books-page .excel-actions .btn {
+        width: auto;
+    }
+
     .books-page .btn-outline {
         background: #fff;
         color: #51443b;
@@ -376,6 +400,30 @@
 
     .books-page .import-input { display: none; }
 
+    /* Filter */
+    .books-page .filter-select {
+        height: 38px;
+        min-width: 150px;
+        padding: 0 10px;
+        border: 1px solid #d5d0ca;
+        border-radius: 8px;
+        outline: none;
+        background: #fff;
+        color: #51443b;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .books-page .filter-select:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(217,107,36,.12);
+    }
+
+    @media (max-width: 768px) {
+        .books-page .filter-select { flex: 1 1 calc(50% - 8px); min-width: 0; }
+    }
+
     /* Modal detail buku */
     .book-detail-modal[hidden] { display: none !important; }
 
@@ -544,6 +592,21 @@
         .books-page .column-visibility-menu { left: auto; right: 0; }
         .books-page .pagination-info { padding: 0 14px 16px; }
 
+        /* Tombol header: 2 kolom di HP */
+        .books-page .header-actions {
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .books-page .header-actions .btn {
+            flex: 1 1 calc(50% - 10px);
+            min-width: 0;
+        }
+
+        .books-page .excel-actions {
+            display: contents;
+        }
+
         .book-detail-modal { padding: 10px; }
 
         .book-detail-header,
@@ -706,12 +769,21 @@
                 Trash
             </a>
 
-            <button type="button" id="importExcelBtn" class="btn btn-green">
-                <span class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/></svg>
-                </span>
-                Import Excel
-            </button>
+            <div class="excel-actions">
+                <button type="button" id="importExcelBtn" class="btn btn-green">
+                    <span class="icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/></svg>
+                    </span>
+                    Import Excel
+                </button>
+
+                <button type="button" id="exportExcelBtn" class="btn btn-green">
+                    <span class="icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 4v12m-5-5 5 5 5-5M4 20h16"/></svg>
+                    </span>
+                    Export Excel
+                </button>
+            </div>
 
             <input type="file" id="excelFile" class="import-input" accept=".xlsx,.xls,.csv">
         </div>
@@ -751,13 +823,6 @@
 
         <div class="table-toolbar">
             <div class="toolbar-left">
-                <button type="button" id="copyTableBtn" class="btn btn-outline">Copy</button>
-                <a href="{{ route('books.exportPdf') }}"
-                class="btn btn-outline"
-                id="exportPdfBtn">
-                 Export PDF
-                 </a>
-
                 <div class="column-visibility-wrapper">
                     <button type="button" id="columnVisibilityBtn"
                             class="btn btn-outline"
@@ -784,6 +849,54 @@
                         <div class="column-menu-footer">Centang untuk menampilkan kolom.</div>
                     </div>
                 </div>
+
+                {{-- FILTER --}}
+                @php
+                    $filterAktif = request()->filled('category_id')
+                        || request()->filled('stok')
+                        || request()->filled('tahun_terbit')
+                        || request()->filled('tahun_bantuan');
+                @endphp
+
+                <select class="filter-select" data-filter="category_id" aria-label="Filter kategori">
+                    <option value="">Semua Kategori</option>
+                    @foreach(($categories ?? []) as $category)
+                        <option value="{{ $category->id }}"
+                                @selected((string) request('category_id') === (string) $category->id)>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select class="filter-select" data-filter="stok" aria-label="Filter stok">
+                    <option value="">Semua Stok</option>
+                    <option value="menipis" @selected(request('stok') === 'menipis')>Stok Menipis (≤ 5)</option>
+                    <option value="aman" @selected(request('stok') === 'aman')>Stok Aman (&gt; 5)</option>
+                </select>
+
+                <select class="filter-select" data-filter="tahun_terbit" aria-label="Filter tahun terbit">
+                    <option value="">Semua Tahun Terbit</option>
+                    @foreach(($tahunTerbitList ?? []) as $tahun)
+                        <option value="{{ $tahun }}" @selected((string) request('tahun_terbit') === (string) $tahun)>
+                            {{ $tahun }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select class="filter-select" data-filter="tahun_bantuan" aria-label="Filter tahun bantuan">
+                    <option value="">Semua Tahun Bantuan</option>
+                    @foreach(($tahunBantuanList ?? []) as $tahun)
+                        <option value="{{ $tahun }}" @selected((string) request('tahun_bantuan') === (string) $tahun)>
+                            {{ $tahun }}
+                        </option>
+                    @endforeach
+                </select>
+
+                @if($filterAktif)
+                    <a href="{{ route('books.index', request()->only('search')) }}" class="btn btn-outline">
+                        Reset Filter
+                    </a>
+                @endif
             </div>
 
             <div class="toolbar-right">
@@ -1026,10 +1139,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleButton = document.getElementById('columnVisibilityBtn');
     const resetButton = document.getElementById('resetColumnsBtn');
     const searchInput = document.getElementById('searchInput');
-    const copyButton = document.getElementById('copyTableBtn');
-    const pdfButton = document.getElementById('exportPdfBtn');
     const fileInput = document.getElementById('excelFile');
     const importButton = document.getElementById('importExcelBtn');
+    const exportExcelButton = document.getElementById('exportExcelBtn');
 
     if (!table) return;
 
@@ -1155,11 +1267,36 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // COPY DATA TABEL
+    // FILTER (kategori, stok, tahun terbit, tahun bantuan)
     // ==========================================
-    if (copyButton) {
-        copyButton.addEventListener('click', async function () {
-            const headers = Array.from(
+    document.querySelectorAll('[data-filter]').forEach(function (select) {
+        select.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+
+            if (this.value) {
+                url.searchParams.set(this.dataset.filter, this.value);
+            } else {
+                url.searchParams.delete(this.dataset.filter);
+            }
+
+            url.searchParams.delete('page');
+
+            window.location.assign(url.toString());
+        });
+    });
+
+    // ==========================================
+    // EXPORT EXCEL
+    // Mengekspor data buku yang sedang tampil pada tabel/halaman aktif.
+    // ==========================================
+    if (exportExcelButton) {
+        exportExcelButton.addEventListener('click', function () {
+            if (typeof XLSX === 'undefined') {
+                alert('Library Excel gagal dimuat. Periksa koneksi internet.');
+                return;
+            }
+
+            const visibleHeaders = Array.from(
                 table.querySelectorAll('thead th[data-col]')
             )
                 .filter(function (cell) {
@@ -1169,45 +1306,55 @@ document.addEventListener('DOMContentLoaded', function () {
                     return cell.innerText.trim();
                 });
 
-            const rows = Array.from(
+            const visibleRows = Array.from(
                 table.querySelectorAll('tbody tr')
             ).filter(function (row) {
                 return !row.hidden && row.querySelector('td[data-col]');
             });
 
-            const output = [headers.join('\t')];
+            if (visibleRows.length === 0) {
+                alert('Tidak ada data buku yang dapat diekspor.');
+                return;
+            }
 
-            rows.forEach(function (row) {
-                const cells = Array.from(
+            const exportData = [visibleHeaders];
+
+            visibleRows.forEach(function (row) {
+                const values = Array.from(
                     row.querySelectorAll('td[data-col]')
                 )
                     .filter(function (cell) {
-                        return !cell.hidden;
+                        return !cell.hidden && cell.dataset.col !== '8';
                     })
                     .map(function (cell) {
-                        return cell.innerText.trim().replace(/\s+/g, ' ');
+                        return cell.innerText.trim().replace(/\\s+/g, ' ');
                     });
 
-                output.push(cells.join('\t'));
+                exportData.push(values);
             });
 
-            try {
-                await navigator.clipboard.writeText(output.join('\n'));
-                alert('Data pada halaman ini berhasil disalin.');
-            } catch (error) {
-                const textarea = document.createElement('textarea');
-                textarea.value = output.join('\n');
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
+            // Hilangkan kolom Aksi dari header agar jumlah kolom sesuai.
+            const actionColumnIndex = Array.from(
+                table.querySelectorAll('thead th[data-col]')
+            ).findIndex(function (cell) {
+                return cell.dataset.col === '8';
+            });
 
-                document.body.appendChild(textarea);
-                textarea.select();
-
-                const success = document.execCommand('copy');
-                textarea.remove();
-
-                alert(success ? 'Data berhasil disalin.' : 'Gagal menyalin data.');
+            if (actionColumnIndex !== -1) {
+                exportData[0].splice(actionColumnIndex, 1);
             }
+
+            const worksheet = XLSX.utils.aoa_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+
+            worksheet['!cols'] = exportData[0].map(function (header) {
+                return { wch: Math.max(String(header).length + 5, 15) };
+            });
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Buku');
+
+            const tanggal = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, 'Data_Buku_SMKN5_' + tanggal + '.xlsx');
         });
     }
 
@@ -1248,13 +1395,62 @@ document.addEventListener('DOMContentLoaded', function () {
                         return;
                     }
 
-                    alert(
-                        'File berhasil dibaca: ' + file.name +
-                        '\nJumlah baris data: ' + data.length +
-                        '\n\nIni hanya pratinjau. Data belum disimpan ke database.'
-                    );
+                    function ambil(row, nama) {
+                        return row[nama] !== undefined ? row[nama] : '';
+                    }
 
-                    console.log('Pratinjau Excel:', data);
+                    const rows = data.map(function (row) {
+                        return {
+                            title: String(ambil(row, 'Judul Buku')).trim(),
+                            penerbit: String(ambil(row, 'Penerbit')).trim(),
+                            pengarang: String(ambil(row, 'Pengarang')).trim(),
+                            tahun_terbit: String(ambil(row, 'Tahun Terbit')).trim(),
+                            tahun_bantuan: String(ambil(row, 'Tahun Bantuan')).trim(),
+                            kategori: String(ambil(row, 'Kategori')).trim(),
+                            stock: String(ambil(row, 'Stok')).trim()
+                        };
+                    }).filter(function (row) {
+                        return row.title !== '';
+                    });
+
+                    if (!rows.length) {
+                        alert('Kolom "Judul Buku" tidak ditemukan atau kosong. Pastikan header Excel sesuai format Export.');
+                        return;
+                    }
+
+                    if (!confirm('Import ' + rows.length + ' data buku dari file "' + file.name + '"?')) {
+                        return;
+                    }
+
+                    const csrf = document.querySelector('meta[name="csrf-token"]');
+
+                    fetch("{{ route('books.importRows') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrf ? csrf.content : ''
+                        },
+                        body: JSON.stringify({ rows: rows })
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (result) {
+                                return { ok: response.ok, result: result };
+                            });
+                        })
+                        .then(function (res) {
+                            if (!res.ok) {
+                                alert(res.result.message || 'Import gagal. Periksa format file Excel.');
+                                return;
+                            }
+
+                            alert(res.result.message);
+                            window.location.reload();
+                        })
+                        .catch(function (error) {
+                            console.error(error);
+                            alert('Import gagal. Terjadi kesalahan saat mengirim data ke server.');
+                        });
                 } catch (error) {
                     console.error(error);
                     alert('File Excel gagal dibaca. Pastikan format file benar.');

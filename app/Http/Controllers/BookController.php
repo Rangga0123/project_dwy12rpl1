@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookController extends Controller
@@ -41,32 +42,68 @@ class BookController extends Controller
                             ->orWhere('tahun_terbit', 'like', $keyword)
                             ->orWhere('tahun_bantuan', 'like', $keyword)
                             ->orWhereHas('category', function ($categoryQuery) use ($keyword) {
-                                $categoryQuery->where(function ($categoryFields) use ($keyword) {
-                                    $categoryFields->where('name', 'like', $keyword)
-                                        ->orWhere('nama_kategori', 'like', $keyword);
-                                });
+                                $categoryQuery->where(
+                                    'name',
+                                    'like',
+                                    $keyword
+                                );
                             });
                     });
                 }
             })
+            // ---------- FILTER ----------
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $query->where('category_id', $request->category_id);
+            })
+            ->when($request->query('stok') === 'menipis', function ($query) {
+                $query->where('stock', '<=', 5);
+            })
+            ->when($request->query('stok') === 'aman', function ($query) {
+                $query->where('stock', '>', 5);
+            })
+            ->when($request->filled('tahun_terbit'), function ($query) use ($request) {
+                $query->where('tahun_terbit', $request->tahun_terbit);
+            })
+            ->when($request->filled('tahun_bantuan'), function ($query) use ($request) {
+                $query->where('tahun_bantuan', $request->tahun_bantuan);
+            })
             ->orderByDesc('id')
-            ->paginate(5)
+            ->paginate(10)
             ->withQueryString();
 
         $totalBuku = Book::count();
+
+        // Data untuk pilihan filter
+        $categories = Category::orderBy('name')->get();
+
+        $tahunTerbitList = Book::whereNotNull('tahun_terbit')
+            ->distinct()
+            ->orderByDesc('tahun_terbit')
+            ->pluck('tahun_terbit');
+
+        $tahunBantuanList = Book::whereNotNull('tahun_bantuan')
+            ->distinct()
+            ->orderByDesc('tahun_bantuan')
+            ->pluck('tahun_bantuan');
 
         if ($request->user()?->role === 'admin') {
             return view('admin.books.index', compact(
                 'books',
                 'totalBuku',
-                'search'
+                'search',
+                'categories',
+                'tahunTerbitList',
+                'tahunBantuanList'
             ));
         }
 
         return view('user.books.index', compact(
             'books',
             'totalBuku',
-            'search'
+            'search',
+            'categories',
+            'tahunTerbitList',
+            'tahunBantuanList'
         ));
     }
 
@@ -97,9 +134,7 @@ class BookController extends Controller
             ->get()
             ->values()
             ->map(function ($book, $index) {
-                $kategori = optional($book->category)->name
-                    ?? optional($book->category)->nama_kategori
-                    ?? '-';
+                $kategori = optional($book->category)->name ?? '-';
 
                 return [
                     'no' => $index + 1,
@@ -116,6 +151,106 @@ class BookController extends Controller
         return response()->json([
             'total' => $books->count(),
             'books' => $books,
+        ]);
+    }
+
+    /**
+     * Import data buku dari Excel.
+     * File dibaca di browser (SheetJS), lalu baris datanya dikirim ke sini.
+     * Aturan validasi tiap baris sama dengan form Tambah Buku.
+     */
+    public function importRows(Request $request)
+    {
+        $request->validate([
+            'rows' => 'required|array|min:1|max:1000',
+        ]);
+
+        $added   = 0;
+        $skipped = 0;
+        $failed  = [];
+
+        foreach ($request->rows as $index => $row) {
+            $nomorBaris = $index + 2; // baris 1 di Excel adalah header
+
+            $data = [
+                'title'         => trim((string) ($row['title'] ?? '')),
+                'penerbit'      => trim((string) ($row['penerbit'] ?? '')),
+                'pengarang'     => trim((string) ($row['pengarang'] ?? '')),
+                'tahun_terbit'  => preg_replace('/\D/', '', (string) ($row['tahun_terbit'] ?? '')),
+                'tahun_bantuan' => preg_replace('/\D/', '', (string) ($row['tahun_bantuan'] ?? '')),
+                'kategori'      => trim((string) ($row['kategori'] ?? '')),
+                'stock'         => preg_replace('/\D/', '', (string) ($row['stock'] ?? '')),
+            ];
+
+            if ($data['stock'] === '') {
+                $data['stock'] = '0';
+            }
+
+            $validator = Validator::make($data, [
+                'title'         => 'required|string|max:255',
+                'penerbit'      => 'required|string|max:255',
+                'pengarang'     => 'required|string|max:255',
+                'tahun_terbit'  => 'required|integer|min:1000|max:9999',
+                'tahun_bantuan' => 'required|integer|min:1000|max:9999',
+                'kategori'      => 'required|string|max:255',
+                'stock'         => 'required|integer|min:0',
+            ]);
+
+            if ($validator->fails()) {
+                $failed[] = "Baris {$nomorBaris}: " . $validator->errors()->first();
+                continue;
+            }
+
+            // Lewati kalau buku dengan judul + pengarang yang sama sudah ada
+            $exists = Book::whereRaw('LOWER(title) = ?', [mb_strtolower($data['title'])])
+                ->whereRaw('LOWER(pengarang) = ?', [mb_strtolower($data['pengarang'])])
+                ->exists();
+
+            if ($exists) {
+                $skipped++;
+                continue;
+            }
+
+            // Cocokkan nama kategori (dibuat otomatis kalau belum ada)
+            $category = Category::whereRaw('LOWER(name) = ?', [mb_strtolower($data['kategori'])])->first();
+
+            if (!$category) {
+                $category = new Category();
+                $category->name = $data['kategori'];
+                $category->save();
+            }
+
+            Book::create([
+                'title'         => $data['title'],
+                'penerbit'      => $data['penerbit'],
+                'pengarang'     => $data['pengarang'],
+                'tahun_terbit'  => (int) $data['tahun_terbit'],
+                'tahun_bantuan' => (int) $data['tahun_bantuan'],
+                'category_id'   => $category->id,
+                'stock'         => (int) $data['stock'],
+            ]);
+
+            $added++;
+        }
+
+        $message = "Import selesai: {$added} buku ditambahkan, {$skipped} dilewati (sudah ada)";
+
+        if (count($failed) > 0) {
+            $message .= ', ' . count($failed) . ' gagal.';
+            $message .= "\n\n" . implode("\n", array_slice($failed, 0, 5));
+
+            if (count($failed) > 5) {
+                $message .= "\n...dan " . (count($failed) - 5) . ' baris lainnya.';
+            }
+        } else {
+            $message .= '.';
+        }
+
+        return response()->json([
+            'message' => $message,
+            'added'   => $added,
+            'skipped' => $skipped,
+            'failed'  => count($failed),
         ]);
     }
 
